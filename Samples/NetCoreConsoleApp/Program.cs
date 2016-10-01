@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp
+namespace NetCoreConsoleApp
 {
-    class Program
+    public class Program
     {
         private const string clientId = "";
         private const string clientSecret = "";
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // Initializes the translator service.
             var translatorService = new BingTranslation.TranslatorService(clientId, clientSecret);
