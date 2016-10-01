@@ -19,9 +19,6 @@ namespace UwpApp
 {
     public sealed partial class MainPage : Page
     {
-        private const string clientId = "";
-        private const string clientSecret = "";
-
         private BingTranslation.TranslatorService translatorService;
 
         public MainPage()
@@ -31,7 +28,7 @@ namespace UwpApp
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            translatorService = new BingTranslation.TranslatorService(clientId, clientSecret);
+            translatorService = new BingTranslation.TranslatorService(ServiceKeys.TranslatorClientId, ServiceKeys.TranslatorClientSecret);
 
             var languages = await translatorService.GetLanguagesAsync();
 

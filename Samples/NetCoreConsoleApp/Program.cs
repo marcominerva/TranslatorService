@@ -7,13 +7,10 @@ namespace NetCoreConsoleApp
 {
     public class Program
     {
-        private const string clientId = "";
-        private const string clientSecret = "";
-
         public static void Main(string[] args)
         {
             // Initializes the translator service.
-            var translatorService = new BingTranslation.TranslatorService(clientId, clientSecret);
+            var translatorService = new BingTranslation.TranslatorService(ServiceKeys.TranslatorClientId, ServiceKeys.TranslatorClientSecret);
 
             do
             {
