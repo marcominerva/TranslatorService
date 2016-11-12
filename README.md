@@ -1,7 +1,7 @@
 # Bing Translation
 A small class library that allows to translate text using Microsoft Translator.
 
-To use this library, you need to subscribe to [Microsoft Translator Service](https://datamarket.azure.com/dataset/bing/microsofttranslator) and register a [new application](https://datamarket.azure.com/developer/applications).
+To use this library, you must register [Microsoft Translator Service](https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation) on Azure to obtain the Subscription key.
 
 **Contribute**
 
