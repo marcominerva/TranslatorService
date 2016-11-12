@@ -8,7 +8,6 @@ namespace NetCoreConsoleApp
 {
     public static class ServiceKeys
     {
-        public const string TranslatorClientId = "";
-        public const string TranslatorClientSecret = "";
+        public const string TranslatorSubscriptionKey = "";
     }
 }

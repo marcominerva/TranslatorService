@@ -14,7 +14,7 @@
   "frameworks": {
     "netcoreapp1.0": {
       "dependencies": {
-        "BingTranslation": {
+        "MicrosoftTranslation": {
           "target": "project"
         }
       },

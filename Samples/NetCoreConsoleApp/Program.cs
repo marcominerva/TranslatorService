@@ -10,7 +10,7 @@ namespace NetCoreConsoleApp
         public static void Main(string[] args)
         {
             // Initializes the translator service.
-            var translatorService = new BingTranslation.TranslatorService(ServiceKeys.TranslatorClientId, ServiceKeys.TranslatorClientSecret);
+            var translatorService = new MicrosoftTranslation.TranslatorService(ServiceKeys.TranslatorSubscriptionKey);
 
             do
             {

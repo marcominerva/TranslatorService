@@ -83,9 +83,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\BingTranslation\BingTranslation.csproj">
+    <ProjectReference Include="..\..\MicrosoftTranslation\MicrosoftTranslation.csproj">
       <Project>{418c8d07-ddf7-4f37-996c-ffc0ca2235b0}</Project>
-      <Name>BingTranslation</Name>
+      <Name>MicrosoftTranslation</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
