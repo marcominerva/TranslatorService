@@ -39,7 +39,11 @@ namespace MicrosoftTranslation
         /// <remarks>
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation to obtain the Subscription key needed to use the service.</para>
         /// </remarks>
-        public string SubscriptionKey { get; set; }
+        public string SubscriptionKey
+        {
+            get { return authToken?.SubscriptionKey; }
+            set { authToken.SubscriptionKey = value; }
+        }
 
         /// <summary>
         /// Gets or sets the string representing the supported language code to speak the text in.
@@ -60,7 +64,7 @@ namespace MicrosoftTranslation
         /// </remarks>
         /// <seealso cref="SubscriptionKey"/>
         /// <seealso cref="Language"/>
-        public TranslatorService(string subscriptionKey)
+        public TranslatorService(string subscriptionKey = null)
             : this(subscriptionKey, CultureInfo.CurrentCulture.Name.ToLower())
         { }
 
@@ -77,11 +81,11 @@ namespace MicrosoftTranslation
         /// <seealso cref="Language"/>
         public TranslatorService(string subscriptionKey, string language)
         {
+            authToken = new AzureAuthToken(subscriptionKey);
+            client = new HttpClient { BaseAddress = new Uri(BASE_URL) };
+
             SubscriptionKey = subscriptionKey;
             Language = language;
-
-            authToken = new AzureAuthToken(SubscriptionKey);
-            client = new HttpClient { BaseAddress = new Uri(BASE_URL) };
         }
 
         #region Get Languages

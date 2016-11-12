@@ -37,14 +37,12 @@ namespace MicrosoftTranslation
             {
                 if (subscriptionKey != value)
                 {
+                    // If the subscription key is changed, the token is no longer valid.
                     subscriptionKey = value;
                     storedTokenValue = string.Empty;
                 }
             }
         }
-
-        /// Gets the HTTP status code for the most recent request to the token service.
-        public HttpStatusCode RequestStatusCode { get; private set; }
 
         /// <summary>
         /// Creates a client to obtain an access token.
@@ -52,11 +50,7 @@ namespace MicrosoftTranslation
         /// <param name="key">Subscription key to use to get an authentication token.</param>
         public AzureAuthToken(string key)
         {
-            if (string.IsNullOrEmpty(key))
-                throw new ArgumentNullException(nameof(key), "A subscription key is required");
-
             this.SubscriptionKey = key;
-            this.RequestStatusCode = HttpStatusCode.ServiceUnavailable;
         }
 
         /// <summary>
@@ -72,6 +66,9 @@ namespace MicrosoftTranslation
         /// </remarks>
         public async Task<string> GetAccessTokenAsync()
         {
+            if (string.IsNullOrEmpty(SubscriptionKey))
+                throw new ArgumentNullException(nameof(SubscriptionKey), "A subscription key is required");
+
             // Re-use the cached token if there is one.
             if ((DateTime.Now - storedTokenTime) < TokenCacheDuration && !string.IsNullOrWhiteSpace(storedTokenValue))
                 return storedTokenValue;
@@ -86,7 +83,6 @@ namespace MicrosoftTranslation
                     request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);
 
                     var response = await client.SendAsync(request).ConfigureAwait(false);
-                    this.RequestStatusCode = response.StatusCode;
                     response.EnsureSuccessStatusCode();
 
                     var token = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
