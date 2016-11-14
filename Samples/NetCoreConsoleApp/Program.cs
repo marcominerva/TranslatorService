@@ -32,6 +32,8 @@ namespace NetCoreConsoleApp
                 Console.WriteLine(translatedText);
 
             } while (true);
+
+            translatorService.Dispose();
         }
     }
 }

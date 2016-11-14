@@ -15,7 +15,7 @@ namespace MicrosoftTranslation
     /// <para>To use this library, you must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation to obtain the Subscription key.</para>
     /// </para>
     /// </remarks>
-    public sealed class TranslatorService : ITranslatorService
+    public sealed class TranslatorService : ITranslatorService, IDisposable
     {
         private const string BASE_URL = "http://api.microsofttranslator.com/v2/Http.svc/";
         private const string LANGUAGES_URI = "GetLanguagesForTranslate";
@@ -26,9 +26,9 @@ namespace MicrosoftTranslation
         private const int MAX_TEXT_LENGTH = 1000;
         private const int MAX_TEXT_LENGTH_FOR_AUTODETECTION = 100;
 
-        private AzureAuthToken authToken;
+        private readonly AzureAuthToken authToken;
+        private readonly HttpClient client;
         private string authorizationHeaderValue = string.Empty;
-        private HttpClient client;
 
         #region Properties
 
@@ -250,5 +250,10 @@ namespace MicrosoftTranslation
         }
 
         public Task InitializeAsync() => this.CheckUpdateTokenAsync();
+
+        public void Dispose()
+        {
+            client.Dispose();
+        }
     }
 }

@@ -33,6 +33,8 @@ namespace ConsoleApp
                 Console.WriteLine(translatedText);
 
             } while (true);
+
+            translatorService.Dispose();
         }
     }
 }

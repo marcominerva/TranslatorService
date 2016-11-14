@@ -59,5 +59,11 @@ namespace UwpApp
             var translatedText = await translatorService.TranslateAsync(sentence.Text, targetLanguage.SelectedValue.ToString());
             translation.Text = translatedText;
         }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            translatorService.Dispose();
+            base.OnNavigatingFrom(e);
+        }
     }
 }
