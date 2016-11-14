@@ -12,7 +12,7 @@ namespace MicrosoftTranslation
     /// The <strong>TranslatorService</strong> class provides methods to translate text in various supported languages.
     /// </summary>
     /// <remarks>
-    /// <para>To use this library, you must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation to obtain the Subscription key.</para>
+    /// <para>To use this library, you must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation to obtain the Subscription key.
     /// </para>
     /// </remarks>
     public sealed class TranslatorService : ITranslatorService, IDisposable
@@ -41,7 +41,7 @@ namespace MicrosoftTranslation
         /// </remarks>
         public string SubscriptionKey
         {
-            get { return authToken?.SubscriptionKey; }
+            get { return authToken.SubscriptionKey; }
             set { authToken.SubscriptionKey = value; }
         }
 
@@ -249,10 +249,19 @@ namespace MicrosoftTranslation
             catch { }
         }
 
+        /// <summary>
+        /// Initializes the <see cref="TranslatorService"/> class by getting an access token for the service.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
+        /// <remarks>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</remarks>
         public Task InitializeAsync() => this.CheckUpdateTokenAsync();
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
+            authToken.Dispose();
             client.Dispose();
         }
     }

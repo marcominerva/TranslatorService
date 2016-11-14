@@ -240,12 +240,6 @@ _Pvt_Extensions
 *.db
 *.vsext
 
-# AppXBundle
-/Src/See4Me.Windows/_scale-400.appx
-/Src/See4Me.Windows/_scale-150.appx
-/Src/See4Me.Windows/_scale-125.appx
-/Src/See4Me.Windows/_scale-100.appx
-/Src/See4Me.Windows/_pkginfo.txt
-/Src/See4Me.Windows/_language-it.appx
-/Src/See4Me.Windows/Package.StoreAssociation.xml
+# Xml Documentation
+/MicrosoftTranslation/MicrosoftTranslation.xml
 /Samples/NetCoreConsoleApp/project.fragment.lock.json
