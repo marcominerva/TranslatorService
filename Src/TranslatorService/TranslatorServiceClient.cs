@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Xml.Linq;
 
-namespace MicrosoftTranslation
+namespace TranslatorService
 {
     /// <summary>
     /// The <strong>TranslatorService</strong> class provides methods to translate text in various supported languages.
@@ -15,7 +15,7 @@ namespace MicrosoftTranslation
     /// <para>To use this library, you must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation to obtain the Subscription key.
     /// </para>
     /// </remarks>
-    public sealed class TranslatorService : ITranslatorService, IDisposable
+    public class TranslatorServiceClient : ITranslatorServiceClient, IDisposable
     {
         private const string BASE_URL = "http://api.microsofttranslator.com/v2/Http.svc/";
         private const string LANGUAGES_URI = "GetLanguagesForTranslate";
@@ -64,7 +64,7 @@ namespace MicrosoftTranslation
         /// </remarks>
         /// <seealso cref="SubscriptionKey"/>
         /// <seealso cref="Language"/>
-        public TranslatorService(string subscriptionKey = null)
+        public TranslatorServiceClient(string subscriptionKey = null)
             : this(subscriptionKey, CultureInfo.CurrentCulture.Name.ToLower())
         { }
 
@@ -79,7 +79,7 @@ namespace MicrosoftTranslation
         /// </remarks>
         /// <seealso cref="SubscriptionKey"/>
         /// <seealso cref="Language"/>
-        public TranslatorService(string subscriptionKey, string language)
+        public TranslatorServiceClient(string subscriptionKey, string language)
         {
             authToken = new AzureAuthToken(subscriptionKey);
             client = new HttpClient { BaseAddress = new Uri(BASE_URL) };

@@ -128,9 +128,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MicrosoftTranslation\MicrosoftTranslation.csproj">
+    <ProjectReference Include="..\..\Src\TranslatorService\TranslatorService.csproj">
       <Project>{418c8d07-ddf7-4f37-996c-ffc0ca2235b0}</Project>
-      <Name>MicrosoftTranslation</Name>
+      <Name>TranslatorService</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

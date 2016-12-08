@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MicrosoftTranslation
+namespace TranslatorService
 {
     /// <summary>
     /// The <strong>ITranslatorService</strong> interface specifies properties and methods to translate text in various supported languages.
     /// </summary>
-    public interface ITranslatorService
+    public interface ITranslatorServiceClient
     {
         /// <summary>
         /// Gets or sets the Subscription key that is necessary to use <strong>Microsoft Translator Service</strong>.

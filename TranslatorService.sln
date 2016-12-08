@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrosoftTranslation", "MicrosoftTranslation\MicrosoftTranslation.csproj", "{418C8D07-DDF7-4F37-996C-FFC0CA2235B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslatorService", "Src\TranslatorService\TranslatorService.csproj", "{418C8D07-DDF7-4F37-996C-FFC0CA2235B0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{0ADD0426-F441-4257-8016-9E112801EF49}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UwpApp", "Samples\UwpApp\UwpApp.csproj", "{F098393E-D34E-4D65-B814-CF48B4DA5EC7}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "NetCoreConsoleApp", "Samples\NetCoreConsoleApp\NetCoreConsoleApp.xproj", "{33856847-AA52-494B-B4EE-F5B5D228578E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslatorService.Pcl", "Src\TranslatorService.Pcl\TranslatorService.Pcl.csproj", "{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,6 +99,22 @@ Global
 		{33856847-AA52-494B-B4EE-F5B5D228578E}.Release|x64.Build.0 = Release|Any CPU
 		{33856847-AA52-494B-B4EE-F5B5D228578E}.Release|x86.ActiveCfg = Release|Any CPU
 		{33856847-AA52-494B-B4EE-F5B5D228578E}.Release|x86.Build.0 = Release|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Debug|ARM.Build.0 = Debug|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Debug|x64.Build.0 = Debug|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Debug|x86.Build.0 = Debug|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Release|ARM.ActiveCfg = Release|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Release|ARM.Build.0 = Release|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Release|x64.ActiveCfg = Release|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Release|x64.Build.0 = Release|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Release|x86.ActiveCfg = Release|Any CPU
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,5 +124,6 @@ Global
 		{3BCEB2B3-10BD-4567-860C-7F27ECDD1476} = {27B7CC94-DE72-40AF-8F93-8327867691D2}
 		{F098393E-D34E-4D65-B814-CF48B4DA5EC7} = {27B7CC94-DE72-40AF-8F93-8327867691D2}
 		{33856847-AA52-494B-B4EE-F5B5D228578E} = {27B7CC94-DE72-40AF-8F93-8327867691D2}
+		{C1528B3D-F940-4978-9CDF-4CC50EDC3C7D} = {0ADD0426-F441-4257-8016-9E112801EF49}
 	EndGlobalSection
 EndGlobal

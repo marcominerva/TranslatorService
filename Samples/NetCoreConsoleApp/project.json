@@ -14,7 +14,7 @@
   "frameworks": {
     "netcoreapp1.0": {
       "dependencies": {
-        "MicrosoftTranslation": {
+        "TranslatorService": {
           "target": "project"
         }
       },

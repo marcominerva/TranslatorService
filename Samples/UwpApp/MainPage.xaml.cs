@@ -19,7 +19,7 @@ namespace UwpApp
 {
     public sealed partial class MainPage : Page
     {
-        private MicrosoftTranslation.TranslatorService translatorService;
+        private TranslatorService.TranslatorServiceClient translatorService;
 
         public MainPage()
         {
@@ -28,7 +28,7 @@ namespace UwpApp
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            translatorService = new MicrosoftTranslation.TranslatorService(ServiceKeys.TranslatorSubscriptionKey);
+            translatorService = new TranslatorService.TranslatorServiceClient(ServiceKeys.TranslatorSubscriptionKey);
 
             var languages = await translatorService.GetLanguagesAsync();
 
