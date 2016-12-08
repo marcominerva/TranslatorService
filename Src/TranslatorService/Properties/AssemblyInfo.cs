@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("TranslatorService")]
-[assembly: AssemblyDescription("A lightweight library that allows to use Microsoft Translator Service")]
+[assembly: AssemblyDescription("A lightweight library that allows to translate text using Microsoft Translator Service")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TranslatorService")]
