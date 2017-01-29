@@ -17,16 +17,13 @@
         </member>
         <member name="F:TranslatorService.AzureAuthToken.TokenCacheDuration">
             After obtaining a valid token, this class will cache it for this duration.
-            Use a duration of 5 minutes, which is less than the actual token lifetime of 10 minutes.
+            Use a duration of 8 minutes, which is less than the actual token lifetime of 10 minutes.
         </member>
         <member name="F:TranslatorService.AzureAuthToken.storedTokenValue">
             Cache the value of the last valid token obtained from the token service.
         </member>
         <member name="F:TranslatorService.AzureAuthToken.storedTokenTime">
             When the last valid token was obtained.
-        </member>
-        <member name="P:TranslatorService.AzureAuthToken.SubscriptionKey">
-            Gets the subscription key.
         </member>
         <member name="M:TranslatorService.AzureAuthToken.#ctor(System.String)">
             <summary>
@@ -43,8 +40,8 @@
             This method uses a cache to limit the number of request to the token service.
             A fresh token can be re-used during its lifetime of 10 minutes. After a successful
             request to the token service, this method caches the access token. Subsequent
-            invocations of the method return the cached token for the next 5 minutes. After
-            5 minutes, a new token is fetched from the token service and the cache is updated.
+            invocations of the method return the cached token for the next 8 minutes. After
+            8 minutes, a new token is fetched from the token service and the cache is updated.
             </remarks>
         </member>
         <member name="T:TranslatorService.ITranslatorServiceClient">
@@ -171,12 +168,10 @@
             <value>The string representing the supported language code to translate the text to. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/>.</value>
             <seealso cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/>
         </member>
-        <member name="M:TranslatorService.TranslatorServiceClient.#ctor(System.String)">
+        <member name="M:TranslatorService.TranslatorServiceClient.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorServiceClient"/> class, using the specified Subscription key and the current system language.
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorServiceClient"/> class, using the current system language.
             </summary>
-            <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure
-            </param>
             <remarks>
             <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation to obtain the Subscription key needed to use the service.</para>
             </remarks>
@@ -189,7 +184,8 @@
             </summary>
             <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure
             </param>
-            <param name="language">A string representing the supported language code to translate the text to. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/>.</param>
+            <param name="language">A string representing the supported language code to translate the text to. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/>. If a null value is provided, the current system language is used.
+            </param>
             <remarks>
             <para>You must register Microsoft Translator on https://portal.azure.com to obtain the Subscription key needed to use the service.</para>
             </remarks>
