@@ -7,7 +7,7 @@ To use this library, you must register [Microsoft Translator Service](https://po
 
 The library is available on [NuGet](https://www.nuget.org/packages/TranslatorService/). Just search *TranslatorService* in the **Package Manager GUI** or run the following command in the **Package Manager Console**:    
 
-    Install-Package RestLibrary
+    Install-Package TranslatorService
     
 In the [Samples](https://github.com/marcominerva/RestLibrary/tree/master/Samples) folder are available samples for .NET, .NET Core and the Universal Windows Platform.
 
