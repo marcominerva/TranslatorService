@@ -42,10 +42,12 @@
   <ItemGroup>
     <Compile Include="AzureAuthToken.cs" />
     <Compile Include="ITranslatorServiceClient.cs" />
+    <Compile Include="Models\ErrorResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TranslatorServiceClient.cs">
       <DependentUpon>ITranslatorServiceClient.cs</DependentUpon>
     </Compile>
+    <Compile Include="TranslatorServiceException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

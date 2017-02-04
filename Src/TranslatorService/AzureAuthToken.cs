@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
+using TranslatorService.Models;
 
 namespace TranslatorService
 {
@@ -68,22 +69,30 @@ namespace TranslatorService
         /// </remarks>
         public async Task<string> GetAccessTokenAsync()
         {
-            if (string.IsNullOrEmpty(subscriptionKey))
-                throw new ArgumentNullException(nameof(SubscriptionKey), "A subscription key is required");
+            if (string.IsNullOrWhiteSpace(subscriptionKey))
+                throw new ArgumentNullException(nameof(SubscriptionKey), "A Subscription Key is required. Go to Azure Portal and sign up for Microsoft Translator: https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation");
 
             // Re-use the cached token if there is one.
             if ((DateTime.Now - storedTokenTime) < TokenCacheDuration && !string.IsNullOrWhiteSpace(storedTokenValue))
+            {
                 return storedTokenValue;
+            }
 
             using (var request = new HttpRequestMessage(HttpMethod.Post, ServiceUrl))
             {
                 request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, subscriptionKey);
 
                 var response = await client.SendAsync(request).ConfigureAwait(false);
-                var token = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = JsonConvert.DeserializeObject<ErrorResponse>(content);
+                    throw new TranslatorServiceException(error.Message);
+                }
 
                 storedTokenTime = DateTime.Now;
-                storedTokenValue = $"Bearer {token}";
+                storedTokenValue = $"Bearer {content}";
 
                 return storedTokenValue;
             }

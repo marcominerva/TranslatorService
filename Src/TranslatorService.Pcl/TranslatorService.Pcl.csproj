@@ -40,11 +40,17 @@
     <Compile Include="..\TranslatorService\ITranslatorServiceClient.cs">
       <Link>ITranslatorServiceClient.cs</Link>
     </Compile>
+    <Compile Include="..\TranslatorService\Models\ErrorResponse.cs">
+      <Link>Models\ErrorResponse.cs</Link>
+    </Compile>
     <Compile Include="..\TranslatorService\TranslatorServiceClient.cs">
       <Link>TranslatorServiceClient.cs</Link>
     </Compile>
     <Compile Include="..\TranslatorService\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\TranslatorService\TranslatorServiceException.cs">
+      <Link>TranslatorServiceException.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
