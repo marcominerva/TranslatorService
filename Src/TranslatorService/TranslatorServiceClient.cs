@@ -204,7 +204,6 @@ namespace TranslatorService
         /// <term>The <paramref name="text"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
         /// </list>
         /// </exception>        
-        /// <exception cref="ArgumentException">The <paramref name="text"/> parameter is longer than 1000 characters.</exception>
         /// <exception cref="TranslatorServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
         /// <remarks><para>This method performs a non-blocking request for language detection.</para>
         /// <para>For more information, go to http://msdn.microsoft.com/en-us/library/ff512427.aspx.
