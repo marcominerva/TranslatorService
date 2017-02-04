@@ -7,7 +7,7 @@ namespace TranslatorService
     /// <summary>
     /// The <strong>ITranslatorServiceClient</strong> interface specifies properties and methods to translate text to various supported languages.
     /// </summary>
-    public interface ITranslatorServiceClient
+    public interface ITranslatorServiceClient : IDisposable
     {
         /// <summary>
         /// Gets or sets the Subscription key that is necessary to use <strong>Microsoft Translator Service</strong>.
