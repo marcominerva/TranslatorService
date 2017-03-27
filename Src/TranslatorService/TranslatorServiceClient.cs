@@ -5,6 +5,8 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Xml.Linq;
+using TranslatorService.Models;
+using System.IO;
 
 namespace TranslatorService
 {
@@ -18,11 +20,18 @@ namespace TranslatorService
     public class TranslatorServiceClient : ITranslatorServiceClient
     {
         private const string BaseUrl = "http://api.microsofttranslator.com/v2/Http.svc/";
-        private const string LanguagesUri = "GetLanguagesForTranslate";
+        private const string TranslateLanguagesUri = "GetLanguagesForTranslate";
         private const string TranslateUri = "Translate?text={0}&to={1}&contentType=text/plain";
         private const string TranslateWithFromUri = "Translate?text={0}&from={1}&to={2}&contentType=text/plain";
+        private const string SpeakLanguagesUri = "GetLanguagesForSpeak";
+        private const string SpeakUri = "Speak?text={0}&language={1}&format={2}&options={3}";
         private const string DetectUri = "Detect?text={0}";
         private const string AuthorizationHeader = "Authorization";
+
+        private const string AudioWavFormat = "audio/wav";
+        private const string AudioMp3Format = "audio/mp3";
+        private const string MinSizeFormat = "MinSize";
+        private const string MaxQualityFormat = "MaxQuality";
 
         private const string ArrayNamespace = "http://schemas.microsoft.com/2003/10/Serialization/Arrays";
 
@@ -52,6 +61,44 @@ namespace TranslatorService
         /// <value>The string representing the supported language code to translate the text to. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>.</value>
         /// <seealso cref="GetLanguagesAsync"/>
         public string Language { get; set; }
+
+        /// <summary> 
+        /// Gets or sets the audio format of the retrieved audio stream. Currently, <strong>Wav</strong> and <strong>MP3</strong> are supported. 
+        /// </summary> 
+        /// <value>The audio format of the retrieved audio stream. Currently, <strong>Wav</strong> and <strong>MP3</strong> are supported.</value> 
+        /// <remarks>The default value is <strong>MP3</strong>.</remarks>         
+        public SpeechStreamFormat AudioFormat { get; set; } = SpeechStreamFormat.Mp3;
+
+        /// <summary> 
+        /// Gets or sets the audio quality of the retrieved audio stream. Currently, <strong>MaxQuality</strong> and <strong>MinSize</strong> are supported. 
+        /// </summary> 
+        /// <value>The audio quality of the retrieved audio stream. Currently, <strong>MaxQuality</strong> and <strong>MinSize</strong> are supported.</value> 
+        /// <remarks> 
+        /// With <strong>MaxQuality</strong>, you can get the voice with the highest quality, and with <strong>MinSize</strong>, you can get the voices with the smallest size. The default value is <strong>MaxQuality</strong>. 
+        /// </remarks> 
+        public SpeechStreamQuality AudioQuality { get; set; } = SpeechStreamQuality.MaxQuality;
+
+        /// <summary> 
+        /// Gets or sets a value indicating whether the sentence to be spoken must be translated in the specified language. 
+        /// </summary> 
+        /// <value><strong>true</strong> if the sentence to be spoken must be translated in the specified language; otherwise, <strong>false</strong>.</value> 
+        /// <remarks>If you don't need to translate to text to be spoken, you can speed-up the the library setting the <strong>AutomaticTranslation</strong> property to <strong>false</strong>. In this way, the specified text is passed as is to the other methods, without performing any translation. The default value is <strong>false</strong>.</remarks> 
+        public bool AutomaticTranslation { get; set; } = false;
+
+        /// <summary> 
+        /// Gets or sets a value indicating whether the language of the text must be automatically detected before text-to-speech. 
+        /// </summary> 
+        /// <value><strong>true</strong> if the language of the text must be automatically detected; otherwise, <strong>false</strong>.</value> 
+        /// <remarks>The <strong>AutoDetectLanguage</strong> property is used when the following methods are invoked: 
+        /// <list type="bullet"> 
+        /// <term><see cref="GetSpeechStreamAsync"/></term> 
+        /// </list> 
+        /// <para>When these methods are called, if the <strong>AutoDetectLanguage</strong> property is set to <strong>true</strong>, the language of the text is auto-detected before speech stream request. Otherwise, the language specified in the <seealso cref="Language"/> property is used.</para> 
+        /// <para>If the language to use is explicitly specified, using the versions of the methods that accept it, no auto-detection is performed.</para> 
+        /// <para>The default value is <strong>false</strong>.</para> 
+        /// </remarks> 
+        /// <seealso cref="Language"/> 
+        public bool AutoDetectLanguage { get; set; } = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorServiceClient"/> class, using the current system language.
@@ -90,6 +137,7 @@ namespace TranslatorService
         /// <summary>
         /// Retrieves the languages available for translation.
         /// </summary>
+        /// <param name="serviceType">The service type for which to retrieve supported languages.</param>
         /// <returns>A string array containing the language codes supported for translation by <strong>Microsoft Translator Service</strong>.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
         /// <exception cref="TranslatorServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
@@ -97,12 +145,15 @@ namespace TranslatorService
         /// <para>For more information, go to http://msdn.microsoft.com/en-us/library/ff512415.aspx.
         /// </para>
         /// </remarks>
-        public async Task<IEnumerable<string>> GetLanguagesAsync()
+        /// <seealso cref="LanguageServiceType"/>
+
+        public async Task<IEnumerable<string>> GetLanguagesAsync(LanguageServiceType serviceType = LanguageServiceType.Translation)
         {
             // Check if it is necessary to obtain/update access token.
             await CheckUpdateTokenAsync().ConfigureAwait(false);
 
-            var content = await client.GetStringAsync(LanguagesUri).ConfigureAwait(false);
+            var uri = serviceType == LanguageServiceType.Speech ? SpeakLanguagesUri : TranslateLanguagesUri;
+            var content = await client.GetStringAsync(uri).ConfigureAwait(false);
 
             XNamespace ns = ArrayNamespace;
             var doc = XDocument.Parse(content);
@@ -222,6 +273,71 @@ namespace TranslatorService
             var detectedLanguage = doc.Root.Value;
 
             return detectedLanguage;
+        }
+
+        /// <summary> 
+        /// Returns a stream of a file speaking the passed-in text in the desired language. If <paramref name="language"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) and the <see cref="AutoDetectLanguage"/> property is set to <strong>true</strong>, the <see cref="DetectLanguageAsync(string)"/> method is used to detect the language of the speech stream. Otherwise, the language specified in the <see cref="Language"/> property is used. 
+        /// </summary> 
+        /// <param name="text">A string containing the sentence to be spoken.</param> 
+        /// <param name="language">A string representing the language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>.</param> 
+        /// <returns>A <see cref="Stream"/> object that contains a file speaking the passed-in text in the desired language.</returns> 
+        /// <exception cref="ArgumentNullException">
+        /// <list type="bullet">
+        /// <term>The <see cref="SubscriptionKey"/> property hasn't been set.</term>
+        /// <term>The <paramref name="text"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+        /// </list>
+        /// </exception>  
+        /// <exception cref="ArgumentException">The <paramref name="text"/> parameter is longer than 1000 characters.</exception>
+        /// <exception cref="TranslatorServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <remarks> 
+        /// <para>This method performs a non-blocking request for speak stream.</para> 
+        /// <para>For more information, go to http://msdn.microsoft.com/en-us/library/ff512420.aspx. 
+        /// </para></remarks> 
+        /// <seealso cref="Stream"/> 
+        /// <seealso cref="Language"/> 
+        /// <seealso cref="GetLanguagesAsync"/> 
+        public async Task<Stream> GetSpeechStreamAsync(string text, string language = null)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            { 
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (text.Length > MaxTextLength)
+            {
+                throw new ArgumentException($"{nameof(text)} parameter cannot be longer than {MaxTextLength} characters");
+            }
+
+            var languageDetected = false;
+            if (string.IsNullOrEmpty(language))
+            {
+                if (AutoDetectLanguage)
+                {
+                    language = await DetectLanguageAsync(text).ConfigureAwait(false);
+                    languageDetected = true;
+                }
+                else
+                {
+                    language = Language;
+                }
+            }
+
+            if (!languageDetected && AutomaticTranslation)
+            { 
+                text = await TranslateAsync(text, language).ConfigureAwait(false);
+            }
+
+            // Checks if it is necessary to obtain/update access token.
+            await CheckUpdateTokenAsync().ConfigureAwait(false);
+
+            var audioFormat = AudioFormat == SpeechStreamFormat.Wave ? AudioWavFormat : AudioMp3Format;
+            var audioQuality = AudioQuality == SpeechStreamQuality.MinSize ? MinSizeFormat : MaxQualityFormat;
+            var uri = string.Format(SpeakUri, Uri.EscapeDataString(text), language, Uri.EscapeDataString(audioFormat), audioQuality);
+
+            var content = await client.GetByteArrayAsync(uri).ConfigureAwait(false);
+
+            var speakStream = new MemoryStream(content);            
+            return speakStream;
         }
 
         private async Task CheckUpdateTokenAsync()

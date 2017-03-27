@@ -43,6 +43,12 @@
     <Compile Include="..\TranslatorService\Models\ErrorResponse.cs">
       <Link>Models\ErrorResponse.cs</Link>
     </Compile>
+    <Compile Include="..\TranslatorService\Models\SpeechStreamFormat.cs">
+      <Link>Models\SpeechStreamFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\TranslatorService\Models\SpeechStreamQuality.cs">
+      <Link>Models\SpeechStreamQuality.cs</Link>
+    </Compile>
     <Compile Include="..\TranslatorService\TranslatorServiceClient.cs">
       <Link>TranslatorServiceClient.cs</Link>
     </Compile>
@@ -52,6 +58,7 @@
     <Compile Include="..\TranslatorService\TranslatorServiceException.cs">
       <Link>TranslatorServiceException.cs</Link>
     </Compile>
+    <Compile Include="Models\LanguageServiceType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

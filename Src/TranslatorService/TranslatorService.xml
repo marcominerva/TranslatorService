@@ -62,8 +62,46 @@
             <summary>
             Gets or sets the string representing the supported language code to translate the text in.
             </summary>
-            <value>The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync"/>.</value>
-            <seealso cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync"/>
+            <value>The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/>.</value>
+            <seealso cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/>
+        </member>
+        <member name="P:TranslatorService.ITranslatorServiceClient.AudioFormat">
+            <summary> 
+            Gets or sets the audio format of the retrieved audio stream. Currently, <strong>Wav</strong> and <strong>MP3</strong> are supported. 
+            </summary> 
+            <value>The audio format of the retrieved audio stream. Currently, <strong>Wav</strong> and <strong>MP3</strong> are supported.</value> 
+            <remarks>The default value is <strong>Mp3</strong>.</remarks>         
+        </member>
+        <member name="P:TranslatorService.ITranslatorServiceClient.AudioQuality">
+            <summary> 
+            Gets or sets the audio quality of the retrieved audio stream. Currently, <strong>MaxQuality</strong> and <strong>MinSize</strong> are supported. 
+            </summary> 
+            <value>The audio quality of the retrieved audio stream. Currently, <strong>MaxQuality</strong> and <strong>MinSize</strong> are supported.</value> 
+            <remarks> 
+            With <strong>MaxQuality</strong>, you can get the voice with the highest quality, and with <strong>MinSize</strong>, you can get the voices with the smallest size. The default value is <strong>MaxQuality</strong>. 
+            </remarks> 
+        </member>
+        <member name="P:TranslatorService.ITranslatorServiceClient.AutomaticTranslation">
+            <summary> 
+            Gets or sets a value indicating whether the sentence to be spoken must be translated in the specified language. 
+            </summary> 
+            <value><strong>true</strong> if the sentence to be spoken must be translated in the specified language; otherwise, <strong>false</strong>.</value> 
+            <remarks>If you don't need to translate to text to be spoken, you can speed-up the the library setting the <strong>AutomaticTranslation</strong> property to <strong>false</strong>. In this way, the specified text is passed as is to the other methods, without performing any translation. The default value is <strong>true</strong>.</remarks> 
+        </member>
+        <member name="P:TranslatorService.ITranslatorServiceClient.AutoDetectLanguage">
+            <summary> 
+            Gets or sets a value indicating whether the language of the text must be automatically detected before text-to-speech. 
+            </summary> 
+            <value><strong>true</strong> if the language of the text must be automatically detected; otherwise, <strong>false</strong>.</value> 
+            <remarks>The <strong>AutoDetectLanguage</strong> property is used when the following methods are invoked: 
+            <list type="bullet"> 
+            <term><see cref="M:TranslatorService.ITranslatorServiceClient.GetSpeechStreamAsync(System.String,System.String)"/></term> 
+            </list> 
+            <para>When these methods are called, if the <strong>AutoDetectLanguage</strong> property is set to <strong>true</strong>, the language of the text is auto-detected before speech stream request. Otherwise, the language specified in the <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/> property is used.</para> 
+            <para>If the language to use is explicitly specified, using the versions of the methods that accept it, no auto-detection is performed.</para> 
+            <para>The default value is <strong>true</strong>.</para> 
+            </remarks> 
+            <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/> 
         </member>
         <member name="M:TranslatorService.ITranslatorServiceClient.DetectLanguageAsync(System.String)">
             <summary>
@@ -81,13 +119,14 @@
             <remarks><para>This method performs a non-blocking request for language detection.</para>
             <para>For more information, go to http://msdn.microsoft.com/en-us/library/ff512427.aspx.
             </para></remarks>
-            <seealso cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync"/>
+            <seealso cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/>
             <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/>
         </member>
-        <member name="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync">
+        <member name="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)">
             <summary>
             Retrieves the languages available for translation.
             </summary>
+            <param name="serviceType">The service type for which to retrieve supported languages.</param>
             <returns>A string array containing the language codes supported for translation by <strong>Microsoft Translator Service</strong>.</returns>
             <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ITranslatorServiceClient.SubscriptionKey"/> property hasn't been set.</exception>
             <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.ITranslatorServiceClient.SubscriptionKey"/> isn't valid or has expired.</exception>
@@ -95,6 +134,7 @@
             <para>For more information, go to http://msdn.microsoft.com/en-us/library/ff512415.aspx.
             </para>
             </remarks>
+            <seealso cref="T:TranslatorService.Models.LanguageServiceType"/>
         </member>
         <member name="M:TranslatorService.ITranslatorServiceClient.InitializeAsync">
             <summary>
@@ -111,7 +151,7 @@
             </summary>
             <returns>A string representing the translated text.</returns>
             <param name="text">A string representing the text to translate.</param>
-            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/> property will be used.</param>
+            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/> property will be used.</param>
             <exception cref="T:System.ArgumentNullException">
             <list type="bullet">
             <term>The <see cref="P:TranslatorService.ITranslatorServiceClient.SubscriptionKey"/> property hasn't been set.</term>
@@ -132,8 +172,8 @@
             </summary>
             <returns>A string representing the translated text.</returns>
             <param name="text">A string representing the text to translate.</param>
-            <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/> property will be used.</param>
-            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/> property will be used.</param>
+            <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/> property will be used.</param>
+            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/> property will be used.</param>
             <exception cref="T:System.ArgumentNullException">
             <list type="bullet">
             <term>The <see cref="P:TranslatorService.ITranslatorServiceClient.SubscriptionKey"/> property hasn't been set.</term>
@@ -147,6 +187,89 @@
             </para>
             </remarks>
             <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorServiceClient.GetSpeechStreamAsync(System.String,System.String)">
+            <summary> 
+            Returns a stream of a file speaking the passed-in text in the desired language. If <paramref name="language"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) and the <see cref="P:TranslatorService.ITranslatorServiceClient.AutoDetectLanguage"/> property is set to <strong>true</strong>, the <see cref="M:TranslatorService.ITranslatorServiceClient.DetectLanguageAsync(System.String)"/> method is used to detect the language of the speech stream. Otherwise, the language specified in the <see cref="P:TranslatorService.ITranslatorServiceClient.Language"/> property is used. 
+            </summary> 
+            <param name="text">A string containing the sentence to be spoken.</param> 
+            <param name="language">A string representing the language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/>.</param> 
+            <returns>A <see cref="T:System.IO.Stream"/> object that contains a file speaking the passed-in text in the desired language.</returns> 
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorServiceClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="text"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            </list>
+            </exception>  
+            <exception cref="T:System.ArgumentException">The <paramref name="text"/> parameter is longer than 1000 characters.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.ITranslatorServiceClient.SubscriptionKey"/> isn't valid or has expired.</exception>
+            <remarks> 
+            <para>This method performs a non-blocking request for speak stream.</para> 
+            <para>For more information, go to http://msdn.microsoft.com/en-us/library/ff512420.aspx. 
+            </para></remarks> 
+            <seealso cref="T:System.IO.Stream"/> 
+            <seealso cref="P:TranslatorService.ITranslatorServiceClient.Language"/> 
+            <seealso cref="M:TranslatorService.ITranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/> 
+        </member>
+        <member name="T:TranslatorService.Models.ErrorResponse">
+            <summary>
+            Holds information about an error occurred while accessing Microsoft Translator Service.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.ErrorResponse.Message">
+            <summary>
+            Gets or sets the error message.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.ErrorResponse.StatusCode">
+            <summary>
+            Gets or sets the HTTP status code.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.LanguageServiceType">
+            <summary> 
+            Specifies the service for which to retrieve the supported languages. 
+            </summary> 
+        </member>
+        <member name="F:TranslatorService.Models.LanguageServiceType.Translation">
+            <summary> 
+            Retrieves languages available for translation. 
+            </summary> 
+        </member>
+        <member name="F:TranslatorService.Models.LanguageServiceType.Speech">
+            <summary> 
+            Retrieves languages available for speech.
+            </summary> 
+        </member>
+        <member name="T:TranslatorService.Models.SpeechStreamFormat">
+            <summary> 
+            Specifies the audio format of the retrieved audio stream. 
+            </summary> 
+        </member>
+        <member name="F:TranslatorService.Models.SpeechStreamFormat.Wave">
+            <summary> 
+            Uses the WAVE file format. 
+            </summary> 
+        </member>
+        <member name="F:TranslatorService.Models.SpeechStreamFormat.Mp3">
+            <summary> 
+            Uses the MP3 file format. 
+            </summary> 
+        </member>
+        <member name="T:TranslatorService.Models.SpeechStreamQuality">
+            <summary> 
+            Specifies the audio quality of the retrieved audio stream. 
+            </summary> 
+        </member>
+        <member name="F:TranslatorService.Models.SpeechStreamQuality.MaxQuality">
+            <summary> 
+            Uses the max available quality. 
+            </summary> 
+        </member>
+        <member name="F:TranslatorService.Models.SpeechStreamQuality.MinSize">
+            <summary> 
+            Retrieves audio file with the minimum size. 
+            </summary> 
         </member>
         <member name="T:TranslatorService.TranslatorServiceClient">
             <summary>
@@ -170,8 +293,46 @@
             <summary>
             Gets or sets the string representing the supported language code to translate the text to.
             </summary>
-            <value>The string representing the supported language code to translate the text to. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/>.</value>
-            <seealso cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/>
+            <value>The string representing the supported language code to translate the text to. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/>.</value>
+            <seealso cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/>
+        </member>
+        <member name="P:TranslatorService.TranslatorServiceClient.AudioFormat">
+            <summary> 
+            Gets or sets the audio format of the retrieved audio stream. Currently, <strong>Wav</strong> and <strong>MP3</strong> are supported. 
+            </summary> 
+            <value>The audio format of the retrieved audio stream. Currently, <strong>Wav</strong> and <strong>MP3</strong> are supported.</value> 
+            <remarks>The default value is <strong>MP3</strong>.</remarks>         
+        </member>
+        <member name="P:TranslatorService.TranslatorServiceClient.AudioQuality">
+            <summary> 
+            Gets or sets the audio quality of the retrieved audio stream. Currently, <strong>MaxQuality</strong> and <strong>MinSize</strong> are supported. 
+            </summary> 
+            <value>The audio quality of the retrieved audio stream. Currently, <strong>MaxQuality</strong> and <strong>MinSize</strong> are supported.</value> 
+            <remarks> 
+            With <strong>MaxQuality</strong>, you can get the voice with the highest quality, and with <strong>MinSize</strong>, you can get the voices with the smallest size. The default value is <strong>MaxQuality</strong>. 
+            </remarks> 
+        </member>
+        <member name="P:TranslatorService.TranslatorServiceClient.AutomaticTranslation">
+            <summary> 
+            Gets or sets a value indicating whether the sentence to be spoken must be translated in the specified language. 
+            </summary> 
+            <value><strong>true</strong> if the sentence to be spoken must be translated in the specified language; otherwise, <strong>false</strong>.</value> 
+            <remarks>If you don't need to translate to text to be spoken, you can speed-up the the library setting the <strong>AutomaticTranslation</strong> property to <strong>false</strong>. In this way, the specified text is passed as is to the other methods, without performing any translation. The default value is <strong>false</strong>.</remarks> 
+        </member>
+        <member name="P:TranslatorService.TranslatorServiceClient.AutoDetectLanguage">
+            <summary> 
+            Gets or sets a value indicating whether the language of the text must be automatically detected before text-to-speech. 
+            </summary> 
+            <value><strong>true</strong> if the language of the text must be automatically detected; otherwise, <strong>false</strong>.</value> 
+            <remarks>The <strong>AutoDetectLanguage</strong> property is used when the following methods are invoked: 
+            <list type="bullet"> 
+            <term><see cref="M:TranslatorService.TranslatorServiceClient.GetSpeechStreamAsync(System.String,System.String)"/></term> 
+            </list> 
+            <para>When these methods are called, if the <strong>AutoDetectLanguage</strong> property is set to <strong>true</strong>, the language of the text is auto-detected before speech stream request. Otherwise, the language specified in the <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/> property is used.</para> 
+            <para>If the language to use is explicitly specified, using the versions of the methods that accept it, no auto-detection is performed.</para> 
+            <para>The default value is <strong>false</strong>.</para> 
+            </remarks> 
+            <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/> 
         </member>
         <member name="M:TranslatorService.TranslatorServiceClient.#ctor">
             <summary>
@@ -189,7 +350,7 @@
             </summary>
             <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure
             </param>
-            <param name="language">A string representing the supported language code to translate the text to. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/>. If a null value is provided, the current system language is used.
+            <param name="language">A string representing the supported language code to translate the text to. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/>. If a null value is provided, the current system language is used.
             </param>
             <remarks>
             <para>You must register Microsoft Translator on https://portal.azure.com to obtain the Subscription key needed to use the service.</para>
@@ -197,10 +358,11 @@
             <seealso cref="P:TranslatorService.TranslatorServiceClient.SubscriptionKey"/>
             <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/>
         </member>
-        <member name="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync">
+        <member name="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)">
             <summary>
             Retrieves the languages available for translation.
             </summary>
+            <param name="serviceType">The service type for which to retrieve supported languages.</param>
             <returns>A string array containing the language codes supported for translation by <strong>Microsoft Translator Service</strong>.</returns>
             <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.TranslatorServiceClient.SubscriptionKey"/> property hasn't been set.</exception>
             <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.TranslatorServiceClient.SubscriptionKey"/> isn't valid or has expired.</exception>
@@ -208,6 +370,7 @@
             <para>For more information, go to http://msdn.microsoft.com/en-us/library/ff512415.aspx.
             </para>
             </remarks>
+            <seealso cref="T:TranslatorService.Models.LanguageServiceType"/>
         </member>
         <member name="M:TranslatorService.TranslatorServiceClient.TranslateAsync(System.String,System.String)">
             <summary>
@@ -215,7 +378,7 @@
             </summary>
             <returns>A string representing the translated text.</returns>
             <param name="text">A string representing the text to translate.</param>
-            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/> property will be used.</param>
+            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/> property will be used.</param>
             <exception cref="T:System.ArgumentNullException">
             <list type="bullet">
             <term>The <see cref="P:TranslatorService.TranslatorServiceClient.SubscriptionKey"/> property hasn't been set.</term>
@@ -236,8 +399,8 @@
             </summary>
             <returns>A string representing the translated text.</returns>
             <param name="text">A string representing the text to translate.</param>
-            <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/> property will be used.</param>
-            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/> property will be used.</param>
+            <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/> property will be used.</param>
+            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/> property will be used.</param>
             <exception cref="T:System.ArgumentNullException">
             <list type="bullet">
             <term>The <see cref="P:TranslatorService.TranslatorServiceClient.SubscriptionKey"/> property hasn't been set.</term>
@@ -268,8 +431,31 @@
             <remarks><para>This method performs a non-blocking request for language detection.</para>
             <para>For more information, go to http://msdn.microsoft.com/en-us/library/ff512427.aspx.
             </para></remarks>
-            <seealso cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync"/>
+            <seealso cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/>
             <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorServiceClient.GetSpeechStreamAsync(System.String,System.String)">
+            <summary> 
+            Returns a stream of a file speaking the passed-in text in the desired language. If <paramref name="language"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) and the <see cref="P:TranslatorService.TranslatorServiceClient.AutoDetectLanguage"/> property is set to <strong>true</strong>, the <see cref="M:TranslatorService.TranslatorServiceClient.DetectLanguageAsync(System.String)"/> method is used to detect the language of the speech stream. Otherwise, the language specified in the <see cref="P:TranslatorService.TranslatorServiceClient.Language"/> property is used. 
+            </summary> 
+            <param name="text">A string containing the sentence to be spoken.</param> 
+            <param name="language">A string representing the language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/>.</param> 
+            <returns>A <see cref="T:System.IO.Stream"/> object that contains a file speaking the passed-in text in the desired language.</returns> 
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.TranslatorServiceClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="text"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            </list>
+            </exception>  
+            <exception cref="T:System.ArgumentException">The <paramref name="text"/> parameter is longer than 1000 characters.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.TranslatorServiceClient.SubscriptionKey"/> isn't valid or has expired.</exception>
+            <remarks> 
+            <para>This method performs a non-blocking request for speak stream.</para> 
+            <para>For more information, go to http://msdn.microsoft.com/en-us/library/ff512420.aspx. 
+            </para></remarks> 
+            <seealso cref="T:System.IO.Stream"/> 
+            <seealso cref="P:TranslatorService.TranslatorServiceClient.Language"/> 
+            <seealso cref="M:TranslatorService.TranslatorServiceClient.GetLanguagesAsync(TranslatorService.Models.LanguageServiceType)"/> 
         </member>
         <member name="M:TranslatorService.TranslatorServiceClient.InitializeAsync">
             <summary>
