@@ -146,7 +146,6 @@ namespace TranslatorService
         /// </para>
         /// </remarks>
         /// <seealso cref="LanguageServiceType"/>
-
         public async Task<IEnumerable<string>> GetLanguagesAsync(LanguageServiceType serviceType = LanguageServiceType.Translation)
         {
             // Check if it is necessary to obtain/update access token.
@@ -336,8 +335,8 @@ namespace TranslatorService
 
             var content = await client.GetByteArrayAsync(uri).ConfigureAwait(false);
 
-            var speakStream = new MemoryStream(content);            
-            return speakStream;
+            var speechStream = new MemoryStream(content);            
+            return speechStream;
         }
 
         private async Task CheckUpdateTokenAsync()
