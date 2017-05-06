@@ -32,9 +32,9 @@
                 Grid.Row="1"
                 Margin="5"
                 HorizontalAlignment="Stretch"
-                DisplayMemberPath="Value"
+                DisplayMemberPath="Name"
                 Header="Target language"
-                SelectedValuePath="Key" />
+                SelectedValuePath="Code" />
             <Button
                 x:Name="translateButton"
                 Grid.Row="2"

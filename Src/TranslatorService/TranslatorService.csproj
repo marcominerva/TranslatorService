@@ -43,7 +43,8 @@
     <Compile Include="AzureAuthToken.cs" />
     <Compile Include="ITranslatorServiceClient.cs" />
     <Compile Include="Models\ErrorResponse.cs" />
-    <Compile Include="Models\LanguageServiceType.cs" />
+    <Compile Include="Models\ServiceLanguage.cs" />
+    <Compile Include="Models\ServiceType.cs" />
     <Compile Include="Models\SpeechStreamFormat.cs" />
     <Compile Include="Models\SpeechStreamQuality.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

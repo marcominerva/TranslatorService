@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Globalization.DateTimeFormatting;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -30,21 +28,9 @@ namespace UwpApp
         {
             translatorService = new TranslatorService.TranslatorServiceClient(ServiceKeys.TranslatorSubscriptionKey);
 
-            var languages = await translatorService.GetLanguagesAsync();
-
-            var dictionary = new Dictionary<string, string>();
-            languages.ToList().ForEach(l =>
-            {
-                try
-                {
-                    var culture = new CultureInfo(l);
-                    if (!culture.EnglishName.StartsWith("Unknown"))
-                        dictionary.Add(l, culture.EnglishName);
-                }
-                catch { }
-            });
-
-            targetLanguage.ItemsSource = dictionary.OrderBy(d => d.Key);
+            var languages = await translatorService.GetLanguageNamesAsync();
+            targetLanguage.ItemsSource = languages.OrderBy(lang => lang.Name).ToList();
+            targetLanguage.SelectedIndex = 0;
 
             base.OnNavigatedTo(e);
         }
@@ -52,7 +38,9 @@ namespace UwpApp
         private async void translateButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(sentence.Text) || targetLanguage.SelectedValue == null)
+            { 
                 return;
+            }
 
             translation.Text = string.Empty;
 
