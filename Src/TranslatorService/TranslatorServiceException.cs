@@ -15,6 +15,7 @@ namespace TranslatorService
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorServiceException"/> class using the specified error message.
         /// </summary>
+        /// <param name="message">Message that describes the error</param>
         public TranslatorServiceException(string message)
             : base(message)
         {

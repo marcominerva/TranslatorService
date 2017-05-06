@@ -543,6 +543,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:TranslatorService.TranslatorServiceException"/> class using the specified error message.
             </summary>
+            <param name="message">Message that describes the error</param>
         </member>
     </members>
 </doc>
