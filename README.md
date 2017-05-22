@@ -9,7 +9,7 @@ The library is available on [NuGet](https://www.nuget.org/packages/TranslatorSer
 
     Install-Package TranslatorService
     
-In the [Samples](https://github.com/marcominerva/TranslatorService/tree/master/Samples) folder are available samples for .NET, .NET Core and the Universal Windows Platform.
+In the [Samples](https://github.com/DotNetToscana/TranslatorService/tree/master/Samples) folder are available samples for .NET, .NET Core and the Universal Windows Platform.
 
 **Contribute**
 
