@@ -8,12 +8,12 @@
     <Authors>Marco Minerva</Authors>
     <Company>Marco Minerva</Company>
     <Product>Translator Service</Product>
-    <Description>A lightweight library that allows to translate text using Microsoft Translator Service and use Cognitive Speech Service for text-to-speech and spech-to-text</Description>
+    <Description>A lightweight library that uses Cognitive Translator Service for text translation and Cognitive Speech Service for text-to-speech and spech-to-text</Description>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/marcominerva/TranslatorService</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/marcominerva/TranslatorService/master/TranslatorService.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/marcominerva/TranslatorService</RepositoryUrl>
-    <PackageTags>microsoft-translator azure microsoft-translator-service translation-service cognitive-services speech speech-api speech-recognition speech-to-text text-to-speech</PackageTags>
+    <PackageTags>cognitive-services translator translation-service speech speech-api speech-recognition speech-to-text text-to-speech</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -24,6 +24,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.2.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
