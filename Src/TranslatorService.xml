@@ -90,7 +90,7 @@
             <summary>
             Initializes the <see cref="T:TranslatorService.TranslatorClient"/> class by getting an access token for the service.
             </summary>
-            <param name="region">The Azure region of the the Speech service.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="P:TranslatorService.ISpeechClient.AuthenticationUri"/>, <see cref="P:TranslatorService.ISpeechClient.TextToSpeechRequestUri"/> and <see cref="P:TranslatorService.ISpeechClient.SpeechToTextRequestUri"/> properties.</param>
             <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> that represents the initialize operation.</returns>
             <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> property hasn't been set.</exception>
@@ -109,7 +109,9 @@
             <exception cref="T:System.ArgumentNullException">
             <list type="bullet">
             <term>The <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> property hasn't been set.</term>
-            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            <term>The <see cref="P:TranslatorService.ISpeechClient.AuthenticationUri"/> property hasn't been set.</term>
+            <term>The <see cref="P:TranslatorService.ISpeechClient.TextToSpeechRequestUri"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
             </list>
             </exception>
             <exception cref="T:System.ArgumentException">The text is longer than 800 characters.</exception>
@@ -127,6 +129,15 @@
             <param name="language">The language of the audio.</param>
             <param name="profanity">The profanity in recognition results.</param>
             <returns>A <see cref="T:TranslatorService.Models.SpeechRecognitionResponse"/> object containing information about the recognized text.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <see cref="P:TranslatorService.ISpeechClient.AuthenticationUri"/> property hasn't been set.</term>
+            <term>The <see cref="P:TranslatorService.ISpeechClient.TextToSpeechRequestUri"/> property hasn't been set.</term>
+            <term>The <paramref name="audioStream"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
+            <term>The <paramref name="language"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            </list>
+            </exception>
             <exception cref="T:TranslatorService.Models.ServiceException">The provided <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> isn't valid or has expired.</exception>
             <remarks>
             <para>The currently supported format for recognition is single-channel (mono) WAV / PCM with a sampling rate of 16 kHz.</para>
@@ -888,7 +899,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:TranslatorService.SpeechClient"/> class.
             </summary>
-            <param name="region">The Azure region of the the Speech service.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="P:TranslatorService.SpeechClient.AuthenticationUri"/>, <see cref="P:TranslatorService.SpeechClient.TextToSpeechRequestUri"/> and <see cref="P:TranslatorService.SpeechClient.SpeechToTextRequestUri"/> properties.</param>
             <param name="subscriptionKey">The Subscription Key to use the service (it must be created in the specified <paramref name="region"/>).</param>
             <remarks>
             <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
@@ -926,7 +937,7 @@
             The <strong>TranslatorClient</strong> class provides methods to translate text in various supported languages.
             </summary>
             <remarks>
-            <para>To use this class, you must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation to obtain the Subscription key.
+            <para>To use this class, you must register Translator Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key.
             </para>
             </remarks>
         </member>

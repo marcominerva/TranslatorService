@@ -53,7 +53,7 @@ namespace NetCoreConsoleApp
 
                 Console.WriteLine("Translating...\n");
 
-                var response = await translatorClient.TranslateAsync(sentence, language);
+                var response = await translatorClient.TranslateAsync(sentence, to: language);
                 Console.WriteLine($"Detected source language: {response.DetectedLanguage.Language} ({response.DetectedLanguage.Score:P2})");
                 Console.WriteLine(response.Translation.Text);
 

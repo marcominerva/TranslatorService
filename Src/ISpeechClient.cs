@@ -46,7 +46,7 @@ namespace TranslatorService
         /// <summary>
         /// Initializes the <see cref="TranslatorClient"/> class by getting an access token for the service.
         /// </summary>
-        /// <param name="region">The Azure region of the the Speech service.</param>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/>, <see cref="TextToSpeechRequestUri"/> and <see cref="SpeechToTextRequestUri"/> properties.</param>
         /// <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
         /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
@@ -65,7 +65,9 @@ namespace TranslatorService
         /// <exception cref="ArgumentNullException">
         /// <list type="bullet">
         /// <term>The <see cref="SubscriptionKey"/> property hasn't been set.</term>
-        /// <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+        /// <term>The <see cref="AuthenticationUri"/> property hasn't been set.</term>
+        /// <term>The <see cref="TextToSpeechRequestUri"/> property hasn't been set.</term>
+        /// <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
         /// </list>
         /// </exception>
         /// <exception cref="ArgumentException">The text is longer than 800 characters.</exception>
@@ -83,6 +85,15 @@ namespace TranslatorService
         /// <param name="language">The language of the audio.</param>
         /// <param name="profanity">The profanity in recognition results.</param>
         /// <returns>A <see cref="SpeechRecognitionResponse"/> object containing information about the recognized text.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <list type="bullet">
+        /// <term>The <see cref="SubscriptionKey"/> property hasn't been set.</term>
+        /// <term>The <see cref="AuthenticationUri"/> property hasn't been set.</term>
+        /// <term>The <see cref="TextToSpeechRequestUri"/> property hasn't been set.</term>
+        /// <term>The <paramref name="audioStream"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
+        /// <term>The <paramref name="language"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+        /// </list>
+        /// </exception>
         /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
         /// <remarks>
         /// <para>The currently supported format for recognition is single-channel (mono) WAV / PCM with a sampling rate of 16 kHz.</para>

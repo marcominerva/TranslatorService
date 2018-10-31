@@ -49,7 +49,7 @@ namespace TranslatorService
         /// <summary>
         /// Initializes a new instance of the <see cref="SpeechClient"/> class.
         /// </summary>
-        /// <param name="region">The Azure region of the the Speech service.</param>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/>, <see cref="TextToSpeechRequestUri"/> and <see cref="SpeechToTextRequestUri"/> properties.</param>
         /// <param name="subscriptionKey">The Subscription Key to use the service (it must be created in the specified <paramref name="region"/>).</param>
         /// <remarks>
         /// <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
@@ -60,9 +60,7 @@ namespace TranslatorService
             handler = new HttpClientHandler { CookieContainer = new CookieContainer(), UseProxy = false };
             client = new HttpClient(handler);
 
-            authToken = new AzureAuthToken(subscriptionKey, string.Format(BaseAuthorizationUri, region));
-            TextToSpeechRequestUri = string.Format(BaseTextToSpeechRequestUri, region);
-            SpeechToTextRequestUri = string.Format(BaseSpeechToTextRequestUri, region);
+            Initialize(region, subscriptionKey);
         }
 
         /// <inheritdoc/>
@@ -88,6 +86,16 @@ namespace TranslatorService
         /// <inheritdoc/>
         public async Task<Stream> SpeakAsync(TextToSpeechParameters input)
         {
+            if (string.IsNullOrWhiteSpace(AuthenticationUri))
+            {
+                throw new ArgumentNullException(nameof(AuthenticationUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(TextToSpeechRequestUri))
+            {
+                throw new ArgumentNullException(nameof(TextToSpeechRequestUri));
+            }
+
             if (input == null)
             {
                 throw new ArgumentNullException(nameof(input));
@@ -146,6 +154,26 @@ namespace TranslatorService
         /// <inheritdoc/>
         public async Task<SpeechRecognitionResponse> RecognizeAsync(Stream audioStream, string language, ProfanityMode profanity = ProfanityMode.Masked)
         {
+            if (string.IsNullOrWhiteSpace(AuthenticationUri))
+            {
+                throw new ArgumentNullException(nameof(AuthenticationUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(TextToSpeechRequestUri))
+            {
+                throw new ArgumentNullException(nameof(TextToSpeechRequestUri));
+            }
+
+            if (audioStream == null)
+            {
+                throw new ArgumentNullException(nameof(audioStream));
+            }
+
+            if (string.IsNullOrWhiteSpace(language))
+            {
+                throw new ArgumentNullException(nameof(language));
+            }
+
             // Checks if it is necessary to obtain/update access token.
             await CheckUpdateTokenAsync().ConfigureAwait(false);
 
@@ -181,17 +209,8 @@ namespace TranslatorService
         /// <inheritdoc/>
         public Task InitializeAsync(string region, string subscriptionKey)
         {
-            authToken = new AzureAuthToken(subscriptionKey, string.Format(BaseAuthorizationUri, region));
-            TextToSpeechRequestUri = string.Format(BaseTextToSpeechRequestUri, region);
-            SpeechToTextRequestUri = string.Format(BaseSpeechToTextRequestUri, region);
-
+            Initialize(region, subscriptionKey);
             return InitializeAsync();
-        }
-
-        private async Task CheckUpdateTokenAsync()
-        {
-            // If necessary, updates the access token.
-            authorizationHeaderValue = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -199,6 +218,19 @@ namespace TranslatorService
         {
             client.Dispose();
             handler.Dispose();
+        }
+
+        private void Initialize(string region, string subscriptionKey)
+        {
+            authToken = new AzureAuthToken(subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(BaseAuthorizationUri, region) : null);
+            TextToSpeechRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseTextToSpeechRequestUri, region) : null;
+            SpeechToTextRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseSpeechToTextRequestUri, region) : null;
+        }
+
+        private async Task CheckUpdateTokenAsync()
+        {
+            // If necessary, updates the access token.
+            authorizationHeaderValue = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
         }
 
         private string GenerateSsml(string locale, string gender, string name, string text)

@@ -15,7 +15,7 @@ namespace TranslatorService
     /// The <strong>TranslatorClient</strong> class provides methods to translate text in various supported languages.
     /// </summary>
     /// <remarks>
-    /// <para>To use this class, you must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation to obtain the Subscription key.
+    /// <para>To use this class, you must register Translator Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key.
     /// </para>
     /// </remarks>
     public class TranslatorClient : ITranslatorClient
@@ -52,8 +52,7 @@ namespace TranslatorService
         /// <seealso cref="ITranslatorClient"/>
         public TranslatorClient(string subscriptionKey = null, string language = null)
         {
-            authToken = new AzureAuthToken(subscriptionKey);
-            Language = language ?? CultureInfo.CurrentCulture.Name.ToLower();
+            Initialize(subscriptionKey, language);
         }
 
         /// <inheritdoc/>
@@ -202,9 +201,7 @@ namespace TranslatorService
         /// <inheritdoc/>
         public Task InitializeAsync(string subscriptionKey, string language = null)
         {
-            authToken = new AzureAuthToken(subscriptionKey);
-            Language = language ?? CultureInfo.CurrentCulture.Name.ToLower();
-
+            Initialize(subscriptionKey, language);
             return InitializeAsync();
         }
 
@@ -213,6 +210,12 @@ namespace TranslatorService
         {
             authToken.Dispose();
             client.Dispose();
+        }
+
+        private void Initialize(string subscriptionKey, string language)
+        {
+            authToken = new AzureAuthToken(subscriptionKey);
+            Language = language ?? CultureInfo.CurrentCulture.Name.ToLower();
         }
 
         private async Task CheckUpdateTokenAsync()

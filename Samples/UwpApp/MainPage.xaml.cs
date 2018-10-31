@@ -45,7 +45,7 @@ namespace UwpApp
             DetectedLanguage.Text = string.Empty;
             Translation.Text = string.Empty;
 
-            var translationResult = await translatorClient.TranslateAsync(Sentence.Text, TargetLanguage.SelectedValue.ToString());
+            var translationResult = await translatorClient.TranslateAsync(Sentence.Text, to: TargetLanguage.SelectedValue.ToString());
             DetectedLanguage.Text = $"Detected source language: {translationResult.DetectedLanguage.Language} ({translationResult.DetectedLanguage.Score:P2})";
             Translation.Text = translationResult.Translation.Text;
         }
