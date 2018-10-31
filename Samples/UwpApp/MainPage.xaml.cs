@@ -17,7 +17,7 @@ namespace UwpApp
 {
     public sealed partial class MainPage : Page
     {
-        private TranslatorService.TranslatorServiceClient translatorService;
+        private TranslatorService.TranslatorClient translatorClient;
 
         public MainPage()
         {
@@ -26,31 +26,33 @@ namespace UwpApp
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            translatorService = new TranslatorService.TranslatorServiceClient(ServiceKeys.TranslatorSubscriptionKey);
+            translatorClient = new TranslatorService.TranslatorClient(ServiceKeys.TranslatorSubscriptionKey);
 
-            var languages = await translatorService.GetLanguageNamesAsync();
-            targetLanguage.ItemsSource = languages.OrderBy(lang => lang.Name).ToList();
-            targetLanguage.SelectedIndex = 0;
+            var languages = await translatorClient.GetLanguagesAsync();
+            TargetLanguage.ItemsSource = languages;
+            TargetLanguage.SelectedIndex = 0;
 
             base.OnNavigatedTo(e);
         }
 
-        private async void translateButton_Click(object sender, RoutedEventArgs e)
+        private async void TranslateButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(sentence.Text) || targetLanguage.SelectedValue == null)
-            { 
+            if (string.IsNullOrWhiteSpace(Sentence.Text) || TargetLanguage.SelectedValue == null)
+            {
                 return;
             }
 
-            translation.Text = string.Empty;
+            DetectedLanguage.Text = string.Empty;
+            Translation.Text = string.Empty;
 
-            var translatedText = await translatorService.TranslateAsync(sentence.Text, targetLanguage.SelectedValue.ToString());
-            translation.Text = translatedText;
+            var translationResult = await translatorClient.TranslateAsync(Sentence.Text, TargetLanguage.SelectedValue.ToString());
+            DetectedLanguage.Text = $"Detected source language: {translationResult.DetectedLanguage.Language} ({translationResult.DetectedLanguage.Score:P2})";
+            Translation.Text = translationResult.Translation.Text;
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            translatorService.Dispose();
+            translatorClient.Dispose();
             base.OnNavigatingFrom(e);
         }
     }

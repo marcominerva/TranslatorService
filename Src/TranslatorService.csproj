@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <DocumentationFile>D:\Projects\GitHub\TranslatorService\Src\TranslatorService.xml</DocumentationFile>
+    <Version>2.0</Version>
+    <Authors>Marco Minerva</Authors>
+    <Company>Marco Minerva</Company>
+    <Product>Translator Service</Product>
+    <Description>A lightweight library that allows to translate text using Microsoft Translator Service and use Cognitive Speech Service for text-to-speech and spech-to-text</Description>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/marcominerva/TranslatorService</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/marcominerva/TranslatorService/master/TranslatorService.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/marcominerva/TranslatorService</RepositoryUrl>
+    <PackageTags>microsoft-translator azure microsoft-translator-service translation-service cognitive-services speech speech-api speech-recognition speech-to-text text-to-speech</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+</Project>
