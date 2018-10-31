@@ -8,7 +8,7 @@
     <Authors>Marco Minerva</Authors>
     <Company>Marco Minerva</Company>
     <Product>Translator Service</Product>
-    <Description>A lightweight library that uses Cognitive Translator Service for text translation and Cognitive Speech Service for text-to-speech and spech-to-text</Description>
+    <Description>A lightweight library that uses Cognitive Translator Service for text translation and Cognitive Speech Service for text-to-speech and speech-to-text.</Description>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/marcominerva/TranslatorService</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/marcominerva/TranslatorService/master/TranslatorService.png</PackageIconUrl>

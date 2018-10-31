@@ -17,12 +17,12 @@ namespace NetCoreConsoleApp
             Console.WriteLine("Calling Speech Service for speech-to-text (using a sample file)...\n");
             using (var fileStream = File.OpenRead(@"SpeechSample.wav"))
             {
-                var result = await speechClient.RecognizeAsync(fileStream, "en-US");
-                Console.WriteLine($"Recognition Result: {result.RecognitionStatus}");
-                Console.WriteLine(result.DisplayText);
+                var response = await speechClient.RecognizeAsync(fileStream, "en-US");
+                Console.WriteLine($"Recognition Result: {response.RecognitionStatus}");
+                Console.WriteLine(response.DisplayText);
             }
 
-            //var result = await speechService.SpeakAsync(new TextToSpeechParameters
+            //var response = await speechClient.SpeakAsync(new TextToSpeechParameters
             //{
             //    Language = "en-US",
             //    VoiceType = Gender.Female,
