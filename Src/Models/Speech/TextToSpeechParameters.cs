@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TranslatorService.Models
+namespace TranslatorService.Models.Speech
 {
     /// <summary>
     /// Inputs Options for the TTS Service.

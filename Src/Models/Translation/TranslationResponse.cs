@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace TranslatorService.Models
+namespace TranslatorService.Models.Translation
 {
     /// <summary>
     /// Strong type for Translate Response

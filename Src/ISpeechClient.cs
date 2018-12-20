@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using TranslatorService.Models;
+using TranslatorService.Models.Speech;
 
 namespace TranslatorService
 {
@@ -83,6 +84,7 @@ namespace TranslatorService
         /// </summary>
         /// <param name="audioStream">The stream containing the audio to be recognized.</param>
         /// <param name="language">The language of the audio.</param>
+        /// <param name="recognitionFormat">The result format.</param>
         /// <param name="profanity">The profanity in recognition results.</param>
         /// <returns>A <see cref="SpeechRecognitionResponse"/> object containing information about the recognized text.</returns>
         /// <exception cref="ArgumentNullException">
@@ -101,7 +103,8 @@ namespace TranslatorService
         /// </para>
         /// </remarks>
         /// <seealso cref="SpeechRecognitionResponse"/>
-        /// <seealso cref=" ProfanityMode"/>
-        Task<SpeechRecognitionResponse> RecognizeAsync(Stream audioStream, string language, ProfanityMode profanity = ProfanityMode.Masked);
+        /// <seealso cref="RecognitionResultFormat"/>
+        /// <seealso cref=" SpeechProfanityMode"/>
+        Task<SpeechRecognitionResponse> RecognizeAsync(Stream audioStream, string language, RecognitionResultFormat recognitionFormat = RecognitionResultFormat.Simple, SpeechProfanityMode profanity = SpeechProfanityMode.Masked);
     }
 }

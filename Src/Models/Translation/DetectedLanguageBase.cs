@@ -1,7 +1,7 @@
 ﻿using TranslatorService;
 using System.Collections.Generic;
 
-namespace TranslatorService.Models
+namespace TranslatorService.Models.Translation
 {
     /// <summary>
     /// Strong type for Base Detected Language

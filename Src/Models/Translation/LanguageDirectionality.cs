@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TranslatorService.Models
+namespace TranslatorService.Models.Translation
 {
     /// <summary>
     /// Language directionality, which is rtl for right-to-left languages or ltr for left-to-right languages.

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using TranslatorService;
 using TranslatorService.Models;
+using TranslatorService.Models.Speech;
 
 namespace TranslatorService
 {
@@ -152,7 +153,7 @@ namespace TranslatorService
         }
 
         /// <inheritdoc/>
-        public async Task<SpeechRecognitionResponse> RecognizeAsync(Stream audioStream, string language, ProfanityMode profanity = ProfanityMode.Masked)
+        public async Task<SpeechRecognitionResponse> RecognizeAsync(Stream audioStream, string language, RecognitionResultFormat recognitionFormat = RecognitionResultFormat.Simple, SpeechProfanityMode profanity = SpeechProfanityMode.Masked)
         {
             if (string.IsNullOrWhiteSpace(AuthenticationUri))
             {
@@ -177,7 +178,7 @@ namespace TranslatorService
             // Checks if it is necessary to obtain/update access token.
             await CheckUpdateTokenAsync().ConfigureAwait(false);
 
-            var requestUri = $"{SpeechToTextRequestUri}?language={language}&profanity={profanity}";
+            var requestUri = $"{SpeechToTextRequestUri}?language={language}&format={recognitionFormat}&profanity={profanity}";
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
 
             request.Headers.TransferEncodingChunked = true;
@@ -193,7 +194,7 @@ namespace TranslatorService
 
             if (response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.Continue)
             {
-                //if we get a valid response (non-null, no exception, and not forbidden), return the response
+                // If we get a valid response (non-null, no exception, and not forbidden), return the response.
                 return JsonConvert.DeserializeObject<SpeechRecognitionResponse>(content);
             }
             else

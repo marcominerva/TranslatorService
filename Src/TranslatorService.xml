@@ -100,7 +100,7 @@
             <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
             </remarks>
         </member>
-        <member name="M:TranslatorService.ISpeechClient.SpeakAsync(TranslatorService.Models.TextToSpeechParameters)">
+        <member name="M:TranslatorService.ISpeechClient.SpeakAsync(TranslatorService.Models.Speech.TextToSpeechParameters)">
             <summary>
             Sends the specified text to be spoken to the TTS service and saves the response audio to a file.
             </summary>
@@ -119,16 +119,17 @@
             <remarks><para>This method performs a non-blocking request for language detection.</para>
             <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/speech-service/rest-apis#text-to-speech.
             </para></remarks>
-            <seealso cref="T:TranslatorService.Models.TextToSpeechParameters"/>
+            <seealso cref="T:TranslatorService.Models.Speech.TextToSpeechParameters"/>
         </member>
-        <member name="M:TranslatorService.ISpeechClient.RecognizeAsync(System.IO.Stream,System.String,TranslatorService.Models.ProfanityMode)">
+        <member name="M:TranslatorService.ISpeechClient.RecognizeAsync(System.IO.Stream,System.String,TranslatorService.Models.Speech.RecognitionResultFormat,TranslatorService.Models.Speech.SpeechProfanityMode)">
             <summary>
             Recognize text in a speech audio file.
             </summary>
             <param name="audioStream">The stream containing the audio to be recognized.</param>
             <param name="language">The language of the audio.</param>
+            <param name="recognitionFormat">The result format.</param>
             <param name="profanity">The profanity in recognition results.</param>
-            <returns>A <see cref="T:TranslatorService.Models.SpeechRecognitionResponse"/> object containing information about the recognized text.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Speech.SpeechRecognitionResponse"/> object containing information about the recognized text.</returns>
             <exception cref="T:System.ArgumentNullException">
             <list type="bullet">
             <term>The <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> property hasn't been set.</term>
@@ -144,8 +145,9 @@
             <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/speech-service/rest-apis#speech-to-text
             </para>
             </remarks>
-            <seealso cref="T:TranslatorService.Models.SpeechRecognitionResponse"/>
-            <seealso cref="T:TranslatorService.Models.ProfanityMode"/>
+            <seealso cref="T:TranslatorService.Models.Speech.SpeechRecognitionResponse"/>
+            <seealso cref="T:TranslatorService.Models.Speech.RecognitionResultFormat"/>
+            <seealso cref="T:TranslatorService.Models.Speech.SpeechProfanityMode"/>
         </member>
         <member name="T:TranslatorService.ITranslatorClient">
             <summary>
@@ -196,7 +198,7 @@
             Detects the language of a text.
             </summary>
             <param name="input">A string representing the text whose language must be detected.</param>
-            <returns>A <see cref="T:TranslatorService.Models.DetectedLanguageResponse"/> object containing information about the detected language.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.DetectedLanguageResponse"/> object containing information about the detected language.</returns>
             <exception cref="T:System.ArgumentNullException">
             <list type="bullet">
             <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
@@ -215,7 +217,7 @@
             Detects the language of a text.
             </summary>
             <param name="input">A string array containing the sentences whose language must be detected.</param>
-            <returns>A <see cref="T:TranslatorService.Models.DetectedLanguageResponse"/> array with one result for each string in the input array. Each object contains information about the detected language.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.DetectedLanguageResponse"/> array with one result for each string in the input array. Each object contains information about the detected language.</returns>
             <exception cref="T:System.ArgumentException">
             <list type="bullet">
             <term>The <paramref name="input"/> parameter doesn't contain any element.</term>
@@ -240,7 +242,7 @@
             Retrieves friendly names for the languages available for text translation.
             </summary>
             <param name="language">The language used to localize the language names. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
-            <returns>An array of <see cref="T:TranslatorService.Models.ServiceLanguage"/> containing the language codes and names supported for translation by <strong>Microsoft Translator Service</strong>.</returns>
+            <returns>An array of <see cref="T:TranslatorService.Models.Translation.ServiceLanguage"/> containing the language codes and names supported for translation by <strong>Microsoft Translator Service</strong>.</returns>
             <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</exception>
             <exception cref="T:TranslatorService.Models.ServiceException">The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</exception>
             <remarks><para>This method performs a non-blocking request for language names.</para>
@@ -252,7 +254,7 @@
             <summary>
             Translates a text string into the specified language.
             </summary>
-            <returns>A <see cref="T:TranslatorService.Models.TranslationResponse"/> object containing translated text and information.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> object containing translated text and information.</returns>
             <param name="input">A string representing the text to translate.</param>
             <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
             <exception cref="T:System.ArgumentNullException">
@@ -274,7 +276,7 @@
             <summary>
             Translates a text string into the specified languages.
             </summary>
-            <returns>A <see cref="T:TranslatorService.Models.TranslationResponse"/> object containing translated text and information.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> object containing translated text and information.</returns>
             <param name="input">A string representing the text to translate.</param>
             <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
             <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
@@ -297,7 +299,7 @@
             <summary>
             Translates a list of sentences into the specified language.
             </summary>
-            <returns>A <see cref="T:TranslatorService.Models.TranslationResponse"/> array with one result for each language code in the <paramref name="to"/> array. Each object contains translated text and information.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> array with one result for each language code in the <paramref name="to"/> array. Each object contains translated text and information.</returns>
             <param name="input">A string array containing the sentences to translate.</param>
             <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
             <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
@@ -325,7 +327,7 @@
             <summary>
             Translates a text into the specified languages.
             </summary>
-            <returns>A <see cref="T:TranslatorService.Models.TranslationResponse"/> object containing translated text and information.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> object containing translated text and information.</returns>
             <param name="input">A string representing the text to translate.</param>
             <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
             <param name="to">A string array representing the language codes to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
@@ -353,7 +355,7 @@
             <summary>
             Translates a text string into the specified languages.
             </summary>
-            <returns>A <see cref="T:TranslatorService.Models.TranslationResponse"/> object containing translated text and information.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> object containing translated text and information.</returns>
             <param name="input">A string representing the text to translate.</param>
             <param name="to">A string array representing the language codes to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
             <exception cref="T:System.ArgumentNullException">
@@ -380,7 +382,7 @@
             <summary>
             Translates a list of sentences into the specified languages.
             </summary>
-            <returns>A <see cref="T:TranslatorService.Models.TranslationResponse"/> array with one result for each language code in the <paramref name="to"/> array. Each object contains translated text and information.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> array with one result for each language code in the <paramref name="to"/> array. Each object contains translated text and information.</returns>
             <param name="input">A string array containing the sentences to translate.</param>
             <param name="to">A string array representing the language codes to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
             <exception cref="T:System.ArgumentNullException">
@@ -407,7 +409,7 @@
             <summary>
             Translates a list of sentences into the specified languages.
             </summary>
-            <returns>A <see cref="T:TranslatorService.Models.TranslationResponse"/> array with one result for each language code in the <paramref name="to"/> array. Each object contains translated text and information.</returns>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> array with one result for each language code in the <paramref name="to"/> array. Each object contains translated text and information.</returns>
             <param name="input">A string array containing the sentences to translate.</param>
             <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
             <param name="to">A string array representing the language codes to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
@@ -431,269 +433,6 @@
             <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
             <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
         </member>
-        <member name="T:TranslatorService.Models.AudioOutputFormat">
-            <summary>
-            Voice output formats.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Raw8Khz8BitMonoMULaw">
-            <summary>
-            raw-8khz-8bit-mono-mulaw request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Raw16Khz16BitMonoPcm">
-            <summary>
-            raw-16khz-16bit-mono-pcm request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Riff8Khz8BitMonoMULaw">
-            <summary>
-            riff-8khz-8bit-mono-mulaw request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Riff16Khz16BitMonoPcm">
-            <summary>
-            riff-16khz-16bit-mono-pcm request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Ssml16Khz16BitMonoSilk">
-            <summary>
-            ssml-16khz-16bit-mono-silk request output audio format type.
-            It is a SSML with audio segment, with audio compressed by SILK codec
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Raw16Khz16BitMonoTrueSilk">
-            <summary>
-            raw-16khz-16bit-mono-truesilk request output audio format type.
-            Audio compressed by SILK codec
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Ssml16Khz16BitMonoTts">
-            <summary>
-            ssml-16khz-16bit-mono-tts request output audio format type.
-            It is a SSML with audio segment, and it needs tts engine to play out
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Audio16Khz128KBitRateMonoMp3">
-            <summary>
-            audio-16khz-128kbitrate-mono-mp3 request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Audio16Khz64KBitRateMonoMp3">
-            <summary>
-            audio-16khz-64kbitrate-mono-mp3 request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Audio16Khz32KBitRateMonoMp3">
-            <summary>
-            audio-16khz-32kbitrate-mono-mp3 request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Audio16Khz16KbpsMonoSiren">
-            <summary>
-            audio-16khz-16kbps-mono-siren request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Riff16Khz16KbpsMonoSiren">
-            <summary>
-            riff-16khz-16kbps-mono-siren request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Raw24Khz16BitMonoTrueSilk">
-            <summary>
-            raw-24khz-16bit-mono-truesilk request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Raw24Khz16BitMonoPcm">
-            <summary>
-            raw-24khz-16bit-mono-pcm request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Riff24Khz16BitMonoPcm">
-            <summary>
-            riff-24khz-16bit-mono-pcm request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Audio24Khz48KBitRateMonoMp3">
-            <summary>
-            audio-24khz-48kbitrate-mono-mp3 request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Audio24Khz96KBitRateMonoMp3">
-            <summary>
-            audio-24khz-96kbitrate-mono-mp3 request output audio format type.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.AudioOutputFormat.Audio24Khz160KBitRateMonoMp3">
-            <summary>
-            audio-24khz-160kbitrate-mono-mp3 request output audio format type.
-            </summary>
-        </member>
-        <member name="T:TranslatorService.Models.DetectedLanguage">
-            <summary>
-            Strong type for Detected Language
-            </summary>
-            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})"/>
-        </member>
-        <member name="P:TranslatorService.Models.DetectedLanguage.IsTranslationSupported">
-            <summary>
-            Gets or sets a value indicating whether the detected language is one of the languages supported for text translation.
-            </summary>
-        </member>
-        <member name="P:TranslatorService.Models.DetectedLanguage.IsTransliterationSupported">
-            <summary>
-            Gets or sets a value indicating whether the detected language is one of the languages supported for transliteration.
-            </summary>
-        </member>
-        <member name="M:TranslatorService.Models.DetectedLanguage.#ctor(System.String,System.Single,System.Boolean,System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:TranslatorService.Models.DetectedLanguage"/> class.
-            </summary>
-            <param name="language">The code of the detected language.</param>
-            <param name="score">A float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.</param>
-            <param name="isTranslationSupported">A value indicating whether the detected language is one of the languages supported for text translation.</param>
-            <param name="isTransliterationSupported">A value indicating whether the detected language is one of the languages supported for transliteration.</param>
-            <seealso cref="T:TranslatorService.Models.DetectedLanguageBase"/>
-        </member>
-        <member name="T:TranslatorService.Models.DetectedLanguageBase">
-            <summary>
-            Strong type for Base Detected Language
-            </summary>
-            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.Collections.Generic.IEnumerable{System.String})"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.String)"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.Collections.Generic.IEnumerable{System.String})"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String)"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.String)"/>
-        </member>
-        <member name="P:TranslatorService.Models.DetectedLanguageBase.Language">
-            <summary>
-            Gets or sets the code of the detected language.
-            </summary>
-        </member>
-        <member name="P:TranslatorService.Models.DetectedLanguageBase.Score">
-            <summary>
-            Gets or sets a float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.
-            </summary>
-        </member>
-        <member name="M:TranslatorService.Models.DetectedLanguageBase.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="M:TranslatorService.Models.DetectedLanguageBase.#ctor(System.String,System.Single)">
-            <summary>
-            Initializes a new instance of the <see cref="T:TranslatorService.Models.DetectedLanguageBase"/> class.
-            Returns the language friendly name.
-            </summary>
-            <param name="language">the code of the detected language.</param>
-            <param name="score">a float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.</param>
-        </member>
-        <member name="T:TranslatorService.Models.DetectedLanguageResponse">
-            <summary>
-            Strong type for Detect Language Response
-            </summary>
-            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)"/>
-            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})"/>
-        </member>
-        <member name="P:TranslatorService.Models.DetectedLanguageResponse.Alternatives">
-            <summary>
-            Gets or sets an array of other possible languages.
-            </summary>
-        </member>
-        <member name="M:TranslatorService.Models.DetectedLanguageResponse.#ctor(System.String,System.Single,System.Boolean,System.Boolean,System.Collections.Generic.IEnumerable{TranslatorService.Models.DetectedLanguage})">
-            <summary>
-            Initializes a new instance of the <see cref="T:TranslatorService.Models.DetectedLanguageResponse"/> class.
-            </summary>
-            <param name="language">The code of the detected language.</param>
-            <param name="score">A float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.</param>
-            <param name="isTranslationSupported">A value indicating whether the detected language is one of the languages supported for text translation.</param>
-            <param name="isTransliterationSupported">A value indicating whether the detected language is one of the languages supported for transliteration.</param>
-            <param name="alternatives">An array of other possible languages</param>
-            <seealso cref="T:TranslatorService.Models.DetectedLanguage"/>
-        </member>
-        <member name="T:TranslatorService.Models.Gender">
-            <summary>
-            Gender of the voice.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.Gender.Female">
-            <summary>
-            Female voice
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.Gender.Male">
-            <summary>
-            Male voice
-            </summary>
-        </member>
-        <member name="T:TranslatorService.Models.LanguageDirectionality">
-            <summary>
-            Language directionality, which is rtl for right-to-left languages or ltr for left-to-right languages.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.LanguageDirectionality.LeftToRight">
-            <summary>
-            Left to right language
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.LanguageDirectionality.RightToLeft">
-            <summary>
-            Right to left language
-            </summary>
-        </member>
-        <member name="T:TranslatorService.Models.ProfanityMode">
-            <summary>
-            <strong>ProfanityMode</strong> enum defines the possible modes in which the service can handle profanity.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.ProfanityMode.Masked">
-            <summary>
-            The service masks profanity with an asterisk. This is the default.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.ProfanityMode.Removed">
-            <summary>
-            The service removes profanity.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.ProfanityMode.Raw">
-            <summary>
-            The service does not remove or mask profanity.
-            </summary>
-        </member>
-        <member name="T:TranslatorService.Models.RecognitionStatus">
-            <summary>
-            Recognition status.
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.RecognitionStatus.Success">
-            <summary>
-            The recognition was successful and the DisplayText field will be present
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.RecognitionStatus.NoMatch">
-            <summary>
-            Speech was detected in the audio stream, but no words from the target language were matched
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.RecognitionStatus.InitialSilenceTimeout">
-            <summary>
-            The start of the audio stream contained only silence, and the service timed out waiting for speech
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.RecognitionStatus.BabbleTimeout">
-            <summary>
-            The start of the audio stream contained only noise, and the service timed out waiting for speech
-            </summary>
-        </member>
-        <member name="F:TranslatorService.Models.RecognitionStatus.Error">
-            <summary>
-            The recognition service encountered an internal error and could not continue
-            </summary>
-        </member>
         <member name="T:TranslatorService.Models.ServiceException">
             <summary>
             The <strong>TranslatorServiceException</strong> class holds information about Exception related to <see cref="T:TranslatorService.TranslatorClient"/> or <see cref="T:TranslatorService.SpeechClient"/>.
@@ -712,41 +451,427 @@
             <param name="message">Message that describes the error.</param>
             <param name="statusCode">The HTTP status code of the error.</param>
         </member>
-        <member name="T:TranslatorService.Models.ServiceLanguage">
+        <member name="T:TranslatorService.Models.Speech.AudioOutputFormat">
+            <summary>
+            Voice output formats.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw8Khz8BitMonoMULaw">
+            <summary>
+            raw-8khz-8bit-mono-mulaw request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw16Khz16BitMonoPcm">
+            <summary>
+            raw-16khz-16bit-mono-pcm request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Riff8Khz8BitMonoMULaw">
+            <summary>
+            riff-8khz-8bit-mono-mulaw request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Riff16Khz16BitMonoPcm">
+            <summary>
+            riff-16khz-16bit-mono-pcm request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Ssml16Khz16BitMonoSilk">
+            <summary>
+            ssml-16khz-16bit-mono-silk request output audio format type.
+            It is a SSML with audio segment, with audio compressed by SILK codec
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw16Khz16BitMonoTrueSilk">
+            <summary>
+            raw-16khz-16bit-mono-truesilk request output audio format type.
+            Audio compressed by SILK codec
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Ssml16Khz16BitMonoTts">
+            <summary>
+            ssml-16khz-16bit-mono-tts request output audio format type.
+            It is a SSML with audio segment, and it needs tts engine to play out
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio16Khz128KBitRateMonoMp3">
+            <summary>
+            audio-16khz-128kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio16Khz64KBitRateMonoMp3">
+            <summary>
+            audio-16khz-64kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio16Khz32KBitRateMonoMp3">
+            <summary>
+            audio-16khz-32kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio16Khz16KbpsMonoSiren">
+            <summary>
+            audio-16khz-16kbps-mono-siren request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Riff16Khz16KbpsMonoSiren">
+            <summary>
+            riff-16khz-16kbps-mono-siren request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw24Khz16BitMonoTrueSilk">
+            <summary>
+            raw-24khz-16bit-mono-truesilk request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw24Khz16BitMonoPcm">
+            <summary>
+            raw-24khz-16bit-mono-pcm request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Riff24Khz16BitMonoPcm">
+            <summary>
+            riff-24khz-16bit-mono-pcm request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio24Khz48KBitRateMonoMp3">
+            <summary>
+            audio-24khz-48kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio24Khz96KBitRateMonoMp3">
+            <summary>
+            audio-24khz-96kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio24Khz160KBitRateMonoMp3">
+            <summary>
+            audio-24khz-160kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.Gender">
+            <summary>
+            Gender of the voice.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.Gender.Female">
+            <summary>
+            Female voice
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.Gender.Male">
+            <summary>
+            Male voice
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.RecognitionAlternative">
+            <summary>
+            The <see cref="T:TranslatorService.Models.Speech.RecognitionAlternative"/> class contains information about a recognition result.
+            </summary>
+            <seealso cref="M:TranslatorService.ISpeechClient.RecognizeAsync(System.IO.Stream,System.String,TranslatorService.Models.Speech.RecognitionResultFormat,TranslatorService.Models.Speech.SpeechProfanityMode)"/>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.Confidence">
+            <summary>
+            The confidence score of the entry from 0.0 (no confidence) to 1.0 (full confidence)
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.LexicalForm">
+            <summary>
+            The lexical form of the recognized text: the actual words recognized.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.CanonicalForm">
+            <summary>
+            The inverse-text-normalized ("canonical") form of the recognized text, with phone numbers, numbers, abbreviations ("doctor smith" to "dr smith"), and other transformations applied.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.MaskedCanonicalForm">
+            <summary>
+            The ITN form with profanity masking applied, if requested.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.Display">
+            <summary>
+            The display form of the recognized text, with punctuation and capitalization added. This parameter is the same as <seealso cref="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.DisplayText"/> provided when <seealso cref="T:TranslatorService.Models.Speech.RecognitionResultFormat"/> is set to <seealso cref="F:TranslatorService.Models.Speech.RecognitionResultFormat.Simple"/>.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.RecognitionResultFormat">
+            <summary>
+            The <strong>RecognitionResultFormat</strong> enum specifies the result format.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionResultFormat.Simple">
+            <summary>
+            The service returns only the top level information of the recognized text. This is the default.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionResultFormat.Detailed">
+            <summary>
+            The service returns detailed recognition result.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.RecognitionStatus">
+            <summary>
+            Recognition status.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.Success">
+            <summary>
+            The recognition was successful and the DisplayText field will be present
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.NoMatch">
+            <summary>
+            Speech was detected in the audio stream, but no words from the target language were matched
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.InitialSilenceTimeout">
+            <summary>
+            The start of the audio stream contained only silence, and the service timed out waiting for speech
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.BabbleTimeout">
+            <summary>
+            The start of the audio stream contained only noise, and the service timed out waiting for speech
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.Error">
+            <summary>
+            The recognition service encountered an internal error and could not continue
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.SpeechProfanityMode">
+            <summary>
+            The <strong>SpeechProfanityMode</strong> enum defines the possible modes in which the service can handle profanity.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.SpeechProfanityMode.Masked">
+            <summary>
+            The service masks profanity with an asterisk. This is the default.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.SpeechProfanityMode.Removed">
+            <summary>
+            The service removes profanity.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.SpeechProfanityMode.Raw">
+            <summary>
+            The service does not remove or mask profanity.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.SpeechRecognitionResponse">
+            <summary>
+            The <strong>RecognitionSpeechResponse</strong> class contains information about a successfull recognition operation.
+            </summary>
+            <seealso cref="T:TranslatorService.SpeechClient"/>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.RecognitionStatus">
+            <summary>
+            A string indicating the result status.  Successful requests will return "Success"
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.Offset">
+            <summary>
+            Gets or sets the offset.
+            The Offset element specifies the offset (in 100-nanosecond units) at which the phrase was recognized, relative to the start of the audio stream
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.Duration">
+            <summary>
+            The duration of speech.
+            The Duration element specifies the duration (in 100-nanosecond units) of this speech phrase.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.DisplayText">
+            <summary>
+            Gets or sets the top result (by confidence), returned in Display Form.
+            </summary>
+            <remarks>The display form adds punctuation and capitalization to recognition results, making it the most appropriate form for applications that display the spoken text.</remarks>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.Alternatives">
+            <summary>
+            A list of alternative interpretations of the same speech recognition result. These results are ranked from most likely to least likely The first entry is the same as the main recognition result.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.TextToSpeechParameters">
+            <summary>
+            Inputs Options for the TTS Service.
+            </summary>
+        </member>
+        <member name="M:TranslatorService.Models.Speech.TextToSpeechParameters.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.Models.Speech.TextToSpeechParameters"/> class.
+            </summary>
+            <seealso cref="T:TranslatorService.SpeechClient"/>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.OutputFormat">
+            <summary>
+            Gets or sets the audio output format.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.Language">
+            <summary>
+            Gets or sets the language of the text.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.VoiceType">
+            <summary>
+            Gets or sets the type of the voice: male/female.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.VoiceName">
+            <summary>
+            Gets or sets the name of the voice.
+            </summary>
+            <remarks>Voices list is available at https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/supported-languages#text-to-speech.
+            </remarks>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.Text">
+            <summary>
+            Gets or sets the text to speech.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.Headers">
+            <summary>
+            Gets or sets the headers.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.DetectedLanguage">
+            <summary>
+            Strong type for Detected Language
+            </summary>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})"/>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguage.IsTranslationSupported">
+            <summary>
+            Gets or sets a value indicating whether the detected language is one of the languages supported for text translation.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguage.IsTransliterationSupported">
+            <summary>
+            Gets or sets a value indicating whether the detected language is one of the languages supported for transliteration.
+            </summary>
+        </member>
+        <member name="M:TranslatorService.Models.Translation.DetectedLanguage.#ctor(System.String,System.Single,System.Boolean,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.Models.Translation.DetectedLanguage"/> class.
+            </summary>
+            <param name="language">The code of the detected language.</param>
+            <param name="score">A float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.</param>
+            <param name="isTranslationSupported">A value indicating whether the detected language is one of the languages supported for text translation.</param>
+            <param name="isTransliterationSupported">A value indicating whether the detected language is one of the languages supported for transliteration.</param>
+            <seealso cref="T:TranslatorService.Models.Translation.DetectedLanguageBase"/>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.DetectedLanguageBase">
+            <summary>
+            Strong type for Base Detected Language
+            </summary>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.String)"/>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguageBase.Language">
+            <summary>
+            Gets or sets the code of the detected language.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguageBase.Score">
+            <summary>
+            Gets or sets a float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.
+            </summary>
+        </member>
+        <member name="M:TranslatorService.Models.Translation.DetectedLanguageBase.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.Models.Translation.DetectedLanguageBase.#ctor(System.String,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.Models.Translation.DetectedLanguageBase"/> class.
+            Returns the language friendly name.
+            </summary>
+            <param name="language">the code of the detected language.</param>
+            <param name="score">a float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.</param>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.DetectedLanguageResponse">
+            <summary>
+            Strong type for Detect Language Response
+            </summary>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})"/>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguageResponse.Alternatives">
+            <summary>
+            Gets or sets an array of other possible languages.
+            </summary>
+        </member>
+        <member name="M:TranslatorService.Models.Translation.DetectedLanguageResponse.#ctor(System.String,System.Single,System.Boolean,System.Boolean,System.Collections.Generic.IEnumerable{TranslatorService.Models.Translation.DetectedLanguage})">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.Models.Translation.DetectedLanguageResponse"/> class.
+            </summary>
+            <param name="language">The code of the detected language.</param>
+            <param name="score">A float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.</param>
+            <param name="isTranslationSupported">A value indicating whether the detected language is one of the languages supported for text translation.</param>
+            <param name="isTransliterationSupported">A value indicating whether the detected language is one of the languages supported for transliteration.</param>
+            <param name="alternatives">An array of other possible languages</param>
+            <seealso cref="T:TranslatorService.Models.Translation.DetectedLanguage"/>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.LanguageDirectionality">
+            <summary>
+            Language directionality, which is rtl for right-to-left languages or ltr for left-to-right languages.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Translation.LanguageDirectionality.LeftToRight">
+            <summary>
+            Left to right language
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Translation.LanguageDirectionality.RightToLeft">
+            <summary>
+            Right to left language
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.ServiceLanguage">
             <summary>
             Holds information about langagues supported for text translation and speech synthesis.
             </summary>
             <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
         </member>
-        <member name="P:TranslatorService.Models.ServiceLanguage.Code">
+        <member name="P:TranslatorService.Models.Translation.ServiceLanguage.Code">
             <summary>
             Gets or sets the language code.
             </summary>
         </member>
-        <member name="P:TranslatorService.Models.ServiceLanguage.Name">
+        <member name="P:TranslatorService.Models.Translation.ServiceLanguage.Name">
             <summary>
             Gets or sets the language friendly name.
             </summary>
         </member>
-        <member name="P:TranslatorService.Models.ServiceLanguage.NativeName">
+        <member name="P:TranslatorService.Models.Translation.ServiceLanguage.NativeName">
             <summary>
             Gets or sets the display name of the language in the locale native for this language.
             </summary>
         </member>
-        <member name="P:TranslatorService.Models.ServiceLanguage.Directionality">
+        <member name="P:TranslatorService.Models.Translation.ServiceLanguage.Directionality">
             <summary>
             Gets or sets the directionality, which is rtl for right-to-left languages or ltr for left-to-right languages.
             </summary>
         </member>
-        <member name="M:TranslatorService.Models.ServiceLanguage.ToString">
+        <member name="M:TranslatorService.Models.Translation.ServiceLanguage.ToString">
             <summary>
             Returns the language friendly name.
             </summary>
             <returns>The language friendly name.</returns>
         </member>
-        <member name="M:TranslatorService.Models.ServiceLanguage.#ctor(System.String,System.String,System.String,TranslatorService.Models.LanguageDirectionality)">
+        <member name="M:TranslatorService.Models.Translation.ServiceLanguage.#ctor(System.String,System.String,System.String,TranslatorService.Models.Translation.LanguageDirectionality)">
             <summary>
-            Initializes a new instance of the <see cref="T:TranslatorService.Models.ServiceLanguage"/> class.
+            Initializes a new instance of the <see cref="T:TranslatorService.Models.Translation.ServiceLanguage"/> class.
             Returns the language friendly name.
             </summary>
             <param name="code">The language code.</param>
@@ -754,132 +879,60 @@
             <param name="nativeName">The display name of the language in the locale native for this language.</param>
             <param name="directionality">The directionality, which is rtl for right-to-left languages or ltr for left-to-right languages</param>
         </member>
-        <member name="T:TranslatorService.Models.SpeechRecognitionResponse">
-            <summary>
-            The <strong>RecognitionSpeechResponse</strong> class contains information about a successfull recognition operation.
-            </summary>
-            <seealso cref="T:TranslatorService.SpeechClient"/>
-        </member>
-        <member name="P:TranslatorService.Models.SpeechRecognitionResponse.RecognitionStatus">
-            <summary>
-            A string indicating the result status.  Successful requests will return "Success"
-            </summary>
-        </member>
-        <member name="P:TranslatorService.Models.SpeechRecognitionResponse.Offset">
-            <summary>
-            Gets or sets the offset.
-            The Offset element specifies the offset (in 100-nanosecond units) at which the phrase was recognized, relative to the start of the audio stream
-            </summary>
-        </member>
-        <member name="P:TranslatorService.Models.SpeechRecognitionResponse.Duration">
-            <summary>
-            The duration of speech.
-            The Duration element specifies the duration (in 100-nanosecond units) of this speech phrase.
-            </summary>
-        </member>
-        <member name="P:TranslatorService.Models.SpeechRecognitionResponse.DisplayText">
-            <summary>
-            The top result (by confidence), returned in Display Form.
-            </summary>
-            <remarks>The display form adds punctuation and capitalization to recognition results, making it the most appropriate form for applications that display the spoken text.</remarks>
-        </member>
-        <member name="T:TranslatorService.Models.TextToSpeechParameters">
-            <summary>
-            Inputs Options for the TTS Service.
-            </summary>
-        </member>
-        <member name="M:TranslatorService.Models.TextToSpeechParameters.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:TranslatorService.Models.TextToSpeechParameters"/> class.
-            </summary>
-            <seealso cref="T:TranslatorService.SpeechClient"/>
-        </member>
-        <member name="P:TranslatorService.Models.TextToSpeechParameters.OutputFormat">
-            <summary>
-            Gets or sets the audio output format.
-            </summary>
-        </member>
-        <member name="P:TranslatorService.Models.TextToSpeechParameters.Language">
-            <summary>
-            Gets or sets the language of the text.
-            </summary>
-        </member>
-        <member name="P:TranslatorService.Models.TextToSpeechParameters.VoiceType">
-            <summary>
-            Gets or sets the type of the voice: male/female.
-            </summary>
-        </member>
-        <member name="P:TranslatorService.Models.TextToSpeechParameters.VoiceName">
-            <summary>
-            Gets or sets the name of the voice.
-            </summary>
-            <remarks>Voices list is available at https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/supported-languages#text-to-speech.
-            </remarks>
-        </member>
-        <member name="P:TranslatorService.Models.TextToSpeechParameters.Text">
-            <summary>
-            Gets or sets the text to speech.
-            </summary>
-        </member>
-        <member name="P:TranslatorService.Models.TextToSpeechParameters.Headers">
-            <summary>
-            Gets or sets the headers.
-            </summary>
-        </member>
-        <member name="T:TranslatorService.Models.Translation">
+        <member name="T:TranslatorService.Models.Translation.Translation">
             <summary>
             Strong type for Translation
             </summary>
             <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.String)"/>
         </member>
-        <member name="P:TranslatorService.Models.Translation.Text">
+        <member name="P:TranslatorService.Models.Translation.Translation.Text">
             <summary>
             Gets or sets a string giving the translated text.
             </summary>
         </member>
-        <member name="P:TranslatorService.Models.Translation.To">
+        <member name="P:TranslatorService.Models.Translation.Translation.To">
             <summary>
             Gets or sets a string representing the language code of the target language.
             </summary>
         </member>
-        <member name="M:TranslatorService.Models.Translation.#ctor(System.String,System.String)">
+        <member name="M:TranslatorService.Models.Translation.Translation.#ctor(System.String,System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:TranslatorService.Models.Translation"/> class.
+            Initializes a new instance of the <see cref="T:TranslatorService.Models.Translation.Translation"/> class.
             </summary>
             <param name="text">A string giving the translated text.</param>
             <param name="to">a string representing the language code of the target language.</param>
         </member>
-        <member name="T:TranslatorService.Models.TranslationResponse">
+        <member name="T:TranslatorService.Models.Translation.TranslationResponse">
             <summary>
             Strong type for Translate Response
             </summary>
             <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.String)"/>
         </member>
-        <member name="P:TranslatorService.Models.TranslationResponse.DetectedLanguage">
+        <member name="P:TranslatorService.Models.Translation.TranslationResponse.DetectedLanguage">
             <summary>
-            Gets or sets a <see cref="T:TranslatorService.Models.DetectedLanguageBase"/> object describing the detected language.
+            Gets or sets a <see cref="T:TranslatorService.Models.Translation.DetectedLanguageBase"/> object describing the detected language.
             </summary>
             <remarks>This property has a value only when the <see cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String)"/> method is invoked without the <strong>from</strong> parameter, so that automatic language detection is applied to determine the source language.
             </remarks>
         </member>
-        <member name="P:TranslatorService.Models.TranslationResponse.Translations">
+        <member name="P:TranslatorService.Models.Translation.TranslationResponse.Translations">
             <summary>
-            Gets or sets an array of <see cref="P:TranslatorService.Models.TranslationResponse.Translation"/> results.
+            Gets or sets an array of <see cref="P:TranslatorService.Models.Translation.TranslationResponse.Translation"/> results.
             </summary>
         </member>
-        <member name="P:TranslatorService.Models.TranslationResponse.Translation">
+        <member name="P:TranslatorService.Models.Translation.TranslationResponse.Translation">
             <summary>
             Gets the first translation result.
             </summary>
         </member>
-        <member name="M:TranslatorService.Models.TranslationResponse.#ctor(TranslatorService.Models.DetectedLanguageBase,System.Collections.Generic.IEnumerable{TranslatorService.Models.Translation})">
+        <member name="M:TranslatorService.Models.Translation.TranslationResponse.#ctor(TranslatorService.Models.Translation.DetectedLanguageBase,System.Collections.Generic.IEnumerable{TranslatorService.Models.Translation.Translation})">
             <summary>
-            Initializes a new instance of the <see cref="T:TranslatorService.Models.TranslationResponse"/> class.
+            Initializes a new instance of the <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> class.
             </summary>
-            <param name="detectedLanguage">A <see cref="T:TranslatorService.Models.DetectedLanguageBase"/> object describing the detected language.</param>
-            <param name="translations">an array of <see cref="P:TranslatorService.Models.TranslationResponse.Translation"/> results.</param>
-            <seealso cref="P:TranslatorService.Models.TranslationResponse.Translation"/>
-            <seealso cref="T:TranslatorService.Models.DetectedLanguageBase"/>
+            <param name="detectedLanguage">A <see cref="T:TranslatorService.Models.Translation.DetectedLanguageBase"/> object describing the detected language.</param>
+            <param name="translations">an array of <see cref="P:TranslatorService.Models.Translation.TranslationResponse.Translation"/> results.</param>
+            <seealso cref="P:TranslatorService.Models.Translation.TranslationResponse.Translation"/>
+            <seealso cref="T:TranslatorService.Models.Translation.DetectedLanguageBase"/>
         </member>
         <member name="T:TranslatorService.SpeechClient">
             <summary>
@@ -917,10 +970,10 @@
         <member name="P:TranslatorService.SpeechClient.SpeechToTextRequestUri">
             <inheritdoc/>
         </member>
-        <member name="M:TranslatorService.SpeechClient.SpeakAsync(TranslatorService.Models.TextToSpeechParameters)">
+        <member name="M:TranslatorService.SpeechClient.SpeakAsync(TranslatorService.Models.Speech.TextToSpeechParameters)">
             <inheritdoc/>
         </member>
-        <member name="M:TranslatorService.SpeechClient.RecognizeAsync(System.IO.Stream,System.String,TranslatorService.Models.ProfanityMode)">
+        <member name="M:TranslatorService.SpeechClient.RecognizeAsync(System.IO.Stream,System.String,TranslatorService.Models.Speech.RecognitionResultFormat,TranslatorService.Models.Speech.SpeechProfanityMode)">
             <inheritdoc/>
         </member>
         <member name="M:TranslatorService.SpeechClient.InitializeAsync">

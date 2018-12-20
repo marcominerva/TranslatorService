@@ -1,4 +1,4 @@
-﻿namespace TranslatorService.Models
+﻿namespace TranslatorService.Models.Speech
 {
     /// <summary>
     /// Voice output formats.

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TranslatorService.Models;
+using TranslatorService.Models.Speech;
 
 namespace NetCoreConsoleApp
 {
@@ -17,7 +18,7 @@ namespace NetCoreConsoleApp
             Console.WriteLine("Calling Speech Service for speech-to-text (using a sample file)...\n");
             using (var fileStream = File.OpenRead(@"SpeechSample.wav"))
             {
-                var response = await speechClient.RecognizeAsync(fileStream, "en-US");
+                var response = await speechClient.RecognizeAsync(fileStream, "en-US", RecognitionResultFormat.Detailed);
                 Console.WriteLine($"Recognition Result: {response.RecognitionStatus}");
                 Console.WriteLine(response.DisplayText);
             }

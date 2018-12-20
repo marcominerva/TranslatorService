@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TranslatorService.Models
+namespace TranslatorService.Models.Speech
 {
     /// <summary>
     /// The <strong>RecognitionSpeechResponse</strong> class contains information about a successfull recognition operation.
@@ -29,10 +30,21 @@ namespace TranslatorService.Models
         /// </summary>
         public long Duration { get; set; }
 
+        private string displayText;
         /// <summary>
-        /// The top result (by confidence), returned in Display Form.
+        /// Gets or sets the top result (by confidence), returned in Display Form.
         /// </summary>
         /// <remarks>The display form adds punctuation and capitalization to recognition results, making it the most appropriate form for applications that display the spoken text.</remarks>
-        public string DisplayText { get; set; }
+        public string DisplayText
+        {
+            get => displayText ?? Alternatives?.FirstOrDefault()?.Display;
+            set => displayText = value;
+        }
+
+        /// <summary>
+        /// A list of alternative interpretations of the same speech recognition result. These results are ranked from most likely to least likely The first entry is the same as the main recognition result.
+        /// </summary>
+        [JsonProperty("NBest")]
+        public IEnumerable<RecognitionAlternative> Alternatives { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace TranslatorService.Models
+namespace TranslatorService.Models.Translation
 {
     /// <summary>
     /// Holds information about langagues supported for text translation and speech synthesis.

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TranslatorService.Models
+namespace TranslatorService.Models.Speech
 {
     /// <summary>
-    /// <strong>ProfanityMode</strong> enum defines the possible modes in which the service can handle profanity.
+    /// The <strong>SpeechProfanityMode</strong> enum defines the possible modes in which the service can handle profanity.
     /// </summary>
-    public enum ProfanityMode
+    public enum SpeechProfanityMode
     {
         /// <summary>
         /// The service masks profanity with an asterisk. This is the default.

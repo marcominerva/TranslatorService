@@ -1,4 +1,4 @@
-﻿namespace TranslatorService.Models
+﻿namespace TranslatorService.Models.Translation
 {
     /// <summary>
     /// Strong type for Translation

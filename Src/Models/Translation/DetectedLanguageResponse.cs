@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TranslatorService.Models
+namespace TranslatorService.Models.Translation
 {
     /// <summary>
     /// Strong type for Detect Language Response

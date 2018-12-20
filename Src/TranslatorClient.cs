@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TranslatorService.Models;
+using TranslatorService.Models.Translation;
 
 namespace TranslatorService
 {
