@@ -1,5 +1,5 @@
 # Translator Service
-A lightweight library that uses Cognitive Translator Service for text translation and Cognitive Speech Service for text-to-speech and spech-to-text
+A lightweight library that uses Cognitive Translator Service for text translation and Cognitive Speech Service for text-to-speech and spech-to-text.
 
 To use this library, you must register [Translator Service](https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation) and [Speech Service](https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices) on Azure to obtain the Subscription keys. Keep in mind that for Speech service, Regional endpoints are available, so you must use a subscription key that corresponds to the endpoint you're using.
 
