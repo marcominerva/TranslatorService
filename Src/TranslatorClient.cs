@@ -29,7 +29,7 @@ namespace TranslatorService
         private const int MaxArrayLengthForDetection = 100;
         private const int MaxTextLengthForDetection = 10000;
 
-        private static readonly HttpClient client = new HttpClient();
+        private readonly HttpClient client = new HttpClient();
 
         private static TranslatorClient instance;
         /// <summary>

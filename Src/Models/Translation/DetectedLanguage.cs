@@ -1,5 +1,4 @@
-﻿using TranslatorService;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TranslatorService.Models.Translation
 {

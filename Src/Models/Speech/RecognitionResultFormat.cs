@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TranslatorService.Models.Speech
+﻿namespace TranslatorService.Models.Speech
 {
     /// <summary>
     /// The <strong>RecognitionResultFormat</strong> enum specifies the result format.

@@ -28,9 +28,9 @@ namespace TranslatorService
 
         private readonly HttpClient client;
 
-        private string _storedTokenValue = string.Empty;
-        private DateTime _storedTokenTime = DateTime.MinValue;
-        private string _subscriptionKey;
+        private string storedTokenValue = string.Empty;
+        private DateTime storedTokenTime = DateTime.MinValue;
+        private string subscriptionKey;
 
         /// <summary>
         /// Gets or sets the Service Subscription Key.
@@ -39,15 +39,15 @@ namespace TranslatorService
         {
             get
             {
-                return _subscriptionKey;
+                return subscriptionKey;
             }
             set
             {
-                if (_subscriptionKey != value)
+                if (subscriptionKey != value)
                 {
                     // If the subscription key is changed, the token is no longer valid.
-                    _subscriptionKey = value;
-                    _storedTokenValue = string.Empty;
+                    subscriptionKey = value;
+                    storedTokenValue = string.Empty;
                 }
             }
         }
@@ -81,15 +81,15 @@ namespace TranslatorService
         /// </remarks>
         public async Task<string> GetAccessTokenAsync()
         {
-            if (string.IsNullOrWhiteSpace(_subscriptionKey))
+            if (string.IsNullOrWhiteSpace(subscriptionKey))
             {
                 throw new ArgumentNullException(nameof(SubscriptionKey), "A subscription key is required. Go to Azure Portal and sign up for Microsoft Translator: https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation");
             }
 
             // Re-use the cached token if there is one.
-            if (!string.IsNullOrWhiteSpace(_storedTokenValue) && (DateTime.Now - _storedTokenTime) < TokenCacheDuration)
+            if (!string.IsNullOrWhiteSpace(storedTokenValue) && (DateTime.Now - storedTokenTime) < TokenCacheDuration)
             {
-                return _storedTokenValue;
+                return storedTokenValue;
             }
 
             try
@@ -106,15 +106,15 @@ namespace TranslatorService
                     throw ServiceException.FromJson(content);
                 }
 
-                _storedTokenTime = DateTime.Now;
-                _storedTokenValue = $"Bearer {content}";
+                storedTokenTime = DateTime.Now;
+                storedTokenValue = $"Bearer {content}";
             }
             catch (Exception ex)
             {
                 throw new ServiceException(500, ex.Message);
             }
 
-            return _storedTokenValue;
+            return storedTokenValue;
         }
 
         public void Dispose()

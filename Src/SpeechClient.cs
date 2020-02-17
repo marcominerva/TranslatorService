@@ -25,8 +25,8 @@ namespace TranslatorService
         private const int BufferSize = 1024;
         private const int MaxTextLengthForSpeech = 800;
 
-        private static HttpClient client;
-        private static HttpClientHandler handler;
+        private readonly HttpClient client;
+        private readonly HttpClientHandler handler;
 
         private static SpeechClient instance;
         /// <summary>
@@ -200,6 +200,7 @@ namespace TranslatorService
         /// <inheritdoc/>
         public void Dispose()
         {
+            authToken.Dispose();
             client.Dispose();
             handler.Dispose();
         }
