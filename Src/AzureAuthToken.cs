@@ -1,13 +1,6 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using TranslatorService.Models;
 
 namespace TranslatorService
 {
@@ -20,10 +13,12 @@ namespace TranslatorService
         /// Name of header used to pass the subscription key to the token service
         /// </summary>
         private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
-        private static readonly Uri defaultServiceUrl = new Uri("https://api.cognitive.microsoft.com/sts/v1.0/issueToken");
+        private const string OcpApimSubscriptionRegionHeader = "Ocp-Apim-Subscription-Region";
 
         /// Gets or sets the URL of the token service.
         public Uri ServiceUrl { get; set; }
+
+        public string Region { get; set; }
 
         /// <summary>
         /// After obtaining a valid token, this class will cache it for this duration.
@@ -31,7 +26,7 @@ namespace TranslatorService
         /// </summary>
         private static readonly TimeSpan TokenCacheDuration = new TimeSpan(0, 8, 0);
 
-        private static HttpClient client = new HttpClient();
+        private readonly HttpClient client;
 
         private string _storedTokenValue = string.Empty;
         private DateTime _storedTokenTime = DateTime.MinValue;
@@ -60,12 +55,17 @@ namespace TranslatorService
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureAuthToken"/> class, that is used to obtain access token
         /// </summary>
+        /// <param name="client">The instance of <see cref="HttpClient"/> used by the service.</param>
         /// <param name="key">Subscription key to use to get an authentication token.</param>
-        /// <param name="serviceUrl">The URL of the authentication service. If is <strong>null</strong> (<string>Nothing</string> in Visual Basic) or empty, the default https://api.cognitive.microsoft.com/sts/v1.0/issueToken is used.</param>
-        public AzureAuthToken(string key, string serviceUrl = null)
+        /// <param name="serviceUrl">The URL of the authentication service.</param>
+        /// <param name="region">The Azure region of the the Translator service, if any.</param>
+        /// <exception cref="ArgumentNullException">The <em>serviceUrl</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</exception>
+        public AzureAuthToken(HttpClient client, string key, string serviceUrl, string region = null)
         {
+            this.client = client;
             SubscriptionKey = key;
-            ServiceUrl = !string.IsNullOrWhiteSpace(serviceUrl) ? new Uri(serviceUrl) : defaultServiceUrl;
+            ServiceUrl = !string.IsNullOrWhiteSpace(serviceUrl) ? new Uri(serviceUrl) : throw new ArgumentNullException(nameof(serviceUrl));
+            Region = region;
         }
 
         /// <summary>
@@ -81,35 +81,40 @@ namespace TranslatorService
         /// </remarks>
         public async Task<string> GetAccessTokenAsync()
         {
-            if (string.IsNullOrEmpty(_subscriptionKey))
+            if (string.IsNullOrWhiteSpace(_subscriptionKey))
             {
                 throw new ArgumentNullException(nameof(SubscriptionKey), "A subscription key is required. Go to Azure Portal and sign up for Microsoft Translator: https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation");
             }
 
             // Re-use the cached token if there is one.
-            if ((DateTime.Now - _storedTokenTime) < TokenCacheDuration && !string.IsNullOrWhiteSpace(_storedTokenValue))
+            if (!string.IsNullOrWhiteSpace(_storedTokenValue) && (DateTime.Now - _storedTokenTime) < TokenCacheDuration)
             {
                 return _storedTokenValue;
             }
 
-            using (var request = new HttpRequestMessage(HttpMethod.Post, ServiceUrl))
+            try
             {
+                using var request = new HttpRequestMessage(HttpMethod.Post, ServiceUrl);
                 request.Headers.Add(OcpApimSubscriptionKeyHeader, SubscriptionKey);
+                request.Headers.Add(OcpApimSubscriptionRegionHeader, Region);
 
                 var response = await client.SendAsync(request).ConfigureAwait(false);
                 var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    var error = JToken.Parse(content);
-                    throw new ServiceException(error["message"].ToString(), int.Parse(error["statusCode"].ToString()));
+                    throw ServiceException.FromJson(content);
                 }
 
                 _storedTokenTime = DateTime.Now;
                 _storedTokenValue = $"Bearer {content}";
-
-                return _storedTokenValue;
             }
+            catch (Exception ex)
+            {
+                throw new ServiceException(500, ex.Message);
+            }
+
+            return _storedTokenValue;
         }
 
         public void Dispose()

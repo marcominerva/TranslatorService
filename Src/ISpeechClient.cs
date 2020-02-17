@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using TranslatorService.Models;
 using TranslatorService.Models.Speech;
 
 namespace TranslatorService
@@ -36,7 +35,7 @@ namespace TranslatorService
         string SubscriptionKey { get; set; }
 
         /// <summary>
-        /// Initializes the <see cref="TranslatorClient"/> class by getting an access token for the service.
+        /// Initializes the <see cref="SpeechClient"/> class by getting an access token for the service.
         /// </summary>
         /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
@@ -45,7 +44,7 @@ namespace TranslatorService
         Task InitializeAsync();
 
         /// <summary>
-        /// Initializes the <see cref="TranslatorClient"/> class by getting an access token for the service.
+        /// Initializes the <see cref="SpeechClient"/> class by getting an access token for the service.
         /// </summary>
         /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/>, <see cref="TextToSpeechRequestUri"/> and <see cref="SpeechToTextRequestUri"/> properties.</param>
         /// <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
@@ -72,7 +71,12 @@ namespace TranslatorService
         /// </list>
         /// </exception>
         /// <exception cref="ArgumentException">The text is longer than 800 characters.</exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks><para>This method performs a non-blocking request for language detection.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/speech-service/rest-apis#text-to-speech.
         /// </para></remarks>
@@ -96,7 +100,12 @@ namespace TranslatorService
         /// <term>The <paramref name="language"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks>
         /// <para>The currently supported format for recognition is single-channel (mono) WAV / PCM with a sampling rate of 16 kHz.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/speech-service/rest-apis#speech-to-text

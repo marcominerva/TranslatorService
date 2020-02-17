@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TranslatorService.Models;
 using TranslatorService.Models.Translation;
 
 namespace TranslatorService
@@ -12,6 +11,11 @@ namespace TranslatorService
     public interface ITranslatorClient : IDisposable
     {
         /// <summary>
+        /// Gets or sets the Authentication URI for the Translator service.
+        /// </summary>
+        string AuthenticationUri { get; set; }
+
+        /// <summary>
         /// Gets or sets the Subscription key that is necessary to use <strong>Microsoft Translator Service</strong>.
         /// </summary>
         /// <value>The Subscription Key.</value>
@@ -21,6 +25,13 @@ namespace TranslatorService
         string SubscriptionKey { get; set; }
 
         /// <summary>
+        /// Gets or sets the the Azure region of the the Translator service.
+        /// </summary>
+        /// <remarks>This value is used to automatically set the <see cref="AuthenticationUri"/> property. If the paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.
+        /// </remarks>
+        string Region { get; set; }
+
+        /// <summary>
         /// Gets or sets the string representing the supported language code to translate the text in.
         /// </summary>
         /// <value>The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>.</value>
@@ -28,7 +39,7 @@ namespace TranslatorService
         string Language { get; set; }
 
         /// <summary>
-        /// Initializes the <see cref="TranslatorClient"/> class by getting an access token for the service.
+        /// Initializes the <see cref="TranslatorClient"/> class by getting an access token for the global (non region-dependent) service, using the current language.
         /// </summary>
         /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
@@ -37,10 +48,11 @@ namespace TranslatorService
         Task InitializeAsync();
 
         /// <summary>
-        /// Initializes the <see cref="TranslatorClient"/> class by getting an access token for the service.
+        /// Initializes the <see cref="TranslatorClient"/> class by getting an access token for a specified region service, using the given language.
         /// </summary>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
         /// <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
-        /// <param name="language">A string representing the supported language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>.</param>
+        /// <param name="language">A string representing the supported language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
         /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
         /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
@@ -48,7 +60,7 @@ namespace TranslatorService
         /// <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
         /// </remarks>
-        Task InitializeAsync(string subscriptionKey, string language = null);
+        Task InitializeAsync(string region, string subscriptionKey, string language = null);
 
         /// <summary>
         /// Detects the language of a text.
@@ -86,8 +98,12 @@ namespace TranslatorService
         /// <term>The <paramref name="input"/> array is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
-        /// <remarks><para>This method performs a non-blocking request for language detection.</para>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>        /// <remarks><para>This method performs a non-blocking request for language detection.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-detect.
         /// </para></remarks>
         /// <seealso cref="GetLanguagesAsync"/>
@@ -100,7 +116,12 @@ namespace TranslatorService
         /// <param name="language">The language used to localize the language names. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="Language"/> property will be used.</param>
         /// <returns>An array of <see cref="ServiceLanguage"/> containing the language codes and names supported for translation by <strong>Microsoft Translator Service</strong>.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks><para>This method performs a non-blocking request for language names.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-languages.
         /// </para>
@@ -120,7 +141,12 @@ namespace TranslatorService
         /// </list>
         /// </exception>
         /// <exception cref="ArgumentException">The <paramref name="input"/> parameter is longer than 1000 characters.</exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks><para>This method perform a non-blocking request for text translation.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
         /// </para>
@@ -143,7 +169,12 @@ namespace TranslatorService
         /// </list>
         /// </exception>
         /// <exception cref="ArgumentException">The <paramref name="input"/> parameter is longer than 1000 characters.</exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks><para>This method perform a non-blocking request for text translation.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
         /// </para>
@@ -171,7 +202,12 @@ namespace TranslatorService
         /// <term>The <paramref name="input"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks><para>This method perform a non-blocking request for text translation.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
         /// </para>
@@ -199,7 +235,12 @@ namespace TranslatorService
         /// <term>The <paramref name="to"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks><para>This method perform a non-blocking request for text translation.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
         /// </para>
@@ -226,7 +267,12 @@ namespace TranslatorService
         /// <term>The <paramref name="to"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks><para>This method perform a non-blocking request for text translation.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
         /// </para>
@@ -253,7 +299,12 @@ namespace TranslatorService
         /// <term>The <paramref name="input"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks><para>This method perform a non-blocking request for text translation.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
         /// </para>
@@ -281,7 +332,12 @@ namespace TranslatorService
         /// <term>The <paramref name="input"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="ServiceException">
+        /// <list type="bullet">
+        /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
+        /// <term>The call to the method has encountered an unexpected error.</term>
+        /// </list>
+        /// </exception>
         /// <remarks><para>This method perform a non-blocking request for text translation.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
         /// </para>

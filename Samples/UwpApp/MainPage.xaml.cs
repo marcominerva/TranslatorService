@@ -1,36 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using TranslatorService;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace UwpApp
 {
     public sealed partial class MainPage : Page
     {
-        private TranslatorService.TranslatorClient translatorClient;
+        private TranslatorClient translatorClient;
 
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            translatorClient = new TranslatorService.TranslatorClient(ServiceKeys.TranslatorSubscriptionKey);
+            translatorClient = new TranslatorClient(ServiceKeys.TranslatorRegion, ServiceKeys.TranslatorSubscriptionKey);
 
-            var languages = await translatorClient.GetLanguagesAsync();
-            TargetLanguage.ItemsSource = languages;
-            TargetLanguage.SelectedIndex = 0;
+            try
+            {
+                var languages = await translatorClient.GetLanguagesAsync();
+                TargetLanguage.ItemsSource = languages;
+                TargetLanguage.SelectedIndex = 0;
+            }
+            catch (ServiceException ex)
+            {
+                var messageDialog = new MessageDialog(ex.Message);
+                await messageDialog.ShowAsync();
+            }
 
             base.OnNavigatedTo(e);
         }
@@ -43,11 +43,19 @@ namespace UwpApp
             }
 
             DetectedLanguage.Text = string.Empty;
-            Translation.Text = string.Empty;
+            TranslationResult.Text = string.Empty;
 
-            var translationResult = await translatorClient.TranslateAsync(Sentence.Text, to: TargetLanguage.SelectedValue.ToString());
-            DetectedLanguage.Text = $"Detected source language: {translationResult.DetectedLanguage.Language} ({translationResult.DetectedLanguage.Score:P2})";
-            Translation.Text = translationResult.Translation.Text;
+            try
+            {
+                var translationResult = await translatorClient.TranslateAsync(Sentence.Text, to: TargetLanguage.SelectedValue.ToString());
+                DetectedLanguage.Text = $"Detected source language: {translationResult.DetectedLanguage.Language} ({translationResult.DetectedLanguage.Score:P2})";
+                TranslationResult.Text = translationResult.Translation.Text;
+            }
+            catch (ServiceException ex)
+            {
+                var messageDialog = new MessageDialog(ex.Message);
+                await messageDialog.ShowAsync();
+            }
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)

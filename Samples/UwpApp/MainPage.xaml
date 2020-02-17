@@ -48,7 +48,7 @@
                 Margin="5"
                 TextWrapping="Wrap" />
             <TextBlock
-                x:Name="Translation"
+                x:Name="TranslationResult"
                 Grid.Row="4"
                 Margin="5"
                 TextWrapping="Wrap" />

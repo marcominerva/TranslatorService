@@ -1,16 +1,11 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using TranslatorService;
-using TranslatorService.Models;
 using TranslatorService.Models.Speech;
 
 namespace TranslatorService
@@ -24,21 +19,16 @@ namespace TranslatorService
     /// </remarks>
     public class SpeechClient : ISpeechClient
     {
-        private const string BaseAuthorizationUri = "https://{0}.api.cognitive.microsoft.com/sts/v1.0/issueToken";
         private const string BaseTextToSpeechRequestUri = "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1";
         private const string BaseSpeechToTextRequestUri = "https://{0}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1";
-        private const string AuthorizationHeader = "Authorization";
-
-        private const string JsonMediaType = "application/json";
-        private const string WavAudioMediaType = "audio/wav";
 
         private const int BufferSize = 1024;
         private const int MaxTextLengthForSpeech = 800;
 
         private static HttpClient client;
         private static HttpClientHandler handler;
-        private static SpeechClient instance;
 
+        private static SpeechClient instance;
         /// <summary>
         /// Gets public singleton property.
         /// </summary>
@@ -57,7 +47,6 @@ namespace TranslatorService
         /// </remarks>
         public SpeechClient(string region = null, string subscriptionKey = null)
         {
-            var cookieContainer = new CookieContainer();
             handler = new HttpClientHandler { CookieContainer = new CookieContainer(), UseProxy = false };
             client = new HttpClient(handler);
 
@@ -114,16 +103,16 @@ namespace TranslatorService
             }
 
             var genderValue = input.VoiceType == Gender.Male ? "Male" : "Female";
-            var request = new HttpRequestMessage(HttpMethod.Post, TextToSpeechRequestUri)
+            using var request = new HttpRequestMessage(HttpMethod.Post, TextToSpeechRequestUri)
             {
                 Content = new StringContent(GenerateSsml(input.Language, genderValue, input.VoiceName, input.Text))
             };
 
             // Checks if it is necessary to obtain/update access token.
             await CheckUpdateTokenAsync().ConfigureAwait(false);
-            request.Headers.Add(AuthorizationHeader, authorizationHeaderValue);
+            request.Headers.Add(Constants.AuthorizationHeader, authorizationHeaderValue);
 
-            var responseMessage = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+            using var responseMessage = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
             try
             {
@@ -138,17 +127,12 @@ namespace TranslatorService
                 }
                 else
                 {
-                    throw new ServiceException(responseMessage.ReasonPhrase, (int)responseMessage.StatusCode);
+                    throw new ServiceException((int)responseMessage.StatusCode, responseMessage.ReasonPhrase);
                 }
             }
             catch (Exception ex)
             {
-                throw new ServiceException(ex.GetBaseException().Message, 500);
-            }
-            finally
-            {
-                responseMessage.Dispose();
-                request.Dispose();
+                throw new ServiceException(500, ex.GetBaseException().Message);
             }
         }
 
@@ -183,9 +167,9 @@ namespace TranslatorService
 
             request.Headers.TransferEncodingChunked = true;
             request.Headers.ExpectContinue = true;
-            request.Headers.Accept.ParseAdd(JsonMediaType);
+            request.Headers.Accept.ParseAdd(Constants.JsonMediaType);
             request.Headers.Host = request.RequestUri.Host;
-            request.Headers.Add(AuthorizationHeader, authorizationHeaderValue);
+            request.Headers.Add(Constants.AuthorizationHeader, authorizationHeaderValue);
 
             request.Content = PopulateSpeechToTextRequestContent(audioStream);
             var response = await client.SendAsync(request).ConfigureAwait(false);
@@ -199,8 +183,7 @@ namespace TranslatorService
             }
             else
             {
-                var error = JToken.Parse(content);
-                throw new ServiceException(error["Message"].ToString(), (int)response.StatusCode);
+                throw ServiceException.FromJson(content);
             }
         }
 
@@ -223,7 +206,7 @@ namespace TranslatorService
 
         private void Initialize(string region, string subscriptionKey)
         {
-            authToken = new AzureAuthToken(subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(BaseAuthorizationUri, region) : null);
+            authToken = new AzureAuthToken(client, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);
             TextToSpeechRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseTextToSpeechRequestUri, region) : null;
             SpeechToTextRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseSpeechToTextRequestUri, region) : null;
         }
@@ -267,7 +250,7 @@ namespace TranslatorService
 
                     await outputStream.FlushAsync();
                 }
-            }, new MediaTypeHeaderValue(WavAudioMediaType));
+            }, new MediaTypeHeaderValue(Constants.WavAudioMediaType));
         }
     }
 }
