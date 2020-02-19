@@ -8,14 +8,19 @@
     <Authors>Marco Minerva</Authors>
     <Company>Marco Minerva</Company>
     <Product>Translator Service</Product>
+    <Title>Translator Service</Title>
     <Description>A lightweight library that uses Cognitive Translator Service for text translation and Cognitive Speech Service for text-to-speech and speech-to-text.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/marcominerva/TranslatorService</PackageProjectUrl>
     <PackageIcon>TranslatorService.png</PackageIcon>
     <RepositoryUrl>https://github.com/marcominerva/TranslatorService</RepositoryUrl>
     <PackageTags>cognitive-services translator translation-service speech speech-api speech-recognition speech-to-text text-to-speech</PackageTags>
+    <RepositoryUrl>https://github.com/restsharp/RestSharp.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>    
+    <RepositoryUrl>https://github.com/marcominerva/TranslatorService.git</RepositoryUrl>
+    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryCommit>3567815f80e33890ab8327660f543961e4048238</RepositoryCommit>
     <LangVersion>8.0</LangVersion>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -26,7 +31,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\TranslatorService.png" Pack="true" PackagePath="\"/>
+    <None Include="..\TranslatorService.png" Pack="true" PackagePath="\" />
   </ItemGroup>
     
   <ItemGroup>
