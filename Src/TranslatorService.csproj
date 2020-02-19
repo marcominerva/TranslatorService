@@ -9,12 +9,13 @@
     <Company>Marco Minerva</Company>
     <Product>Translator Service</Product>
     <Description>A lightweight library that uses Cognitive Translator Service for text translation and Cognitive Speech Service for text-to-speech and speech-to-text.</Description>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/marcominerva/TranslatorService</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/marcominerva/TranslatorService/master/TranslatorService.png</PackageIconUrl>
+    <PackageIcon>TranslatorService.png</PackageIcon>
     <RepositoryUrl>https://github.com/marcominerva/TranslatorService</RepositoryUrl>
     <PackageTags>cognitive-services translator translation-service speech speech-api speech-recognition speech-to-text text-to-speech</PackageTags>
     <LangVersion>8.0</LangVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -24,6 +25,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\TranslatorService.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+    
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.50">
       <PrivateAssets>all</PrivateAssets>
