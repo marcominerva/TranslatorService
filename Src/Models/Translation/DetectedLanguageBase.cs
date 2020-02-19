@@ -19,26 +19,14 @@ namespace TranslatorService.Models.Translation
         /// <summary>
         /// Gets or sets the code of the detected language.
         /// </summary>
-        public string Language { get; }
+        public string Language { get; set; }
 
         /// <summary>
         /// Gets or sets a float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.
         /// </summary>
-        public float Score { get; }
+        public float Score { get; set; }
 
         /// <inheritdoc/>
         public override string ToString() => Language;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DetectedLanguageBase"/> class.
-        /// Returns the language friendly name.
-        /// </summary>
-        /// <param name="language">the code of the detected language.</param>
-        /// <param name="score">a float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.</param>
-        public DetectedLanguageBase(string language, float score)
-        {
-            Language = language;
-            Score = score;
-        }
     }
 }

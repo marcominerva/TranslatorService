@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace TranslatorService.Models.Speech
 {
@@ -41,7 +41,7 @@ namespace TranslatorService.Models.Speech
         /// <summary>
         /// A list of alternative interpretations of the same speech recognition result. These results are ranked from most likely to least likely The first entry is the same as the main recognition result.
         /// </summary>
-        [JsonProperty("NBest")]
+        [JsonPropertyName("NBest")]
         public IEnumerable<RecognitionAlternative> Alternatives { get; set; }
     }
 }

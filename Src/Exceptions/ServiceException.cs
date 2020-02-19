@@ -1,5 +1,5 @@
-using Newtonsoft.Json.Linq;
 using System;
+using System.Text.Json;
 
 namespace TranslatorService
 {
@@ -27,12 +27,13 @@ namespace TranslatorService
         {
             try
             {
-                var error = JToken.Parse(json)["error"];
-                return new ServiceException((int)error["code"], error["message"].ToString());
+                using var jsonDocument = JsonDocument.Parse(json);
+                var error = jsonDocument.RootElement.GetProperty("error");
+                return new ServiceException(Convert.ToInt32(error.GetProperty("code").GetString()), error.GetProperty("message").GetString());
             }
             catch
             {
-                return new ServiceException(500, "Unknown error");
+                return new ServiceException(500, json ?? "Unknown error");
             }
         }
     }

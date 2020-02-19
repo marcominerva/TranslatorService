@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <DocumentationFile>D:\Projects\GitHub\TranslatorService\Src\TranslatorService.xml</DocumentationFile>
-    <Version>2.0</Version>
+    <Version>2.1</Version>
     <Authors>Marco Minerva</Authors>
     <Company>Marco Minerva</Company>
     <Product>Translator Service</Product>
@@ -29,7 +29,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Text.Json" Version="4.7.0" />
   </ItemGroup>
 
 </Project>

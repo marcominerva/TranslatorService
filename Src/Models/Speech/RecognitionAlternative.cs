@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.IO;
+﻿using System.IO;
+using System.Text.Json.Serialization;
 
 namespace TranslatorService.Models.Speech
 {
@@ -17,19 +17,19 @@ namespace TranslatorService.Models.Speech
         /// <summary>
         /// The lexical form of the recognized text: the actual words recognized.
         /// </summary>
-        [JsonProperty("Lexical")]
+        [JsonPropertyName("Lexical")]
         public string LexicalForm { get; set; }
 
         /// <summary>
         /// The inverse-text-normalized ("canonical") form of the recognized text, with phone numbers, numbers, abbreviations ("doctor smith" to "dr smith"), and other transformations applied.
         /// </summary>
-        [JsonProperty("ITN")]
+        [JsonPropertyName("ITN")]
         public string CanonicalForm { get; set; }
 
         /// <summary>
         /// The ITN form with profanity masking applied, if requested.
         /// </summary>
-        [JsonProperty("MaskedITN")]
+        [JsonPropertyName("MaskedITN")]
         public string MaskedCanonicalForm { get; set; }
 
         /// <summary>

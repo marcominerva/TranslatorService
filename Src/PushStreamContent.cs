@@ -38,7 +38,7 @@ namespace System.Net.Http
     // https://github.com/ASP-NET-MVC/aspnetwebstack/blob/d5188c8a75b5b26b09ab89bedfd7ee635ae2ff17/src/System.Net.Http.Formatting/PushStreamContent.cs
     internal class PushStreamContent : HttpContent
     {
-        private readonly Func<Stream, HttpContent, TransportContext, Task> _onStreamAvailable;
+        private readonly Func<Stream, HttpContent, TransportContext, Task> onStreamAvailable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PushStreamContent"/> class. The
@@ -92,7 +92,7 @@ namespace System.Net.Http
         /// </summary>
         public PushStreamContent(Func<Stream, HttpContent, TransportContext, Task> onStreamAvailable, MediaTypeHeaderValue mediaType)
         {
-            _onStreamAvailable = onStreamAvailable ?? throw new ArgumentNullException(nameof(onStreamAvailable));
+            this.onStreamAvailable = onStreamAvailable ?? throw new ArgumentNullException(nameof(onStreamAvailable));
             Headers.ContentType = mediaType ?? new MediaTypeHeaderValue("application/octet-stream");
         }
 
@@ -134,7 +134,7 @@ namespace System.Net.Http
             var serializeToStreamTask = new TaskCompletionSource<bool>();
 
             Stream wrappedStream = new CompleteTaskOnCloseStream(stream, serializeToStreamTask);
-            await _onStreamAvailable(wrappedStream, this, context);
+            await onStreamAvailable(wrappedStream, this, context);
 
             // wait for wrappedStream.Close/Dispose to get called.
             await serializeToStreamTask.Task;
@@ -154,13 +154,13 @@ namespace System.Net.Http
 
         internal class CompleteTaskOnCloseStream : DelegatingStream
         {
-            private TaskCompletionSource<bool> _serializeToStreamTask;
+            private readonly TaskCompletionSource<bool> serializeToStreamTask;
 
             public CompleteTaskOnCloseStream(Stream innerStream, TaskCompletionSource<bool> serializeToStreamTask)
                 : base(innerStream)
             {
                 Contract.Assert(serializeToStreamTask != null);
-                _serializeToStreamTask = serializeToStreamTask;
+                this.serializeToStreamTask = serializeToStreamTask;
             }
 
             [SuppressMessage(
@@ -171,7 +171,7 @@ namespace System.Net.Http
             {
                 // We don't dispose the underlying stream because we don't own it. Dispose in this case just signifies
                 // that the user's action is finished.
-                _serializeToStreamTask.TrySetResult(true);
+                serializeToStreamTask.TrySetResult(true);
             }
         }
     }

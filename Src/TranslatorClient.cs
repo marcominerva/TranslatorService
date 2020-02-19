@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TranslatorService.Models.Translation;
 
@@ -153,7 +152,7 @@ namespace TranslatorService
                 throw ServiceException.FromJson(content);
             }
 
-            var responseContent = JsonConvert.DeserializeObject<IEnumerable<DetectedLanguageResponse>>(content);
+            var responseContent = JsonSerializer.Deserialize<IEnumerable<DetectedLanguageResponse>>(content, JsonOptions.JsonSerializerOptions);
             return responseContent;
         }
 
@@ -181,8 +180,9 @@ namespace TranslatorService
                 throw ServiceException.FromJson(content);
             }
 
-            var jsonContent = JToken.Parse(content)["translation"];
-            var responseContent = JsonConvert.DeserializeObject<Dictionary<string, ServiceLanguage>>(jsonContent.ToString()).ToList();
+            using var jsonDocument = JsonDocument.Parse(content);
+            var jsonContent = jsonDocument.RootElement.GetProperty("translation");
+            var responseContent = JsonSerializer.Deserialize<Dictionary<string, ServiceLanguage>>(jsonContent.ToString(), JsonOptions.JsonSerializerOptions).ToList();
             responseContent.ForEach(r => r.Value.Code = r.Key);
 
             return responseContent.Select(r => r.Value).OrderBy(r => r.Name).ToList();
@@ -252,7 +252,7 @@ namespace TranslatorService
                 throw ServiceException.FromJson(content);
             }
 
-            var responseContent = JsonConvert.DeserializeObject<IEnumerable<TranslationResponse>>(content);
+            var responseContent = JsonSerializer.Deserialize<IEnumerable<TranslationResponse>>(content, JsonOptions.JsonSerializerOptions);
             return responseContent;
         }
 
@@ -295,7 +295,7 @@ namespace TranslatorService
 
             if (content != null)
             {
-                var jsonRequest = JsonConvert.SerializeObject(content);
+                var jsonRequest = JsonSerializer.Serialize(content, JsonOptions.JsonSerializerOptions);
                 var requestContent = new StringContent(jsonRequest, Encoding.UTF8, Constants.JsonMediaType);
                 request.Content = requestContent;
             }

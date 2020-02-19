@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using TranslatorService.Models.Speech;
@@ -179,7 +179,7 @@ namespace TranslatorService
             if (response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.Continue)
             {
                 // If we get a valid response (non-null, no exception, and not forbidden), return the response.
-                return JsonConvert.DeserializeObject<SpeechRecognitionResponse>(content);
+                return JsonSerializer.Deserialize<SpeechRecognitionResponse>(content, JsonOptions.JsonSerializerOptions);
             }
             else
             {
