@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <DocumentationFile>D:\Projects\GitHub\TranslatorService\Src\TranslatorService.xml</DocumentationFile>
+    <DocumentationFile>TranslatorService.xml</DocumentationFile>
     <Version>2.1</Version>
     <Authors>Marco Minerva</Authors>
     <Company>Marco Minerva</Company>
