@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
     <DocumentationFile>TranslatorService.xml</DocumentationFile>
     <Version>2.1</Version>
     <Authors>Marco Minerva</Authors>
@@ -19,8 +20,6 @@
     <RepositoryType>git</RepositoryType>    
     <RepositoryUrl>https://github.com/marcominerva/TranslatorService.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>3567815f80e33890ab8327660f543961e4048238</RepositoryCommit>
-    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -35,11 +34,11 @@
   </ItemGroup>
     
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.50">
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.3.37">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="4.7.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
 
 </Project>
