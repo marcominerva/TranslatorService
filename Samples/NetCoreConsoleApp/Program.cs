@@ -30,7 +30,7 @@ namespace NetCoreConsoleApp
                     Text = "Hello everyone! Today is really a beautiful day."
                 });
 
-                File.WriteAllBytes(@"D:\Test.mp3", (speakResponse as MemoryStream).ToArray());
+                // speakResponse contains the stream of the audio.
             }
             catch (ServiceException ex)
             {
