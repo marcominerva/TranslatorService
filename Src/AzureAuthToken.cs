@@ -98,23 +98,23 @@ namespace TranslatorService
                 request.Headers.Add(OcpApimSubscriptionKeyHeader, SubscriptionKey);
                 request.Headers.Add(OcpApimSubscriptionRegionHeader, Region);
 
-                var response = await client.SendAsync(request).ConfigureAwait(false);
-                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                using var response = await client.SendAsync(request).ConfigureAwait(false);
 
-                if (!response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    throw ServiceException.FromJson(content);
+                    var content = await response.Content.ReadAsStringAsync();
+                    storedTokenTime = DateTime.Now;
+                    storedTokenValue = $"Bearer {content}";
+
+                    return storedTokenValue;
                 }
 
-                storedTokenTime = DateTime.Now;
-                storedTokenValue = $"Bearer {content}";
+                throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 throw new ServiceException(500, ex.Message);
             }
-
-            return storedTokenValue;
         }
     }
 }

@@ -1,5 +1,8 @@
 using System;
+using System.IO;
+using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace TranslatorService
 {
@@ -23,17 +26,21 @@ namespace TranslatorService
         public ServiceException(int code, string message)
             : base(message) => Code = code;
 
-        internal static ServiceException FromJson(string json)
+        internal static async Task<ServiceException> FromResponseAsync(HttpResponseMessage response)
         {
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+
             try
             {
-                using var jsonDocument = JsonDocument.Parse(json);
+                using var jsonDocument = await JsonDocument.ParseAsync(responseStream);
                 var error = jsonDocument.RootElement.GetProperty("error");
                 return new ServiceException(Convert.ToInt32(error.GetProperty("code").GetString()), error.GetProperty("message").GetString());
             }
             catch
             {
-                return new ServiceException(500, json ?? "Unknown error");
+                responseStream.Position = 0;
+                using var reader = new StreamReader(responseStream);
+                return new ServiceException(500, await reader.ReadToEndAsync() ?? "Unknown error");
             }
         }
     }

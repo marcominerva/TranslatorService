@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using TranslatorService.Models.Speech;
@@ -125,10 +125,8 @@ namespace TranslatorService
 
                     return result;
                 }
-                else
-                {
-                    throw new ServiceException((int)responseMessage.StatusCode, responseMessage.ReasonPhrase);
-                }
+
+                throw new ServiceException((int)responseMessage.StatusCode, responseMessage.ReasonPhrase);
             }
             catch (Exception ex)
             {
@@ -172,19 +170,16 @@ namespace TranslatorService
             request.Headers.Add(Constants.AuthorizationHeader, authorizationHeaderValue);
 
             request.Content = PopulateSpeechToTextRequestContent(audioStream);
-            var response = await client.SendAsync(request).ConfigureAwait(false);
-
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            using var response = await client.SendAsync(request).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.Continue)
             {
                 // If we get a valid response (non-null, no exception, and not forbidden), return the response.
-                return JsonSerializer.Deserialize<SpeechRecognitionResponse>(content, JsonOptions.JsonSerializerOptions);
+                var responseContent = await response.Content.ReadFromJsonAsync<SpeechRecognitionResponse>(JsonOptions.JsonSerializerOptions).ConfigureAwait(false);
+                return responseContent;
             }
-            else
-            {
-                throw ServiceException.FromJson(content);
-            }
+
+            throw await ServiceException.FromResponseAsync(response);
         }
 
         /// <inheritdoc/>

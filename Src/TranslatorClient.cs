@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using TranslatorService.Models.Translation;
@@ -144,16 +144,15 @@ namespace TranslatorService
                 Text = t.Substring(0, Math.Min(t.Length, MaxTextLengthForDetection))
             }));
 
-            var response = await client.SendAsync(request).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            using var response = await client.SendAsync(request).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                throw ServiceException.FromJson(content);
+                var responseContent = await response.Content.ReadFromJsonAsync<IEnumerable<DetectedLanguageResponse>>(JsonOptions.JsonSerializerOptions).ConfigureAwait(false);
+                return responseContent;
             }
 
-            var responseContent = JsonSerializer.Deserialize<IEnumerable<DetectedLanguageResponse>>(content, JsonOptions.JsonSerializerOptions);
-            return responseContent;
+            throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -172,20 +171,21 @@ namespace TranslatorService
                 request.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));
             }
 
-            var response = await client.SendAsync(request).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            using var response = await client.SendAsync(request).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                throw ServiceException.FromJson(content);
+                using var contentStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+
+                using var jsonDocument = JsonDocument.Parse(contentStream);
+                var jsonContent = jsonDocument.RootElement.GetProperty("translation");
+                var responseContent = JsonSerializer.Deserialize<Dictionary<string, ServiceLanguage>>(jsonContent.ToString(), JsonOptions.JsonSerializerOptions).ToList();
+                responseContent.ForEach(r => r.Value.Code = r.Key);
+
+                return responseContent.Select(r => r.Value).OrderBy(r => r.Name).ToList();
             }
 
-            using var jsonDocument = JsonDocument.Parse(content);
-            var jsonContent = jsonDocument.RootElement.GetProperty("translation");
-            var responseContent = JsonSerializer.Deserialize<Dictionary<string, ServiceLanguage>>(jsonContent.ToString(), JsonOptions.JsonSerializerOptions).ToList();
-            responseContent.ForEach(r => r.Value.Code = r.Key);
-
-            return responseContent.Select(r => r.Value).OrderBy(r => r.Name).ToList();
+            throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -244,16 +244,15 @@ namespace TranslatorService
             var uriString = (string.IsNullOrWhiteSpace(from) ? $"{BaseUrl}translate?{toQueryString}" : $"{BaseUrl}translate?from={from}&{toQueryString}") + $"&{ApiVersion}";
             using var request = CreateHttpRequest(uriString, HttpMethod.Post, input.Select(t => new { Text = t }));
 
-            var response = await client.SendAsync(request).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            using var response = await client.SendAsync(request).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                throw ServiceException.FromJson(content);
+                var responseContent = await response.Content.ReadFromJsonAsync<IEnumerable<TranslationResponse>>(JsonOptions.JsonSerializerOptions).ConfigureAwait(false);
+                return responseContent;
             }
 
-            var responseContent = JsonSerializer.Deserialize<IEnumerable<TranslationResponse>>(content, JsonOptions.JsonSerializerOptions);
-            return responseContent;
+            throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -289,16 +288,12 @@ namespace TranslatorService
 
         private HttpRequestMessage CreateHttpRequest(string uriString, HttpMethod method, object? content = null)
         {
-            var request = new HttpRequestMessage(method, new Uri(uriString));
-            request.Headers.Add(Constants.AuthorizationHeader, authorizationHeaderValue);
-
-            if (content != null)
+            var request = new HttpRequestMessage(method, new Uri(uriString))
             {
-                var jsonRequest = JsonSerializer.Serialize(content, JsonOptions.JsonSerializerOptions);
-                var requestContent = new StringContent(jsonRequest, Encoding.UTF8, Constants.JsonMediaType);
-                request.Content = requestContent;
-            }
+                Content = content != null ? JsonContent.Create(content, content.GetType(), options: JsonOptions.JsonSerializerOptions) : null
+            };
 
+            request.Headers.Add(Constants.AuthorizationHeader, authorizationHeaderValue);
             return request;
         }
     }
