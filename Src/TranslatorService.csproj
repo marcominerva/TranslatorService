@@ -5,7 +5,6 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <DocumentationFile>TranslatorService.xml</DocumentationFile>
-    <Version>2.1</Version>
     <Authors>Marco Minerva</Authors>
     <Company>Marco Minerva</Company>
     <Product>Translator Service</Product>
