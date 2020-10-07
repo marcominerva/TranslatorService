@@ -1,0 +1,35 @@
+name: Publish on NuGet
+
+on:
+  push:
+    branches: [ master ]
+    paths: [ 'Src/**' ]
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.3.2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+        
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1.6.0
+      with:
+        dotnet-version: 3.1.402
+        
+    - name: Nerdbank.GitVersioning 
+      uses: dotnet/nbgv@v0.3.1
+      id: nbgv
+      with:        
+        path: TinyNetHelpers     
+
+    - name: Publish on NuGet        
+      uses: rohith/publish-nuget@v2
+      with:          
+        PROJECT_FILE_PATH: Src/TranslatorService.csproj
+        VERSION_STATIC: ${{ steps.nbgv.outputs.NuGetPackageVersion }}
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
