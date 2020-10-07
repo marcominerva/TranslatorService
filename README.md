@@ -23,7 +23,7 @@ It's usage is straightforward. For example, if you want to translate text:
     
     var response = await translatorClient.TranslateAsync("Today is really a beautiful day.", to: "it");
     Console.WriteLine(
-      $"Detected source language: {response.DetectedLanguage.Language} ({response.DetectedLanguage.Score:P2})");
+     $"Detected source language: {response.DetectedLanguage.Language} ({response.DetectedLanguage.Score:P2})");
     
     Console.WriteLine(response.Translation.Text);
 
