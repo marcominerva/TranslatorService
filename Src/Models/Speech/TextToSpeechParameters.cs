@@ -14,7 +14,8 @@ namespace TranslatorService.Models.Speech
         public TextToSpeechParameters()
         {
             Language = "en-us";
-            VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)";
+            VoiceName = "en-US-AriaNeural";
+            VoiceType = Gender.Female;
             // Default to Riff16Khz16BitMonoPcm output format.
             OutputFormat = AudioOutputFormat.Riff16Khz16BitMonoPcm;
         }
@@ -54,9 +55,9 @@ namespace TranslatorService.Models.Speech
             get
             {
                 var toReturn = new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>("Content-Type", "application/ssml+xml")
-                    };
+                {
+                    new KeyValuePair<string, string>("Content-Type", "application/ssml+xml")
+                };
 
                 var outputFormat = OutputFormat switch
                 {
