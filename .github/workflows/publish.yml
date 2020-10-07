@@ -25,7 +25,7 @@ jobs:
       uses: dotnet/nbgv@v0.3.1
       id: nbgv
       with:        
-        path: TinyNetHelpers     
+        path: Src     
 
     - name: Publish on NuGet        
       uses: rohith/publish-nuget@v2
