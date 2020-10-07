@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using TranslatorService.Models.Translation;
@@ -28,16 +28,17 @@ namespace TranslatorService
         private const int MaxArrayLengthForDetection = 100;
         private const int MaxTextLengthForDetection = 10000;
 
-        private readonly HttpClient client = new HttpClient();
+        private HttpClient httpClient = null!;
+        private bool innerHttpClient = false;
 
-        private static TranslatorClient instance;
+        private static TranslatorClient instance = null!;
         /// <summary>
         /// Gets public singleton property.
         /// </summary>
-        public static TranslatorClient Instance => instance ?? (instance = new TranslatorClient());
+        public static TranslatorClient Instance => instance ??= new TranslatorClient();
 
-        private AzureAuthToken authToken;
-        private string authorizationHeaderValue;
+        private AzureAuthToken authToken = null!;
+        private string authorizationHeaderValue = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using the global (non region-dependent) service and the current language.
@@ -47,9 +48,19 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
         public TranslatorClient()
-        {
-            Initialize(null, null, null);
-        }
+            => Initialize(null, null, null, null);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using an existing <see cref="System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
+        /// </summary>
+        /// <param name="httpClient">An instance of the <see cref="HttpClient"/> object to use to network communication.</param>
+        /// <remarks>
+        /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+        /// </remarks>
+        /// <seealso cref="ITranslatorClient"/>
+        /// <seealso cref="HttpClient"/>
+        public TranslatorClient(HttpClient httpClient)
+            => Initialize(httpClient, null, null, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using the global (non region-dependent) service and the current language.
@@ -60,27 +71,51 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
         public TranslatorClient(string subscriptionKey)
-        {
-            Initialize(null, subscriptionKey, null);
-        }
+            => Initialize(null, subscriptionKey, null, null);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TranslatorClient"/> class for a specified region service, using the given language..
+        /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using an existing <see cref="System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
         /// </summary>
-        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
+        /// <param name="httpClient">An instance of the <see cref="HttpClient"/> object to use to network communication.</param>
         /// <param name="subscriptionKey">The Subscription Key to use the service.</param>
+        /// <remarks>
+        /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+        /// </remarks>
+        /// <seealso cref="ITranslatorClient"/>
+        /// <seealso cref="HttpClient"/>
+        public TranslatorClient(HttpClient httpClient, string subscriptionKey)
+            => Initialize(httpClient, subscriptionKey, null, null);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TranslatorClient"/> class for a specified region service, using the given language.
+        /// </summary>
+        /// <param name="subscriptionKey">The Subscription Key to use the service.</param>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
         /// <param name="language">The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
         /// <remarks>
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
-        public TranslatorClient(string region, string subscriptionKey, string language = null)
-        {
-            Initialize(region, subscriptionKey, language);
-        }
+        public TranslatorClient(string subscriptionKey, string? region, string? language = null)
+            => Initialize(null, subscriptionKey, region, language);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TranslatorClient"/> class for a specified region service, using an existing <see cref="HttpClient"/> and the given language.
+        /// </summary>
+        /// <param name="httpClient">An instance of the <see cref="HttpClient"/> object to use to network communication.</param>
+        /// <param name="subscriptionKey">The Subscription Key to use the service.</param>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
+        /// <param name="language">The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
+        /// <remarks>
+        /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+        /// </remarks>
+        /// <seealso cref="ITranslatorClient"/>
+        /// <seealso cref="HttpClient"/>
+        public TranslatorClient(HttpClient httpClient, string subscriptionKey, string? region, string? language = null)
+            => Initialize(httpClient, subscriptionKey, region, language);
 
         /// <inheritdoc/>
-        public string SubscriptionKey
+        public string? SubscriptionKey
         {
             get => authToken.SubscriptionKey;
             set => authToken.SubscriptionKey = value;
@@ -94,7 +129,7 @@ namespace TranslatorService
         }
 
         /// <inheritdoc/>
-        public string Region
+        public string? Region
         {
             get => authToken.Region;
             set
@@ -108,7 +143,7 @@ namespace TranslatorService
         }
 
         /// <inheritdoc/>
-        public string Language { get; set; }
+        public string Language { get; set; } = null!;
 
         /// <inheritdoc/>
         public async Task<DetectedLanguageResponse> DetectLanguageAsync(string input)
@@ -144,20 +179,19 @@ namespace TranslatorService
                 Text = t.Substring(0, Math.Min(t.Length, MaxTextLengthForDetection))
             }));
 
-            var response = await client.SendAsync(request).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                throw ServiceException.FromJson(content);
+                var responseContent = await response.Content.ReadFromJsonAsync<IEnumerable<DetectedLanguageResponse>>(JsonOptions.JsonSerializerOptions).ConfigureAwait(false);
+                return responseContent;
             }
 
-            var responseContent = JsonSerializer.Deserialize<IEnumerable<DetectedLanguageResponse>>(content, JsonOptions.JsonSerializerOptions);
-            return responseContent;
+            throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<ServiceLanguage>> GetLanguagesAsync(string language = null)
+        public async Task<IEnumerable<ServiceLanguage>> GetLanguagesAsync(string? language = null)
         {
             // Check if it is necessary to obtain/update access token.
             await CheckUpdateTokenAsync().ConfigureAwait(false);
@@ -172,50 +206,55 @@ namespace TranslatorService
                 request.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));
             }
 
-            var response = await client.SendAsync(request).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                throw ServiceException.FromJson(content);
+                using var contentStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+
+                using var jsonDocument = JsonDocument.Parse(contentStream);
+                var jsonContent = jsonDocument.RootElement.GetProperty("translation");
+                var responseContent = JsonSerializer.Deserialize<Dictionary<string, ServiceLanguage>>(jsonContent.ToString(), JsonOptions.JsonSerializerOptions).ToList();
+                responseContent.ForEach(r => r.Value.Code = r.Key);
+
+                return responseContent.Select(r => r.Value).OrderBy(r => r.Name).ToList();
             }
 
-            using var jsonDocument = JsonDocument.Parse(content);
-            var jsonContent = jsonDocument.RootElement.GetProperty("translation");
-            var responseContent = JsonSerializer.Deserialize<Dictionary<string, ServiceLanguage>>(jsonContent.ToString(), JsonOptions.JsonSerializerOptions).ToList();
-            responseContent.ForEach(r => r.Value.Code = r.Key);
-
-            return responseContent.Select(r => r.Value).OrderBy(r => r.Name).ToList();
+            throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public Task<TranslationResponse> TranslateAsync(string input, string to = null) => TranslateAsync(input, null, to ?? Language);
+        public Task<TranslationResponse> TranslateAsync(string input, string? to = null)
+            => TranslateAsync(input, null, to ?? Language);
 
         /// <inheritdoc/>
-        public async Task<TranslationResponse> TranslateAsync(string input, string from, string to)
+        public async Task<TranslationResponse> TranslateAsync(string input, string? from, string to)
         {
             var response = await TranslateAsync(new string[] { input }, from, new string[] { to }).ConfigureAwait(false);
             return response.FirstOrDefault();
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<TranslationResponse>> TranslateAsync(IEnumerable<string> input, string from, string to) => TranslateAsync(input, from, new string[] { to });
+        public Task<IEnumerable<TranslationResponse>> TranslateAsync(IEnumerable<string> input, string? from, string to)
+            => TranslateAsync(input, from, new string[] { to });
 
         /// <inheritdoc/>
-        public Task<TranslationResponse> TranslateAsync(string input, IEnumerable<string> to) => TranslateAsync(input, null, to);
+        public Task<TranslationResponse> TranslateAsync(string input, IEnumerable<string> to)
+            => TranslateAsync(input, null, to);
 
         /// <inheritdoc/>
-        public async Task<TranslationResponse> TranslateAsync(string input, string from, IEnumerable<string> to)
+        public async Task<TranslationResponse> TranslateAsync(string input, string? from, IEnumerable<string> to)
         {
             var response = await TranslateAsync(new string[] { input }, from, to).ConfigureAwait(false);
             return response.FirstOrDefault();
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<TranslationResponse>> TranslateAsync(IEnumerable<string> input, IEnumerable<string> to = null) => TranslateAsync(input, null, to);
+        public Task<IEnumerable<TranslationResponse>> TranslateAsync(IEnumerable<string> input, IEnumerable<string>? to = null)
+            => TranslateAsync(input, null, to);
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<TranslationResponse>> TranslateAsync(IEnumerable<string> input, string from, IEnumerable<string> to)
+        public async Task<IEnumerable<TranslationResponse>> TranslateAsync(IEnumerable<string> input, string? from, IEnumerable<string>? to)
         {
             if (input == null)
             {
@@ -244,38 +283,56 @@ namespace TranslatorService
             var uriString = (string.IsNullOrWhiteSpace(from) ? $"{BaseUrl}translate?{toQueryString}" : $"{BaseUrl}translate?from={from}&{toQueryString}") + $"&{ApiVersion}";
             using var request = CreateHttpRequest(uriString, HttpMethod.Post, input.Select(t => new { Text = t }));
 
-            var response = await client.SendAsync(request).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                throw ServiceException.FromJson(content);
+                var responseContent = await response.Content.ReadFromJsonAsync<IEnumerable<TranslationResponse>>(JsonOptions.JsonSerializerOptions).ConfigureAwait(false);
+                return responseContent;
             }
 
-            var responseContent = JsonSerializer.Deserialize<IEnumerable<TranslationResponse>>(content, JsonOptions.JsonSerializerOptions);
-            return responseContent;
+            throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public Task InitializeAsync() => CheckUpdateTokenAsync();
+        public Task InitializeAsync()
+            => CheckUpdateTokenAsync();
 
         /// <inheritdoc/>
-        public Task InitializeAsync(string region, string subscriptionKey, string language = null)
+
+        public Task InitializeAsync(string? subscriptionKey, string? region, string? language = null)
+            => InitializeAsync(null, region, subscriptionKey, language);
+
+        /// <inheritdoc/>
+        public Task InitializeAsync(HttpClient? httpClient, string? region, string? subscriptionKey, string? language = null)
         {
-            Initialize(region, subscriptionKey, language);
+            Initialize(httpClient, subscriptionKey, region, language);
             return InitializeAsync();
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            authToken.Dispose();
-            client.Dispose();
+            if (innerHttpClient)
+            {
+                httpClient.Dispose();
+            }
         }
 
-        private void Initialize(string region, string subscriptionKey, string language)
+        private void Initialize(HttpClient? httpClient, string? subscriptionKey, string? region, string? language)
         {
-            authToken = new AzureAuthToken(client, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);
+            if (httpClient == null)
+            {
+                this.httpClient = new HttpClient();
+                innerHttpClient = true;
+            }
+            else
+            {
+                this.httpClient = httpClient;
+                innerHttpClient = false;
+            }
+
+            authToken = new AzureAuthToken(this.httpClient, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);
             Language = language ?? CultureInfo.CurrentCulture.Name.ToLower();
         }
 
@@ -288,18 +345,14 @@ namespace TranslatorService
         private HttpRequestMessage CreateHttpRequest(string uriString)
             => CreateHttpRequest(uriString, HttpMethod.Get);
 
-        private HttpRequestMessage CreateHttpRequest(string uriString, HttpMethod method, object content = null)
+        private HttpRequestMessage CreateHttpRequest(string uriString, HttpMethod method, object? content = null)
         {
-            var request = new HttpRequestMessage(method, new Uri(uriString));
-            request.Headers.Add(Constants.AuthorizationHeader, authorizationHeaderValue);
-
-            if (content != null)
+            var request = new HttpRequestMessage(method, new Uri(uriString))
             {
-                var jsonRequest = JsonSerializer.Serialize(content, JsonOptions.JsonSerializerOptions);
-                var requestContent = new StringContent(jsonRequest, Encoding.UTF8, Constants.JsonMediaType);
-                request.Content = requestContent;
-            }
+                Content = content != null ? JsonContent.Create(content, content.GetType(), options: JsonOptions.JsonSerializerOptions) : null
+            };
 
+            request.Headers.Add(Constants.AuthorizationHeader, authorizationHeaderValue);
             return request;
         }
     }

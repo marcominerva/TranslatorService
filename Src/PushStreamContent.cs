@@ -49,7 +49,7 @@ namespace System.Net.Http
         /// </summary>
         /// <param name="onStreamAvailable">The action to call when an output stream is available.</param>
         public PushStreamContent(Action<Stream, HttpContent, TransportContext> onStreamAvailable)
-            : this(Taskify(onStreamAvailable), (MediaTypeHeaderValue)null)
+            : this(Taskify(onStreamAvailable), (MediaTypeHeaderValue?)null)
         {
         }
 
@@ -59,7 +59,7 @@ namespace System.Net.Http
         /// <param name="onStreamAvailable">The action to call when an output stream is available. The stream is automatically
         /// closed when the return task is completed.</param>
         public PushStreamContent(Func<Stream, HttpContent, TransportContext, Task> onStreamAvailable)
-            : this(onStreamAvailable, (MediaTypeHeaderValue)null)
+            : this(onStreamAvailable, (MediaTypeHeaderValue?)null)
         {
         }
 
@@ -82,7 +82,7 @@ namespace System.Net.Http
         /// <summary>
         /// Initializes a new instance of the <see cref="PushStreamContent"/> class with the given <see cref="MediaTypeHeaderValue"/>.
         /// </summary>
-        public PushStreamContent(Action<Stream, HttpContent, TransportContext> onStreamAvailable, MediaTypeHeaderValue mediaType)
+        public PushStreamContent(Action<Stream, HttpContent, TransportContext> onStreamAvailable, MediaTypeHeaderValue? mediaType)
             : this(Taskify(onStreamAvailable), mediaType)
         {
         }
@@ -90,7 +90,7 @@ namespace System.Net.Http
         /// <summary>
         /// Initializes a new instance of the <see cref="PushStreamContent"/> class with the given <see cref="MediaTypeHeaderValue"/>.
         /// </summary>
-        public PushStreamContent(Func<Stream, HttpContent, TransportContext, Task> onStreamAvailable, MediaTypeHeaderValue mediaType)
+        public PushStreamContent(Func<Stream, HttpContent, TransportContext, Task> onStreamAvailable, MediaTypeHeaderValue? mediaType)
         {
             this.onStreamAvailable = onStreamAvailable ?? throw new ArgumentNullException(nameof(onStreamAvailable));
             Headers.ContentType = mediaType ?? new MediaTypeHeaderValue("application/octet-stream");
@@ -108,7 +108,7 @@ namespace System.Net.Http
             {
                 onStreamAvailable(stream, content, transportContext);
                 // https://github.com/ASP-NET-MVC/aspnetwebstack/blob/5118a14040b13f95bf778d1fc4522eb4ea2eef18/src/Common/TaskHelpers.cs#L10
-                return Task.FromResult<AsyncVoid>(default(AsyncVoid));
+                return Task.FromResult<AsyncVoid>(default);
             };
         }
 
@@ -160,7 +160,7 @@ namespace System.Net.Http
                 : base(innerStream)
             {
                 Contract.Assert(serializeToStreamTask != null);
-                this.serializeToStreamTask = serializeToStreamTask;
+                this.serializeToStreamTask = serializeToStreamTask!;
             }
 
             [SuppressMessage(

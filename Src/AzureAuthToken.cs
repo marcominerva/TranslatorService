@@ -7,7 +7,7 @@ namespace TranslatorService
     /// <summary>
     /// Client to call Cognitive Services Azure Auth Token service in order to get an access token.
     /// </summary>
-    internal class AzureAuthToken : IDisposable
+    internal class AzureAuthToken
     {
         /// <summary>
         /// Name of header used to pass the subscription key to the token service
@@ -18,7 +18,7 @@ namespace TranslatorService
         /// Gets or sets the URL of the token service.
         public Uri ServiceUrl { get; set; }
 
-        public string Region { get; set; }
+        public string? Region { get; set; }
 
         /// <summary>
         /// After obtaining a valid token, this class will cache it for this duration.
@@ -30,12 +30,12 @@ namespace TranslatorService
 
         private string storedTokenValue = string.Empty;
         private DateTime storedTokenTime = DateTime.MinValue;
-        private string subscriptionKey;
+        private string? subscriptionKey;
 
         /// <summary>
         /// Gets or sets the Service Subscription Key.
         /// </summary>
-        public string SubscriptionKey
+        public string? SubscriptionKey
         {
             get
             {
@@ -60,7 +60,7 @@ namespace TranslatorService
         /// <param name="serviceUrl">The URL of the authentication service.</param>
         /// <param name="region">The Azure region of the the Translator service, if any.</param>
         /// <exception cref="ArgumentNullException">The <em>serviceUrl</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</exception>
-        public AzureAuthToken(HttpClient client, string key, string serviceUrl, string region = null)
+        public AzureAuthToken(HttpClient client, string? key, string? serviceUrl, string? region = null)
         {
             this.client = client;
             SubscriptionKey = key;
@@ -98,28 +98,23 @@ namespace TranslatorService
                 request.Headers.Add(OcpApimSubscriptionKeyHeader, SubscriptionKey);
                 request.Headers.Add(OcpApimSubscriptionRegionHeader, Region);
 
-                var response = await client.SendAsync(request).ConfigureAwait(false);
-                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                using var response = await client.SendAsync(request).ConfigureAwait(false);
 
-                if (!response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    throw ServiceException.FromJson(content);
+                    var content = await response.Content.ReadAsStringAsync();
+                    storedTokenTime = DateTime.Now;
+                    storedTokenValue = $"Bearer {content}";
+
+                    return storedTokenValue;
                 }
 
-                storedTokenTime = DateTime.Now;
-                storedTokenValue = $"Bearer {content}";
+                throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 throw new ServiceException(500, ex.Message);
             }
-
-            return storedTokenValue;
-        }
-
-        public void Dispose()
-        {
-            client.Dispose();
         }
     }
 }

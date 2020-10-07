@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using TranslatorService.Models.Translation;
 
@@ -22,14 +23,14 @@ namespace TranslatorService
         /// <remarks>
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
         /// </remarks>
-        string SubscriptionKey { get; set; }
+        string? SubscriptionKey { get; set; }
 
         /// <summary>
         /// Gets or sets the the Azure region of the the Translator service.
         /// </summary>
         /// <remarks>This value is used to automatically set the <see cref="AuthenticationUri"/> property. If the paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.
         /// </remarks>
-        string Region { get; set; }
+        string? Region { get; set; }
 
         /// <summary>
         /// Gets or sets the string representing the supported language code to translate the text in.
@@ -50,6 +51,22 @@ namespace TranslatorService
         /// <summary>
         /// Initializes the <see cref="TranslatorClient"/> class by getting an access token for a specified region service, using the given language.
         /// </summary>
+        /// <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
+        /// <param name="language">A string representing the supported language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
+        /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
+        /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
+        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <remarks>
+        /// <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
+        /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+        /// </remarks>
+        Task InitializeAsync(string? subscriptionKey, string? region, string? language = null);
+
+        /// <summary>
+        /// Initializes the <see cref="TranslatorClient"/> class by getting an access token for a specified region service, using an existing <see cref="HttpClient"/>, using the given language.
+        /// </summary>
+        /// <param name="httpClient">An instance of the <see cref="HttpClient"/> object to use to network communication.</param>
         /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
         /// <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
         /// <param name="language">A string representing the supported language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
@@ -60,7 +77,8 @@ namespace TranslatorService
         /// <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
         /// </remarks>
-        Task InitializeAsync(string region, string subscriptionKey, string language = null);
+        /// <seealso cref="HttpClient"/>
+        Task InitializeAsync(HttpClient? httpClient, string? region, string? subscriptionKey, string? language = null);
 
         /// <summary>
         /// Detects the language of a text.
@@ -126,7 +144,7 @@ namespace TranslatorService
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-languages.
         /// </para>
         /// </remarks>
-        Task<IEnumerable<ServiceLanguage>> GetLanguagesAsync(string language = null);
+        Task<IEnumerable<ServiceLanguage>> GetLanguagesAsync(string? language = null);
 
         /// <summary>
         /// Translates a text string into the specified language.
@@ -153,7 +171,7 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="Language"/>
         /// <seealso cref="GetLanguagesAsync"/>
-        Task<TranslationResponse> TranslateAsync(string input, string to = null);
+        Task<TranslationResponse> TranslateAsync(string input, string? to = null);
 
         /// <summary>
         /// Translates a text string into the specified languages.
@@ -311,7 +329,7 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="Language"/>
         /// <seealso cref="GetLanguagesAsync"/>
-        Task<IEnumerable<TranslationResponse>> TranslateAsync(IEnumerable<string> input, IEnumerable<string> to = null);
+        Task<IEnumerable<TranslationResponse>> TranslateAsync(IEnumerable<string> input, IEnumerable<string>? to = null);
 
         /// <summary>
         /// Translates a list of sentences into the specified languages.

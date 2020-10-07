@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using TranslatorService.Models.Speech;
 
@@ -18,12 +19,12 @@ namespace TranslatorService
         /// <summary>
         /// Gets or sets the request URI for the Text-to-speech service.
         /// </summary>
-        string TextToSpeechRequestUri { get; set; }
+        string? TextToSpeechRequestUri { get; set; }
 
         /// <summary>
         /// Gets or sets the request URI for the Speech-to-text service.
         /// </summary>
-        string SpeechToTextRequestUri { get; set; }
+        string? SpeechToTextRequestUri { get; set; }
 
         /// <summary>
         /// Gets or sets the Subscription key that is necessary to use <strong>Microsoft Translator Service</strong>.
@@ -32,7 +33,7 @@ namespace TranslatorService
         /// <remarks>
         /// <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
         /// </remarks>
-        string SubscriptionKey { get; set; }
+        string? SubscriptionKey { get; set; }
 
         /// <summary>
         /// Initializes the <see cref="SpeechClient"/> class by getting an access token for the service.
@@ -46,8 +47,8 @@ namespace TranslatorService
         /// <summary>
         /// Initializes the <see cref="SpeechClient"/> class by getting an access token for the service.
         /// </summary>
-        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/>, <see cref="TextToSpeechRequestUri"/> and <see cref="SpeechToTextRequestUri"/> properties.</param>
         /// <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/>, <see cref="TextToSpeechRequestUri"/> and <see cref="SpeechToTextRequestUri"/> properties.</param>
         /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
         /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
@@ -55,7 +56,23 @@ namespace TranslatorService
         /// <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
         /// <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
         /// </remarks>
-        Task InitializeAsync(string region, string subscriptionKey);
+        Task InitializeAsync(string? subscriptionKey, string? region);
+
+        /// <summary>
+        /// Initializes the <see cref="SpeechClient"/> class by getting an access token for the service using an existing <see cref="HttpClient"/>.
+        /// </summary>
+        /// <param name="httpClient">An instance of the <see cref="HttpClient"/> object to use to network communication.</param>
+        /// <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/>, <see cref="TextToSpeechRequestUri"/> and <see cref="SpeechToTextRequestUri"/> properties.</param>
+        /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
+        /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
+        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <remarks>
+        /// <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
+        /// <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
+        /// </remarks>
+        /// <seealso cref="HttpClient"/>
+        Task InitializeAsync(HttpClient httpClient, string? subscriptionKey, string? region);
 
         /// <summary>
         /// Sends the specified text to be spoken to the TTS service and saves the response audio to a file.

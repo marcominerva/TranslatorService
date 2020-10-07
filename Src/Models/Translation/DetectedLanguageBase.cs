@@ -19,7 +19,7 @@ namespace TranslatorService.Models.Translation
         /// <summary>
         /// Gets or sets the code of the detected language.
         /// </summary>
-        public string Language { get; set; }
+        public string Language { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.

@@ -11,17 +11,17 @@ namespace TranslatorService.Models.Translation
         /// <summary>
         /// Gets or sets the language code.
         /// </summary>
-        public string Code { get; set; }
+        public string Code { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the language friendly name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the display name of the language in the locale native for this language.
         /// </summary>
-        public string NativeName { get; set; }
+        public string NativeName { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the directionality, which is rtl for right-to-left languages or ltr for left-to-right languages.
