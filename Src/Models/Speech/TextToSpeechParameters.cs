@@ -44,7 +44,7 @@ namespace TranslatorService.Models.Speech
         /// <summary>
         /// Gets or sets the text to speech.
         /// </summary>
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the headers.

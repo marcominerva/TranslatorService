@@ -28,14 +28,14 @@ namespace TranslatorService
         private readonly HttpClient client;
         private readonly HttpClientHandler handler;
 
-        private static SpeechClient instance;
+        private static SpeechClient instance = null!;
         /// <summary>
         /// Gets public singleton property.
         /// </summary>
-        public static SpeechClient Instance => instance ?? (instance = new SpeechClient());
+        public static SpeechClient Instance => instance ??= new SpeechClient();
 
-        private AzureAuthToken authToken;
-        private string authorizationHeaderValue;
+        private AzureAuthToken authToken = null!;
+        private string authorizationHeaderValue = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpeechClient"/> class.
@@ -45,7 +45,7 @@ namespace TranslatorService
         /// <remarks>
         /// <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
         /// </remarks>
-        public SpeechClient(string region = null, string subscriptionKey = null)
+        public SpeechClient(string? region = null, string? subscriptionKey = null)
         {
             handler = new HttpClientHandler { CookieContainer = new CookieContainer(), UseProxy = false };
             client = new HttpClient(handler);
@@ -54,7 +54,7 @@ namespace TranslatorService
         }
 
         /// <inheritdoc/>
-        public string SubscriptionKey
+        public string? SubscriptionKey
         {
             get => authToken.SubscriptionKey;
             set => authToken.SubscriptionKey = value;
@@ -68,10 +68,10 @@ namespace TranslatorService
         }
 
         /// <inheritdoc/>
-        public string TextToSpeechRequestUri { get; set; }
+        public string? TextToSpeechRequestUri { get; set; }
 
         /// <inheritdoc/>
-        public string SpeechToTextRequestUri { get; set; }
+        public string? SpeechToTextRequestUri { get; set; }
 
         /// <inheritdoc/>
         public async Task<Stream> SpeakAsync(TextToSpeechParameters input)
@@ -105,7 +105,7 @@ namespace TranslatorService
             var genderValue = input.VoiceType == Gender.Male ? "Male" : "Female";
             using var request = new HttpRequestMessage(HttpMethod.Post, TextToSpeechRequestUri)
             {
-                Content = new StringContent(GenerateSsml(input.Language, genderValue, input.VoiceName, input.Text))
+                Content = new StringContent(GenerateSsml(input.Language, genderValue, input.VoiceName, input.Text!))
             };
 
             // Checks if it is necessary to obtain/update access token.
@@ -200,12 +200,11 @@ namespace TranslatorService
         /// <inheritdoc/>
         public void Dispose()
         {
-            authToken.Dispose();
             client.Dispose();
             handler.Dispose();
         }
 
-        private void Initialize(string region, string subscriptionKey)
+        private void Initialize(string? region, string? subscriptionKey)
         {
             authToken = new AzureAuthToken(client, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);
             TextToSpeechRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseTextToSpeechRequestUri, region) : null;
@@ -236,7 +235,7 @@ namespace TranslatorService
         {
             return new PushStreamContent(async (outputStream, httpContext, transportContext) =>
             {
-                byte[] buffer = null;
+                byte[]? buffer = null;
                 var bytesRead = 0;
 
                 using (outputStream) //must close/dispose output stream to notify that content is done

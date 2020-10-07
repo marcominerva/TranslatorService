@@ -1097,34 +1097,6 @@
         <member name="M:TranslatorService.TranslatorClient.Dispose">
             <inheritdoc/>
         </member>
-        <member name="T:System.Text.Json.Serialization.JsonStringEnumMemberConverter">
-            <summary>
-            <see cref="T:System.Text.Json.Serialization.JsonConverterFactory"/> to convert enums to and from strings, respecting <see cref="T:System.Runtime.Serialization.EnumMemberAttribute"/> decorations. Supports nullable enums.
-            </summary>
-        </member>
-        <member name="M:System.Text.Json.Serialization.JsonStringEnumMemberConverter.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Text.Json.Serialization.JsonStringEnumMemberConverter"/> class.
-            </summary>
-        </member>
-        <member name="M:System.Text.Json.Serialization.JsonStringEnumMemberConverter.#ctor(System.Text.Json.JsonNamingPolicy,System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Text.Json.Serialization.JsonStringEnumMemberConverter"/> class.
-            </summary>
-            <param name="namingPolicy">
-            Optional naming policy for writing enum values.
-            </param>
-            <param name="allowIntegerValues">
-            True to allow undefined enum values. When true, if an enum value isn't
-            defined it will output as a number rather than a string.
-            </param>
-        </member>
-        <member name="M:System.Text.Json.Serialization.JsonStringEnumMemberConverter.CanConvert(System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:System.Text.Json.Serialization.JsonStringEnumMemberConverter.CreateConverter(System.Type,System.Text.Json.JsonSerializerOptions)">
-            <inheritdoc/>
-        </member>
         <member name="T:System.Net.Http.PushStreamContent">
             <summary>
             Provides an <see cref="T:System.Net.Http.HttpContent"/> implementation that exposes an output <see cref="T:System.IO.Stream"/>

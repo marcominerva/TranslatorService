@@ -6,7 +6,7 @@ namespace TranslatorService.Models.Translation
     /// <summary>
     /// Language directionality, which is rtl for right-to-left languages or ltr for left-to-right languages.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    [JsonConverter(typeof(StringEnumMemberConverter))]
     public enum LanguageDirectionality
     {
         /// <summary>

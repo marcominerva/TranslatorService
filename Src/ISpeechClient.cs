@@ -18,12 +18,12 @@ namespace TranslatorService
         /// <summary>
         /// Gets or sets the request URI for the Text-to-speech service.
         /// </summary>
-        string TextToSpeechRequestUri { get; set; }
+        string? TextToSpeechRequestUri { get; set; }
 
         /// <summary>
         /// Gets or sets the request URI for the Speech-to-text service.
         /// </summary>
-        string SpeechToTextRequestUri { get; set; }
+        string? SpeechToTextRequestUri { get; set; }
 
         /// <summary>
         /// Gets or sets the Subscription key that is necessary to use <strong>Microsoft Translator Service</strong>.
@@ -32,7 +32,7 @@ namespace TranslatorService
         /// <remarks>
         /// <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
         /// </remarks>
-        string SubscriptionKey { get; set; }
+        string? SubscriptionKey { get; set; }
 
         /// <summary>
         /// Initializes the <see cref="SpeechClient"/> class by getting an access token for the service.

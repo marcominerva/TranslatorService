@@ -27,12 +27,12 @@ namespace TranslatorService.Models.Speech
         /// </summary>
         public long Duration { get; set; }
 
-        private string displayText;
+        private string? displayText;
         /// <summary>
         /// Gets or sets the top result (by confidence), returned in Display Form.
         /// </summary>
         /// <remarks>The display form adds punctuation and capitalization to recognition results, making it the most appropriate form for applications that display the spoken text.</remarks>
-        public string DisplayText
+        public string? DisplayText
         {
             get => displayText ?? Alternatives?.FirstOrDefault()?.Display;
             set => displayText = value;
@@ -42,6 +42,6 @@ namespace TranslatorService.Models.Speech
         /// A list of alternative interpretations of the same speech recognition result. These results are ranked from most likely to least likely The first entry is the same as the main recognition result.
         /// </summary>
         [JsonPropertyName("NBest")]
-        public IEnumerable<RecognitionAlternative> Alternatives { get; set; }
+        public IEnumerable<RecognitionAlternative> Alternatives { get; set; } = new List<RecognitionAlternative>();
     }
 }

@@ -6,7 +6,7 @@ namespace TranslatorService.Models.Speech
     /// <summary>
     /// Recognition status.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    [JsonConverter(typeof(StringEnumMemberConverter))]
     public enum RecognitionStatus
     {
         /// <summary>
