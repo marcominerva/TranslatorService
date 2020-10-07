@@ -25,8 +25,8 @@ namespace TranslatorService
         private const int BufferSize = 1024;
         private const int MaxTextLengthForSpeech = 800;
 
-        private readonly HttpClient client;
-        private readonly HttpClientHandler handler;
+        private HttpClient httpClient = null!;
+        private bool innerHttpClient = false;
 
         private static SpeechClient instance = null!;
         /// <summary>
@@ -38,20 +38,41 @@ namespace TranslatorService
         private string authorizationHeaderValue = null!;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpeechClient"/> class.
+        /// Initializes a new instance of the <see cref="SpeechClient"/> class using an existing <see cref="HttpClient"/>.
         /// </summary>
-        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/>, <see cref="TextToSpeechRequestUri"/> and <see cref="SpeechToTextRequestUri"/> properties.</param>
-        /// <param name="subscriptionKey">The Subscription Key to use the service (it must be created in the specified <paramref name="region"/>).</param>
+        /// <param name="httpClient">An instance of the <see cref="HttpClient"/> object to use to network communication.</param>        
         /// <remarks>
         /// <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
         /// </remarks>
-        public SpeechClient(string? region = null, string? subscriptionKey = null)
-        {
-            handler = new HttpClientHandler { CookieContainer = new CookieContainer(), UseProxy = false };
-            client = new HttpClient(handler);
+        /// <seealso cref="ISpeechClient"/>
+        /// <seealso cref="HttpClient"/>
+        public SpeechClient(HttpClient httpClient)
+            => Initialize(httpClient, null, null);
 
-            Initialize(region, subscriptionKey);
-        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpeechClient"/> class.
+        /// </summary>
+        /// <param name="subscriptionKey">The Subscription Key to use the service (it must be created in the specified <paramref name="region"/>).</param>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/>, <see cref="TextToSpeechRequestUri"/> and <see cref="SpeechToTextRequestUri"/> properties.</param>
+        /// <remarks>
+        /// <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
+        /// </remarks>
+        public SpeechClient(string? subscriptionKey = null, string? region = null)
+            => Initialize(null, subscriptionKey, region);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpeechClient"/> class using an existing <see cref="HttpClient"/>.
+        /// </summary>
+        /// <param name="httpClient">An instance of the <see cref="HttpClient"/> object to use to network communication.</param>
+        /// <param name="subscriptionKey">The Subscription Key to use the service (it must be created in the specified <paramref name="region"/>).</param>
+        /// <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="AuthenticationUri"/>, <see cref="TextToSpeechRequestUri"/> and <see cref="SpeechToTextRequestUri"/> properties.</param>
+        /// <remarks>
+        /// <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
+        /// </remarks>
+        /// <seealso cref="ISpeechClient"/>
+        /// <seealso cref="HttpClient"/>
+        public SpeechClient(HttpClient httpClient, string subscriptionKey, string? region = null)
+            => Initialize(httpClient, subscriptionKey, region);
 
         /// <inheritdoc/>
         public string? SubscriptionKey
@@ -96,29 +117,28 @@ namespace TranslatorService
                 throw new ArgumentException($"Input text cannot be null or longer than {MaxTextLengthForSpeech} characters");
             }
 
-            client.DefaultRequestHeaders.Clear();
-            foreach (var header in input.Headers)
-            {
-                client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
-            }
-
             var genderValue = input.VoiceType == Gender.Male ? "Male" : "Female";
             using var request = new HttpRequestMessage(HttpMethod.Post, TextToSpeechRequestUri)
             {
                 Content = new StringContent(GenerateSsml(input.Language, genderValue, input.VoiceName, input.Text!))
             };
 
+            foreach (var header in input.Headers)
+            {
+                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+
             // Checks if it is necessary to obtain/update access token.
             await CheckUpdateTokenAsync().ConfigureAwait(false);
             request.Headers.Add(Constants.AuthorizationHeader, authorizationHeaderValue);
 
-            using var responseMessage = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
             try
             {
-                if (responseMessage.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    var httpStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                    var httpStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     var result = new MemoryStream();
                     await httpStream.CopyToAsync(result);
                     result.Position = 0;
@@ -126,7 +146,7 @@ namespace TranslatorService
                     return result;
                 }
 
-                throw new ServiceException((int)responseMessage.StatusCode, responseMessage.ReasonPhrase);
+                throw new ServiceException((int)response.StatusCode, response.ReasonPhrase);
             }
             catch (Exception ex)
             {
@@ -161,7 +181,7 @@ namespace TranslatorService
             await CheckUpdateTokenAsync().ConfigureAwait(false);
 
             var requestUri = $"{SpeechToTextRequestUri}?language={language}&format={recognitionFormat}&profanity={profanity}";
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+            using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
 
             request.Headers.TransferEncodingChunked = true;
             request.Headers.ExpectContinue = true;
@@ -170,7 +190,7 @@ namespace TranslatorService
             request.Headers.Add(Constants.AuthorizationHeader, authorizationHeaderValue);
 
             request.Content = PopulateSpeechToTextRequestContent(audioStream);
-            using var response = await client.SendAsync(request).ConfigureAwait(false);
+            using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.Continue)
             {
@@ -186,22 +206,39 @@ namespace TranslatorService
         public Task InitializeAsync() => CheckUpdateTokenAsync();
 
         /// <inheritdoc/>
-        public Task InitializeAsync(string region, string subscriptionKey)
+        public Task InitializeAsync(string? subscriptionKey, string? region)
+            => InitializeAsync(null, subscriptionKey, region);
+
+        /// <inheritdoc/>
+        public Task InitializeAsync(HttpClient? httpClient, string? subscriptionKey, string? region)
         {
-            Initialize(region, subscriptionKey);
+            Initialize(httpClient, subscriptionKey, region);
             return InitializeAsync();
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            client.Dispose();
-            handler.Dispose();
+            if (innerHttpClient)
+            {
+                httpClient.Dispose();
+            }
         }
 
-        private void Initialize(string? region, string? subscriptionKey)
+        private void Initialize(HttpClient? httpClient, string? subscriptionKey, string? region)
         {
-            authToken = new AzureAuthToken(client, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);
+            if (httpClient == null)
+            {
+                this.httpClient = new HttpClient();
+                innerHttpClient = true;
+            }
+            else
+            {
+                this.httpClient = httpClient;
+                innerHttpClient = false;
+            }
+
+            authToken = new AzureAuthToken(this.httpClient, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);
             TextToSpeechRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseTextToSpeechRequestUri, region) : null;
             SpeechToTextRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseSpeechToTextRequestUri, region) : null;
         }
@@ -223,6 +260,7 @@ namespace TranslatorService
                                       new XAttribute(XNamespace.Xml + "gender", gender),
                                       new XAttribute("name", name),
                                       text)));
+
             return ssmlDoc.ToString();
         }
 

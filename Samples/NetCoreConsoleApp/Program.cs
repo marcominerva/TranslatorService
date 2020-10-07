@@ -11,7 +11,7 @@ namespace NetCoreConsoleApp
         public static async Task Main(string[] args)
         {
             // Initializes the speech client.
-            var speechClient = new SpeechClient(ServiceKeys.SpeechRegion, ServiceKeys.SpeechSubscriptionKey);
+            using var speechClient = new SpeechClient(ServiceKeys.SpeechSubscriptionKey, ServiceKeys.SpeechRegion);
 
             try
             {
@@ -26,9 +26,11 @@ namespace NetCoreConsoleApp
                 {
                     Language = "en-US",
                     VoiceType = Gender.Female,
-                    VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)",
-                    Text = "Hello everyone! Today is really a beautiful day.",
+                    VoiceName = "en-US-AriaNeural",
+                    Text = "Hello everyone! Today is really a beautiful day."
                 });
+
+                File.WriteAllBytes(@"D:\Test.mp3", (speakResponse as MemoryStream).ToArray());
             }
             catch (ServiceException ex)
             {
@@ -36,7 +38,7 @@ namespace NetCoreConsoleApp
             }
 
             // Initializes the translator client.
-            var translatorClient = new TranslatorClient(ServiceKeys.TranslatorRegion, ServiceKeys.TranslatorSubscriptionKey);
+            using var translatorClient = new TranslatorClient(ServiceKeys.TranslatorSubscriptionKey, ServiceKeys.TranslatorRegion);
 
             do
             {
@@ -70,8 +72,6 @@ namespace NetCoreConsoleApp
                 }
 
             } while (true);
-
-            translatorClient.Dispose();
         }
     }
 }

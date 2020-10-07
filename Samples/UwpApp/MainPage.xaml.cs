@@ -18,7 +18,7 @@ namespace UwpApp
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            translatorClient = new TranslatorClient(ServiceKeys.TranslatorRegion, ServiceKeys.TranslatorSubscriptionKey);
+            translatorClient = new TranslatorClient(ServiceKeys.TranslatorSubscriptionKey, ServiceKeys.TranslatorRegion);
 
             try
             {
