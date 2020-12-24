@@ -21,7 +21,7 @@ try
         Language = "en-US",
         VoiceType = Gender.Female,
         VoiceName = "en-US-AriaNeural",
-        Text = "Hello everyone! Today is really a beautiful day."
+        Text = "Hello everyone! Today is really a nice day."
     });
 
     // speakResponse contains the stream of the audio.
