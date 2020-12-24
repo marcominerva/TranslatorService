@@ -19,12 +19,12 @@ It's usage is straightforward. For example, if you want to translate text:
     var translatorClient = new TranslatorClient("<subscription_key>");
 
     // Use a Regional Translation Service
-    var translatorClient = new TranslatorClient("subscription_key>", "<region>");
+    var translatorClient = new TranslatorClient("<subscription_key>", "<region>");
     
     // Use an external HttpClient (i.e. coming from IHttpClientFactory)
-    var translatorClient = new TranslatorClient(httpClient, "subscription_key>", "<region>");
+    var translatorClient = new TranslatorClient(httpClient, "<subscription_key>", "<region>");
     
-    var response = await translatorClient.TranslateAsync("Today is really a beautiful day.", to: "it");
+    var response = await translatorClient.TranslateAsync("Today is really a nice day.", to: "it");
     Console.WriteLine(
         $"Detected source language: {response.DetectedLanguage.Language} ({response.DetectedLanguage.Score:P2})");
     
@@ -35,7 +35,7 @@ It's usage is straightforward. For example, if you want to translate text:
     var speechClient = new SpeechClient("<subscription_key>", "<region>");
     
     // Use an external HttpClient (i.e. coming from IHttpClientFactory)
-    var speechClient = new SpeechClient(httpClient, "subscription_key>", "<region>");
+    var speechClient = new SpeechClient(httpClient, "<subscription_key>", "<region>");
 
     var response = await speechClient.RecognizeAsync(audioStream, "en-US", RecognitionResultFormat.Detailed);
     Console.WriteLine($"Recognition Result: {response.RecognitionStatus}");
@@ -46,14 +46,14 @@ It's usage is straightforward. For example, if you want to translate text:
     var speechClient = new SpeechClient("<subscription_key>", "<region>");
     
     // Use an external HttpClient (i.e. coming from IHttpClientFactory)
-    var speechClient = new SpeechClient(httpClient, "subscription_key>", "<region>");
+    var speechClient = new SpeechClient(httpClient, "<subscription_key>", "<region>");
 
     var responseStream = await speechClient.SpeakAsync(new TextToSpeechParameters
         {
             Language = "en-US",
             VoiceType = Gender.Female,
             VoiceName = "en-US-AriaNeural",
-            Text = "Hello everyone! Today is really a beautiful day.",
+            Text = "Hello everyone! Today is really a nice day.",
         });
 
 In the [Samples](https://github.com/marcominerva/TranslatorService/tree/master/Samples) folder are available samples for .NET Core and the Universal Windows Platform.
