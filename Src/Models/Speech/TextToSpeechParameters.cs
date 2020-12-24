@@ -23,29 +23,29 @@ namespace TranslatorService.Models.Speech
         /// <summary>
         /// Gets or sets the audio output format.
         /// </summary>
-        public AudioOutputFormat OutputFormat { get; set; }
+        public AudioOutputFormat OutputFormat { get; init; }
 
         /// <summary>
         /// Gets or sets the language of the text.
         /// </summary>
-        public string Language { get; set; }
+        public string Language { get; init; }
 
         /// <summary>
         /// Gets or sets the type of the voice: male/female.
         /// </summary>
-        public Gender VoiceType { get; set; }
+        public Gender VoiceType { get; init; }
 
         /// <summary>
         /// Gets or sets the name of the voice.
         /// </summary>
         /// <remarks>Voices list is available at https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/supported-languages#text-to-speech.
         /// </remarks>
-        public string VoiceName { get; set; }
+        public string VoiceName { get; init; }
 
         /// <summary>
         /// Gets or sets the text to speech.
         /// </summary>
-        public string Text { get; set; } = string.Empty;
+        public string Text { get; init; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the headers.
@@ -83,11 +83,11 @@ namespace TranslatorService.Models.Speech
 
                 toReturn.Add(new KeyValuePair<string, string>("X-Microsoft-OutputFormat", outputFormat));
                 // The software originating the request
-                toReturn.Add(new KeyValuePair<string, string>("User-Agent", "TextToSpeechClient"));
+                toReturn.Add(new KeyValuePair<string, string>("User-Agent", "TranslatorService.SpeechClient"));
 
                 return toReturn;
             }
-            set
+            init
             {
                 Headers = value;
             }

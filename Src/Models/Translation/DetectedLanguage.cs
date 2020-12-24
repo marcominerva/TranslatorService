@@ -12,11 +12,11 @@ namespace TranslatorService.Models.Translation
         /// <summary>
         /// Gets or sets a value indicating whether the detected language is one of the languages supported for text translation.
         /// </summary>
-        public bool IsTranslationSupported { get; set; }
+        public bool IsTranslationSupported { get; init; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the detected language is one of the languages supported for transliteration.
         /// </summary>
-        public bool IsTransliterationSupported { get; set; }
+        public bool IsTransliterationSupported { get; init; }
     }
 }

@@ -19,12 +19,12 @@ namespace TranslatorService.Models.Translation
         /// <summary>
         /// Gets or sets the code of the detected language.
         /// </summary>
-        public string Language { get; set; } = null!;
+        public string Language { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets a float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.
         /// </summary>
-        public float Score { get; set; }
+        public float Score { get; init; }
 
         /// <inheritdoc/>
         public override string ToString() => Language;

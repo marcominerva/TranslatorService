@@ -184,7 +184,7 @@ namespace TranslatorService
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadFromJsonAsync<IEnumerable<DetectedLanguageResponse>>(JsonOptions.JsonSerializerOptions).ConfigureAwait(false);
-                return responseContent;
+                return responseContent!;
             }
 
             throw await TranslatorServiceException.ReadFromResponseAsync(response).ConfigureAwait(false);
@@ -214,7 +214,7 @@ namespace TranslatorService
 
                 using var jsonDocument = JsonDocument.Parse(contentStream);
                 var jsonContent = jsonDocument.RootElement.GetProperty("translation");
-                var responseContent = JsonSerializer.Deserialize<Dictionary<string, ServiceLanguage>>(jsonContent.ToString(), JsonOptions.JsonSerializerOptions).ToList();
+                var responseContent = JsonSerializer.Deserialize<Dictionary<string, ServiceLanguage>>(jsonContent.ToString()!, JsonOptions.JsonSerializerOptions).ToList();
                 responseContent.ForEach(r => r.Value.Code = r.Key);
 
                 return responseContent.Select(r => r.Value).OrderBy(r => r.Name).ToList();
@@ -288,7 +288,7 @@ namespace TranslatorService
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadFromJsonAsync<IEnumerable<TranslationResponse>>(JsonOptions.JsonSerializerOptions).ConfigureAwait(false);
-                return responseContent;
+                return responseContent!;
             }
 
             throw await TranslatorServiceException.ReadFromResponseAsync(response).ConfigureAwait(false);

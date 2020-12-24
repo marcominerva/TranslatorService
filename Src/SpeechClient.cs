@@ -196,7 +196,7 @@ namespace TranslatorService
             {
                 // If we get a valid response (non-null, no exception, and not forbidden), return the response.
                 var responseContent = await response.Content.ReadFromJsonAsync<SpeechRecognitionResponse>(JsonOptions.JsonSerializerOptions).ConfigureAwait(false);
-                return responseContent;
+                return responseContent!;
             }
 
             throw await TranslatorServiceException.ReadFromResponseAsync(response);

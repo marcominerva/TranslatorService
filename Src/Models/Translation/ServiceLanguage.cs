@@ -11,23 +11,23 @@ namespace TranslatorService.Models.Translation
         /// <summary>
         /// Gets or sets the language code.
         /// </summary>
-        public string Code { get; set; } = null!;
+        public string Code { get; internal set; } = null!;
 
         /// <summary>
         /// Gets or sets the language friendly name.
         /// </summary>
-        public string Name { get; set; } = null!;
+        public string Name { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the display name of the language in the locale native for this language.
         /// </summary>
-        public string NativeName { get; set; } = null!;
+        public string NativeName { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the directionality, which is rtl for right-to-left languages or ltr for left-to-right languages.
         /// </summary>
         [JsonPropertyName("dir")]
-        public LanguageDirectionality Directionality { get; set; }
+        public LanguageDirectionality Directionality { get; init; }
 
         /// <summary>
         /// Returns the language friendly name.
