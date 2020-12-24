@@ -16,10 +16,13 @@ The library is available on [NuGet](https://www.nuget.org/packages/TranslatorSer
 It's usage is straightforward. For example, if you want to translate text:
 
     // Use a Global Translator Service
-    var translatorClient = new TranslatorService.TranslatorClient("<subscription_key>");
+    var translatorClient = new TranslatorClient("<subscription_key>");
 
     // Use a Regional Translation Service
-    var translatorClient = new TranslatorService.TranslatorClient("<region>", "subscription_key>");
+    var translatorClient = new TranslatorClient("subscription_key>", "<region>");
+    
+    // Use an external HttpClient (i.e. coming from IHttpClientFactory)
+    var translatorClient = new TranslatorClient(httpClient, "subscription_key>", "<region>");
     
     var response = await translatorClient.TranslateAsync("Today is really a beautiful day.", to: "it");
     Console.WriteLine(
@@ -29,7 +32,10 @@ It's usage is straightforward. For example, if you want to translate text:
 
 **Speech Recognition**
 
-    var speechClient = new SpeechClient("<region>", "<subscription_key>");
+    var speechClient = new SpeechClient("<subscription_key>", "<region>");
+    
+    // Use an external HttpClient (i.e. coming from IHttpClientFactory)
+    var speechClient = new SpeechClient(httpClient, "subscription_key>", "<region>");
 
     var response = await speechClient.RecognizeAsync(audioStream, "en-US", RecognitionResultFormat.Detailed);
     Console.WriteLine($"Recognition Result: {response.RecognitionStatus}");
@@ -37,13 +43,16 @@ It's usage is straightforward. For example, if you want to translate text:
 
 **Speech Synthesis**
 
-    var speechClient = new SpeechClient("<region>", "<subscription_key>");
+    var speechClient = new SpeechClient("<subscription_key>", "<region>");
+    
+    // Use an external HttpClient (i.e. coming from IHttpClientFactory)
+    var speechClient = new SpeechClient(httpClient, "subscription_key>", "<region>");
 
     var responseStream = await speechClient.SpeakAsync(new TextToSpeechParameters
         {
             Language = "en-US",
             VoiceType = Gender.Female,
-            VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)",
+            VoiceName = "en-US-AriaNeural",
             Text = "Hello everyone! Today is really a beautiful day.",
         });
 
