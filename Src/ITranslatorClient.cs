@@ -44,7 +44,7 @@ namespace TranslatorService
         /// </summary>
         /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="TranslatorServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
         /// <remarks>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</remarks>
         Task InitializeAsync();
 
@@ -56,7 +56,7 @@ namespace TranslatorService
         /// <param name="language">A string representing the supported language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
         /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="TranslatorServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
         /// <remarks>
         /// <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
@@ -72,7 +72,7 @@ namespace TranslatorService
         /// <param name="language">A string representing the supported language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="GetLanguagesAsync"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
         /// <returns>A <see cref="Task"/> that represents the initialize operation.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="TranslatorServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
         /// <remarks>
         /// <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
@@ -91,7 +91,7 @@ namespace TranslatorService
         /// <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
+        /// <exception cref="TranslatorServiceException">The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</exception>
         /// <remarks><para>This method performs a non-blocking request for language detection.</para>
         /// <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-detect.
         /// </para></remarks>
@@ -116,7 +116,7 @@ namespace TranslatorService
         /// <term>The <paramref name="input"/> array is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">
+        /// <exception cref="TranslatorServiceException">
         /// <list type="bullet">
         /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
         /// <term>The call to the method has encountered an unexpected error.</term>
@@ -134,7 +134,7 @@ namespace TranslatorService
         /// <param name="language">The language used to localize the language names. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="Language"/> property will be used.</param>
         /// <returns>An array of <see cref="ServiceLanguage"/> containing the language codes and names supported for translation by <strong>Microsoft Translator Service</strong>.</returns>
         /// <exception cref="ArgumentNullException">The <see cref="SubscriptionKey"/> property hasn't been set.</exception>
-        /// <exception cref="ServiceException">
+        /// <exception cref="TranslatorServiceException">
         /// <list type="bullet">
         /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
         /// <term>The call to the method has encountered an unexpected error.</term>
@@ -159,7 +159,7 @@ namespace TranslatorService
         /// </list>
         /// </exception>
         /// <exception cref="ArgumentException">The <paramref name="input"/> parameter is longer than 1000 characters.</exception>
-        /// <exception cref="ServiceException">
+        /// <exception cref="TranslatorServiceException">
         /// <list type="bullet">
         /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
         /// <term>The call to the method has encountered an unexpected error.</term>
@@ -187,7 +187,7 @@ namespace TranslatorService
         /// </list>
         /// </exception>
         /// <exception cref="ArgumentException">The <paramref name="input"/> parameter is longer than 1000 characters.</exception>
-        /// <exception cref="ServiceException">
+        /// <exception cref="TranslatorServiceException">
         /// <list type="bullet">
         /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
         /// <term>The call to the method has encountered an unexpected error.</term>
@@ -220,7 +220,7 @@ namespace TranslatorService
         /// <term>The <paramref name="input"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">
+        /// <exception cref="TranslatorServiceException">
         /// <list type="bullet">
         /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
         /// <term>The call to the method has encountered an unexpected error.</term>
@@ -253,7 +253,7 @@ namespace TranslatorService
         /// <term>The <paramref name="to"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">
+        /// <exception cref="TranslatorServiceException">
         /// <list type="bullet">
         /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
         /// <term>The call to the method has encountered an unexpected error.</term>
@@ -285,7 +285,7 @@ namespace TranslatorService
         /// <term>The <paramref name="to"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">
+        /// <exception cref="TranslatorServiceException">
         /// <list type="bullet">
         /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
         /// <term>The call to the method has encountered an unexpected error.</term>
@@ -317,7 +317,7 @@ namespace TranslatorService
         /// <term>The <paramref name="input"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">
+        /// <exception cref="TranslatorServiceException">
         /// <list type="bullet">
         /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
         /// <term>The call to the method has encountered an unexpected error.</term>
@@ -350,7 +350,7 @@ namespace TranslatorService
         /// <term>The <paramref name="input"/> array contains more than 25 elements.</term>
         /// </list>
         /// </exception>
-        /// <exception cref="ServiceException">
+        /// <exception cref="TranslatorServiceException">
         /// <list type="bullet">
         /// <term>The provided <see cref="SubscriptionKey"/> isn't valid or has expired.</term>
         /// <term>The call to the method has encountered an unexpected error.</term>

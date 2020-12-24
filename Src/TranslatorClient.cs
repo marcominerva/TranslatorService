@@ -29,7 +29,7 @@ namespace TranslatorService
         private const int MaxTextLengthForDetection = 10000;
 
         private HttpClient httpClient = null!;
-        private bool innerHttpClient = false;
+        private bool useInnerHttpClient = false;
 
         private static TranslatorClient instance = null!;
         /// <summary>
@@ -187,7 +187,7 @@ namespace TranslatorService
                 return responseContent;
             }
 
-            throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
+            throw await TranslatorServiceException.ReadFromResponseAsync(response).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -220,7 +220,7 @@ namespace TranslatorService
                 return responseContent.Select(r => r.Value).OrderBy(r => r.Name).ToList();
             }
 
-            throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
+            throw await TranslatorServiceException.ReadFromResponseAsync(response).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -291,7 +291,7 @@ namespace TranslatorService
                 return responseContent;
             }
 
-            throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
+            throw await TranslatorServiceException.ReadFromResponseAsync(response).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -313,7 +313,7 @@ namespace TranslatorService
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (innerHttpClient)
+            if (useInnerHttpClient)
             {
                 httpClient.Dispose();
             }
@@ -324,12 +324,12 @@ namespace TranslatorService
             if (httpClient == null)
             {
                 this.httpClient = new HttpClient();
-                innerHttpClient = true;
+                useInnerHttpClient = true;
             }
             else
             {
                 this.httpClient = httpClient;
-                innerHttpClient = false;
+                useInnerHttpClient = false;
             }
 
             authToken = new AzureAuthToken(this.httpClient, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);

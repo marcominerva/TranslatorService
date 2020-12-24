@@ -26,7 +26,7 @@ namespace TranslatorService
         private const int MaxTextLengthForSpeech = 800;
 
         private HttpClient httpClient = null!;
-        private bool innerHttpClient = false;
+        private bool useInnerHttpClient = false;
 
         private static SpeechClient instance = null!;
         /// <summary>
@@ -146,11 +146,11 @@ namespace TranslatorService
                     return result;
                 }
 
-                throw new ServiceException((int)response.StatusCode, response.ReasonPhrase);
+                throw new TranslatorServiceException((int)response.StatusCode, response.ReasonPhrase);
             }
             catch (Exception ex)
             {
-                throw new ServiceException(500, ex.GetBaseException().Message);
+                throw new TranslatorServiceException(500, ex.GetBaseException().Message);
             }
         }
 
@@ -199,7 +199,7 @@ namespace TranslatorService
                 return responseContent;
             }
 
-            throw await ServiceException.FromResponseAsync(response);
+            throw await TranslatorServiceException.ReadFromResponseAsync(response);
         }
 
         /// <inheritdoc/>
@@ -219,7 +219,7 @@ namespace TranslatorService
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (innerHttpClient)
+            if (useInnerHttpClient)
             {
                 httpClient.Dispose();
             }
@@ -230,12 +230,12 @@ namespace TranslatorService
             if (httpClient == null)
             {
                 this.httpClient = new HttpClient();
-                innerHttpClient = true;
+                useInnerHttpClient = true;
             }
             else
             {
                 this.httpClient = httpClient;
-                innerHttpClient = false;
+                useInnerHttpClient = false;
             }
 
             authToken = new AzureAuthToken(this.httpClient, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);

@@ -26,7 +26,7 @@ namespace UwpApp
                 TargetLanguage.ItemsSource = languages;
                 TargetLanguage.SelectedIndex = 0;
             }
-            catch (ServiceException ex)
+            catch (TranslatorServiceException ex)
             {
                 var messageDialog = new MessageDialog(ex.Message);
                 await messageDialog.ShowAsync();
@@ -51,7 +51,7 @@ namespace UwpApp
                 DetectedLanguage.Text = $"Detected source language: {translationResult.DetectedLanguage.Language} ({translationResult.DetectedLanguage.Score:P2})";
                 TranslationResult.Text = translationResult.Translation.Text;
             }
-            catch (ServiceException ex)
+            catch (TranslatorServiceException ex)
             {
                 var messageDialog = new MessageDialog(ex.Message);
                 await messageDialog.ShowAsync();

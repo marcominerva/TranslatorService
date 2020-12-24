@@ -32,7 +32,7 @@ namespace NetCoreConsoleApp
 
                 // speakResponse contains the stream of the audio.
             }
-            catch (ServiceException ex)
+            catch (TranslatorServiceException ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
             }
@@ -66,7 +66,7 @@ namespace NetCoreConsoleApp
                     Console.WriteLine($"Detected source language: {response.DetectedLanguage.Language} ({response.DetectedLanguage.Score:P2})");
                     Console.WriteLine(response.Translation.Text);
                 }
-                catch (ServiceException ex)
+                catch (TranslatorServiceException ex)
                 {
                     Console.WriteLine($"Error: {ex.Message}");
                 }

@@ -11,7 +11,7 @@ namespace TranslatorService
     /// </summary>
     /// <seealso cref="TranslatorClient"/>
     /// <seealso cref="SpeechClient"/>
-    public class ServiceException : Exception
+    public class TranslatorServiceException : Exception
     {
         /// <summary>
         /// Gets or sets the error status code.
@@ -19,14 +19,14 @@ namespace TranslatorService
         public int Code { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceException"/> class using the specified error message.
+        /// Initializes a new instance of the <see cref="TranslatorServiceException"/> class using the specified error message.
         /// </summary>
         /// <param name="code">The status code of the error.</param>
         /// <param name="message">Message that describes the error.</param>
-        public ServiceException(int code, string message)
+        public TranslatorServiceException(int code, string message)
             : base(message) => Code = code;
 
-        internal static async Task<ServiceException> FromResponseAsync(HttpResponseMessage response)
+        internal static async Task<TranslatorServiceException> ReadFromResponseAsync(HttpResponseMessage response)
         {
             using var responseStream = await response.Content.ReadAsStreamAsync();
 
@@ -34,13 +34,13 @@ namespace TranslatorService
             {
                 using var jsonDocument = await JsonDocument.ParseAsync(responseStream);
                 var error = jsonDocument.RootElement.GetProperty("error");
-                return new ServiceException(Convert.ToInt32(error.GetProperty("code").GetString()), error.GetProperty("message").GetString());
+                return new TranslatorServiceException(Convert.ToInt32(error.GetProperty("code").GetString()), error.GetProperty("message").GetString()!);
             }
             catch
             {
                 responseStream.Position = 0;
                 using var reader = new StreamReader(responseStream);
-                return new ServiceException(500, await reader.ReadToEndAsync() ?? "Unknown error");
+                return new TranslatorServiceException(500, await reader.ReadToEndAsync() ?? "Unknown error");
             }
         }
     }
