@@ -26,7 +26,7 @@ namespace TranslatorService
         /// </summary>
         private static readonly TimeSpan TokenCacheDuration = new TimeSpan(0, 8, 0);
 
-        private readonly HttpClient client;
+        private readonly HttpClient httpClient;
 
         private string storedTokenValue = string.Empty;
         private DateTime storedTokenTime = DateTime.MinValue;
@@ -62,7 +62,7 @@ namespace TranslatorService
         /// <exception cref="ArgumentNullException">The <em>serviceUrl</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</exception>
         public AzureAuthToken(HttpClient client, string? key, string? serviceUrl, string? region = null)
         {
-            this.client = client;
+            httpClient = client;
             SubscriptionKey = key;
             ServiceUrl = !string.IsNullOrWhiteSpace(serviceUrl) ? new Uri(serviceUrl) : throw new ArgumentNullException(nameof(serviceUrl));
             Region = region;
@@ -98,7 +98,7 @@ namespace TranslatorService
                 request.Headers.Add(OcpApimSubscriptionKeyHeader, SubscriptionKey);
                 request.Headers.Add(OcpApimSubscriptionRegionHeader, Region);
 
-                using var response = await client.SendAsync(request).ConfigureAwait(false);
+                using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -109,11 +109,11 @@ namespace TranslatorService
                     return storedTokenValue;
                 }
 
-                throw await ServiceException.FromResponseAsync(response).ConfigureAwait(false);
+                throw await TranslatorServiceException.ReadFromResponseAsync(response).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                throw new ServiceException(500, ex.Message);
+                throw new TranslatorServiceException(500, ex.Message);
             }
         }
     }

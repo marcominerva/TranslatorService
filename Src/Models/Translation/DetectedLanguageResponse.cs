@@ -12,6 +12,6 @@ namespace TranslatorService.Models.Translation
         /// <summary>
         /// Gets or sets an array of other possible languages.
         /// </summary>
-        public IEnumerable<DetectedLanguage> Alternatives { get; set; } = new List<DetectedLanguage>();
+        public IEnumerable<DetectedLanguage> Alternatives { get; init; } = new List<DetectedLanguage>();
     }
 }

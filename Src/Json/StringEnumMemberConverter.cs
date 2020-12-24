@@ -98,7 +98,7 @@ namespace System.Text.Json.Serialization
                 var token = reader.TokenType;
                 if (token == JsonTokenType.String)
                 {
-                    var enumString = reader.GetString();
+                    var enumString = reader.GetString()!;
 
                     // Case sensitive search attempted first.
                     if (transformedToRaw.TryGetValue(enumString, out var enumInfo))
@@ -190,7 +190,7 @@ namespace System.Text.Json.Serialization
                 {
                     var calculatedValue = 0UL;
 
-                    var Builder = new StringBuilder();
+                    var builder = new StringBuilder();
                     foreach (var enumItem in rawToTransformed)
                     {
                         enumInfo = enumItem.Value;
@@ -203,17 +203,17 @@ namespace System.Text.Json.Serialization
                         // Track the value to make sure all bits are represented.
                         calculatedValue |= enumInfo.RawValue;
 
-                        if (Builder.Length > 0)
+                        if (builder.Length > 0)
                         {
-                            Builder.Append(", ");
+                            builder.Append(", ");
                         }
 
-                        Builder.Append(enumInfo.Name);
+                        builder.Append(enumInfo.Name);
                     }
 
                     if (calculatedValue == rawValue)
                     {
-                        writer.WriteStringValue(Builder.ToString());
+                        writer.WriteStringValue(builder.ToString());
                         return;
                     }
                 }
