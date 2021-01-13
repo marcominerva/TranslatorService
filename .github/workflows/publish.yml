@@ -1,35 +1,43 @@
-name: Publish on NuGet
-
+name: Publish TranslatorService on NuGet
+ 
 on:
   push:
     branches: [ master ]
     paths: [ 'Src/**' ]
   workflow_dispatch:
-  
+
+env:
+  NETCORE_VERSION: '5.0.102'
+  PROJECT_NAME: Src 
+  PROJECT_FILE: TranslatorService.csproj
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
 jobs:
   build:
+    name: Publish on NuGet
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2.3.2
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
         
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1.6.0
+    - name: Setup .NET Core SDK ${{ env.NETCORE_VERSION }}
+      uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.402
+        dotnet-version: ${{ env.NETCORE_VERSION }}
         
     - name: Nerdbank.GitVersioning 
       uses: dotnet/nbgv@v0.3.1
       id: nbgv
       with:        
-        path: Src     
+        path: ${{ env.PROJECT_NAME }}     
 
     - name: Publish on NuGet        
       uses: rohith/publish-nuget@v2
       with:          
-        PROJECT_FILE_PATH: Src/TranslatorService.csproj
+        PROJECT_FILE_PATH: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_FILE }}'
         VERSION_STATIC: ${{ steps.nbgv.outputs.NuGetPackageVersion }}
+        TAG_FORMAT: v*
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
