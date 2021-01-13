@@ -1,4 +1,5 @@
 # Translator Service
+
 [![GitHub Super-Linter](https://github.com/marcominerva/TranslatorService/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 A lightweight library that uses Cognitive Translator Service for text translation and Cognitive Speech Service for text-to-speech and speech-to-text.
