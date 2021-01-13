@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  NETCORE_VERSION: '5.0.101'
+  NETCORE_VERSION: '5.0.102'
   PROJECT_NAME: Src 
   PROJECT_FILE: TranslatorService.csproj
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
