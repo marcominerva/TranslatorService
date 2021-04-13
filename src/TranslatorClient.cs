@@ -31,12 +31,6 @@ namespace TranslatorService
         private HttpClient httpClient = null!;
         private bool useInnerHttpClient = false;
 
-        private static TranslatorClient instance = null!;
-        /// <summary>
-        /// Gets public singleton property.
-        /// </summary>
-        public static TranslatorClient Instance => instance ??= new TranslatorClient();
-
         private AzureAuthToken authToken = null!;
         private string authorizationHeaderValue = null!;
 
