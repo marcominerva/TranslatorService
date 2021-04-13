@@ -241,5 +241,5 @@ _Pvt_Extensions
 *.vsext
 
 # Xml Documentation
-/TranslatorService/TranslatorService.xml
-/Samples/NetCoreConsoleApp/project.fragment.lock.json
+
+/src/TranslatorService.xml
