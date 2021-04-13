@@ -3,14 +3,14 @@ name: Publish TranslatorService on NuGet
 on:
   push:
     branches: [ master ]
-    paths: [ 'Src/**' ]
+    paths: [ 'src/**' ]
   workflow_dispatch:
 
 env:
-  NETCORE_VERSION: '5.0.102'
-  PROJECT_NAME: Src 
+  NETCORE_VERSION: '5.0.202'
+  PROJECT_NAME: src 
   PROJECT_FILE: TranslatorService.csproj
-  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+  NBGV_GitEngine: LibGit2
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
         dotnet-version: ${{ env.NETCORE_VERSION }}
         
     - name: Nerdbank.GitVersioning 
-      uses: dotnet/nbgv@v0.3.1
+      uses: dotnet/nbgv@v0.4
       id: nbgv
       with:        
         path: ${{ env.PROJECT_NAME }}     
