@@ -28,7 +28,7 @@ namespace TranslatorService
         private HttpClient httpClient = null!;
         private bool useInnerHttpClient = false;
 
-        private AzureAuthToken authToken = null!;
+        private DefaultTokenProvider authToken = null!;
         private string authorizationHeaderValue = null!;
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace TranslatorService
                 useInnerHttpClient = false;
             }
 
-            authToken = new AzureAuthToken(this.httpClient, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);
+            authToken = null; // new DefaultTokenProvider(this.httpClient, subscriptionKey, region);
             TextToSpeechRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseTextToSpeechRequestUri, region) : null;
             SpeechToTextRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseSpeechToTextRequestUri, region) : null;
         }

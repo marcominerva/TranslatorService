@@ -1,13 +1,14 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using TranslatorService.Settings;
 
 namespace TranslatorService
 {
     /// <summary>
     /// Client to call Cognitive Services Azure Auth Token service in order to get an access token.
     /// </summary>
-    internal class AzureAuthToken
+    public class DefaultTokenProvider : ITokenProvider
     {
         /// <summary>
         /// Name of header used to pass the subscription key to the token service
@@ -53,20 +54,32 @@ namespace TranslatorService
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureAuthToken"/> class, that is used to obtain access token
+        /// Initializes a new instance of the <see cref="DefaultTokenProvider"/> class, that is used to obtain access token
         /// </summary>
-        /// <param name="client">The instance of <see cref="HttpClient"/> used by the service.</param>
-        /// <param name="key">Subscription key to use to get an authentication token.</param>
-        /// <param name="serviceUrl">The URL of the authentication service.</param>
+        /// <param name="httpClient">The instance of <see cref="HttpClient"/> used by the service.</param>
+        public DefaultTokenProvider(HttpClient httpClient, TranslatorSettings settings)
+        //: this(httpClient, settings.SubscriptionKey, settings.Region)
+        {
+            this.httpClient = httpClient;
+            SubscriptionKey = settings.SubscriptionKey;
+            Region = settings.Region;
+            ServiceUrl = new Uri(!string.IsNullOrWhiteSpace(Region) ? string.Format(Constants.RegionAuthorizationUrl, Region) : Constants.GlobalAuthorizationUrl);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultTokenProvider"/> class, that is used to obtain access token
+        /// </summary>
+        /// <param name="httpClient">The instance of <see cref="HttpClient"/> used by the service.</param>
+        /// <param name="subscriptionKey">Subscription key to use to get an authentication token.</param>
         /// <param name="region">The Azure region of the the Translator service, if any.</param>
         /// <exception cref="ArgumentNullException">The <em>serviceUrl</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</exception>
-        public AzureAuthToken(HttpClient client, string? key, string? serviceUrl, string? region = null)
-        {
-            httpClient = client;
-            SubscriptionKey = key;
-            ServiceUrl = !string.IsNullOrWhiteSpace(serviceUrl) ? new Uri(serviceUrl) : throw new ArgumentNullException(nameof(serviceUrl));
-            Region = region;
-        }
+        //public DefaultTokenProvider(HttpClient httpClient, string? subscriptionKey, string? region = null)
+        //{
+        //    this.httpClient = httpClient;
+        //    SubscriptionKey = subscriptionKey;
+        //    ServiceUrl = new Uri(!string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl);
+        //    Region = region;
+        //}
 
         /// <summary>
         /// Gets a token for the specified subscription.
