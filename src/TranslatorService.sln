@@ -3,22 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslatorService", "src\TranslatorService.csproj", "{EC436EC0-DB8F-4353-B22B-8F81C35655F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslatorService", "TranslatorService\TranslatorService.csproj", "{EC436EC0-DB8F-4353-B22B-8F81C35655F5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{72744EE0-C7EF-424B-91C5-C11254C79CCB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreConsoleApp", "Samples\NetCoreConsoleApp\NetCoreConsoleApp.csproj", "{371E28CA-B9E1-4157-86DB-2D38D56AD042}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreConsoleApp", "..\Samples\NetCoreConsoleApp\NetCoreConsoleApp.csproj", "{371E28CA-B9E1-4157-86DB-2D38D56AD042}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UwpApp", "Samples\UwpApp\UwpApp.csproj", "{183EA51A-5B72-4642-BADB-766B3FF5F9E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UwpApp", "..\Samples\UwpApp\UwpApp.csproj", "{183EA51A-5B72-4642-BADB-766B3FF5F9E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AA4C50D9-356B-420D-935B-05AC89AF8B9D}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslatorService.DependencyInjection", "TranslatorService.DependencyInjection\TranslatorService.DependencyInjection.csproj", "{A9484FE2-5477-4FD5-9D46-736879E6B4D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslatorService.DependencyInjection", "TranslatorService.DependencyInjection\TranslatorService.DependencyInjection.csproj", "{A9484FE2-5477-4FD5-9D46-736879E6B4D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net50ConsoleApplication", "Net50ConsoleApplication\Net50ConsoleApplication.csproj", "{A071E674-F6EA-49EA-B573-471D34073E06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net50ConsoleApplication", "..\Samples\Net50ConsoleApplication\Net50ConsoleApplication.csproj", "{A071E674-F6EA-49EA-B573-471D34073E06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

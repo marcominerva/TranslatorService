@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TranslatorService.DependencyInjection\TranslatorService.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\TranslatorService.DependencyInjection\TranslatorService.DependencyInjection.csproj" />
   </ItemGroup>
 
 </Project>

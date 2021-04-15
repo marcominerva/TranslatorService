@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\TranslatorService.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\TranslatorService.png" Pack="true" PackagePath="\" />
   </ItemGroup>
     
   <ItemGroup>
