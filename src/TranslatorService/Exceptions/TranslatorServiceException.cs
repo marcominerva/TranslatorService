@@ -26,7 +26,7 @@ namespace TranslatorService
         public TranslatorServiceException(int code, string message)
             : base(message) => Code = code;
 
-        internal static async Task<TranslatorServiceException> ReadFromResponseAsync(HttpResponseMessage response)
+        public static async Task<TranslatorServiceException> ReadFromResponseAsync(HttpResponseMessage response)
         {
             using var responseStream = await response.Content.ReadAsStreamAsync();
 

@@ -15,6 +15,7 @@ namespace Net50ConsoleApplication
         public async Task RunAsync()
         {
             var result = await translatorClient.TranslateAsync("Ciao Taggia, 42 frullini a tutti!", "en");
+            var result2 = await translatorClient.TranslateAsync("Ciao Taggia, 42 frullini a tutti!", "en");
         }
     }
 }

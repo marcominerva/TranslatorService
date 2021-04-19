@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using TranslatorService.Settings;
 
@@ -38,9 +39,13 @@ namespace TranslatorService.DependencyInjection
              * Remember that AddHttpClient registers the implementations as transient
              */
 
-            services.AddHttpClient<ITokenProvider, DefaultTokenProvider>((_, provider) =>
+            services.AddMemoryCache();
+
+            services.AddHttpClient<ITokenProvider, CacheableTokenProvider>((httpClient, provider) =>
             {
-                return ActivatorUtilities.GetServiceOrCreateInstance<DefaultTokenProvider>(provider);
+                //return ActivatorUtilities.GetServiceOrCreateInstance<CacheableTokenProvider>(provider);
+                var cache = provider.GetRequiredService<IMemoryCache>();
+                return new CacheableTokenProvider(httpClient, settings, cache);
             });
 
             services.AddHttpClient<ITranslatorClient, TranslatorClient>((httpClient, provider) =>
