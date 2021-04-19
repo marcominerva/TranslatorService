@@ -34,6 +34,15 @@
             </summary>
             <param name="httpClient">The instance of <see cref="T:System.Net.Http.HttpClient"/> used by the service.</param>
         </member>
+        <member name="M:TranslatorService.DefaultTokenProvider.#ctor(System.Net.Http.HttpClient,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.DefaultTokenProvider"/> class, that is used to obtain access token
+            </summary>
+            <param name="httpClient">The instance of <see cref="T:System.Net.Http.HttpClient"/> used by the service.</param>
+            <param name="subscriptionKey">Subscription key to use to get an authentication token.</param>
+            <param name="region">The Azure region of the the Translator service, if any.</param>
+            <exception cref="T:System.ArgumentNullException">The <em>serviceUrl</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</exception>
+        </member>
         <member name="M:TranslatorService.DefaultTokenProvider.GetAccessTokenAsync">
             <summary>
             Gets a token for the specified subscription.
@@ -1061,11 +1070,59 @@
             </para>
             </remarks>
         </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class, using the global (non region-dependent) service and the current language.
+            </summary>
+            <param name="subscriptionKey">The Subscription Key to use the service.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.Net.Http.HttpClient,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class, using an existing <see cref="T:System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <param name="subscriptionKey">The Subscription Key to use the service.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class for a specified region service, using the given language.
+            </summary>
+            <param name="subscriptionKey">The Subscription Key to use the service.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="P:TranslatorService.TranslatorClient.AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
+            <param name="language">The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorClient.GetLanguagesAsync(System.String)"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+        </member>
         <member name="M:TranslatorService.TranslatorClient.#ctor(System.Net.Http.HttpClient,TranslatorService.Settings.TranslatorSettings,TranslatorService.ITokenProvider)">
             <summary>
             Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class for a specified region service, using an existing <see cref="T:System.Net.Http.HttpClient"/> and the given language.
             </summary>
             <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.Net.Http.HttpClient,System.String,System.String,System.String,TranslatorService.ITokenProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class for a specified region service, using an existing <see cref="T:System.Net.Http.HttpClient"/> and the given language.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <param name="subscriptionKey">The Subscription Key to use the service.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="P:TranslatorService.TranslatorClient.AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
+            <param name="language">The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorClient.GetLanguagesAsync(System.String)"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
             <remarks>
             <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
             </remarks>

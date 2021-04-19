@@ -58,12 +58,8 @@ namespace TranslatorService
         /// </summary>
         /// <param name="httpClient">The instance of <see cref="HttpClient"/> used by the service.</param>
         public DefaultTokenProvider(HttpClient httpClient, TranslatorSettings settings)
-        //: this(httpClient, settings.SubscriptionKey, settings.Region)
+            : this(httpClient, settings.SubscriptionKey, settings.Region)
         {
-            this.httpClient = httpClient;
-            SubscriptionKey = settings.SubscriptionKey;
-            Region = settings.Region;
-            ServiceUrl = new Uri(!string.IsNullOrWhiteSpace(Region) ? string.Format(Constants.RegionAuthorizationUrl, Region) : Constants.GlobalAuthorizationUrl);
         }
 
         /// <summary>
@@ -73,13 +69,13 @@ namespace TranslatorService
         /// <param name="subscriptionKey">Subscription key to use to get an authentication token.</param>
         /// <param name="region">The Azure region of the the Translator service, if any.</param>
         /// <exception cref="ArgumentNullException">The <em>serviceUrl</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</exception>
-        //public DefaultTokenProvider(HttpClient httpClient, string? subscriptionKey, string? region = null)
-        //{
-        //    this.httpClient = httpClient;
-        //    SubscriptionKey = subscriptionKey;
-        //    ServiceUrl = new Uri(!string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl);
-        //    Region = region;
-        //}
+        public DefaultTokenProvider(HttpClient httpClient, string? subscriptionKey, string? region = null)
+        {
+            this.httpClient = httpClient;
+            SubscriptionKey = subscriptionKey;
+            ServiceUrl = new Uri(!string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl);
+            Region = region;
+        }
 
         /// <summary>
         /// Gets a token for the specified subscription.

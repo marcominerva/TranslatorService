@@ -65,8 +65,8 @@ namespace TranslatorService
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
-        //public TranslatorClient(string subscriptionKey)
-        //    => Initialize(null, subscriptionKey, null, null, null);
+        public TranslatorClient(string subscriptionKey)
+            => Initialize(null, subscriptionKey, null, null, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using an existing <see cref="System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
@@ -78,8 +78,8 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
         /// <seealso cref="HttpClient"/>
-        //public TranslatorClient(HttpClient httpClient, string subscriptionKey)
-        //    => Initialize(httpClient, subscriptionKey, null, null, null);
+        public TranslatorClient(HttpClient httpClient, string subscriptionKey)
+            => Initialize(httpClient, subscriptionKey, null, null, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class for a specified region service, using the given language.
@@ -91,8 +91,8 @@ namespace TranslatorService
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
-        //public TranslatorClient(string subscriptionKey, string? region, string? language = null)
-        //    => Initialize(null, subscriptionKey, region, language, null);
+        public TranslatorClient(string subscriptionKey, string? region, string? language = null)
+            => Initialize(null, subscriptionKey, region, language, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class for a specified region service, using an existing <see cref="HttpClient"/> and the given language.
@@ -118,8 +118,8 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
         /// <seealso cref="HttpClient"/>
-        //public TranslatorClient(HttpClient httpClient, string subscriptionKey, string? region, string? language = null, ITokenProvider? tokenProvider = null)
-        //    => Initialize(httpClient, subscriptionKey, region, language, tokenProvider);
+        public TranslatorClient(HttpClient httpClient, string subscriptionKey, string? region, string? language = null, ITokenProvider? tokenProvider = null)
+            => Initialize(httpClient, subscriptionKey, region, language, tokenProvider);
 
         /// <inheritdoc/>
         public string? SubscriptionKey
@@ -339,7 +339,7 @@ namespace TranslatorService
                 useInnerHttpClient = false;
             }
 
-            this.tokenProvider = tokenProvider; //?? new DefaultTokenProvider(this.httpClient, subscriptionKey, region);
+            this.tokenProvider = tokenProvider ?? new DefaultTokenProvider(this.httpClient, subscriptionKey, region);
             Language = language ?? CultureInfo.CurrentCulture.Name.ToLower();
         }
 

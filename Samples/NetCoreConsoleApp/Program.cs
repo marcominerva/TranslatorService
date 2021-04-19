@@ -1,8 +1,6 @@
 ﻿using NetCoreConsoleApp;
 using System;
-using System.Net.Http;
 using TranslatorService;
-using TranslatorService.Settings;
 
 //// Initializes the speech client.
 //using var speechClient = new SpeechClient(ServiceKeys.SpeechSubscriptionKey, ServiceKeys.SpeechRegion);
@@ -32,15 +30,7 @@ using TranslatorService.Settings;
 //}
 
 // Initializes the translator client.
-var httpClient = new HttpClient();
-var settings = new TranslatorSettings
-{
-    SubscriptionKey = ServiceKeys.TranslatorSubscriptionKey,
-    Region = ServiceKeys.TranslatorRegion
-};
-
-var tokenProvider = new DefaultTokenProvider(httpClient, settings);
-using var translatorClient = new TranslatorClient(httpClient, settings, tokenProvider);
+using var translatorClient = new TranslatorClient(ServiceKeys.TranslatorSubscriptionKey, ServiceKeys.TranslatorRegion);
 
 do
 {
