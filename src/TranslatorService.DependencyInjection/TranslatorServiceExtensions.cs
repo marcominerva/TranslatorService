@@ -16,7 +16,7 @@ namespace TranslatorService.DependencyInjection
 
             /*
              * Classic (explicit) objects registrations
-             * If needed, we can change the lifetime of the registrations
+             * If needed, we can change the lifetime of the services
              */
 
             //services.AddHttpClient();
@@ -35,7 +35,7 @@ namespace TranslatorService.DependencyInjection
             //});
 
             /* 
-             * Registrations with AddHttpClient and ActivatorUtilities (more concise approach).
+             * Registrations with AddHttpClient (more concise approach).
              * Remember that AddHttpClient registers the implementations as transient
              */
 
