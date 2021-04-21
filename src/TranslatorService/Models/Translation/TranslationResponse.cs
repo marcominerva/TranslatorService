@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace TranslatorService.Models.Translation
 {
@@ -24,6 +25,7 @@ namespace TranslatorService.Models.Translation
         /// <summary>
         /// Gets the first translation result.
         /// </summary>
+        [JsonIgnore]
         public Translation? Translation => Translations?.FirstOrDefault();
     }
 }

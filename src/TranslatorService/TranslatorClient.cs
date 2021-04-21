@@ -42,8 +42,8 @@ namespace TranslatorService
         /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
-        //public TranslatorClient()
-        //    => Initialize(null, null, null, null, null);
+        public TranslatorClient()
+            => Initialize(null, null, null, null, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using an existing <see cref="System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
@@ -54,8 +54,8 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
         /// <seealso cref="HttpClient"/>
-        //public TranslatorClient(HttpClient httpClient)
-        //    => Initialize(httpClient, null, null, null, null);
+        public TranslatorClient(HttpClient httpClient)
+            => Initialize(httpClient, null, null, null, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using the global (non region-dependent) service and the current language.

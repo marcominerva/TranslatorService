@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using TranslatorService.Settings;
 
@@ -7,15 +8,12 @@ namespace TranslatorService.DependencyInjection
 {
     public static class TranslatorServiceExtensions
     {
-        public static IServiceCollection AddTranslatorClient(this IServiceCollection services, Action<TranslatorSettings>? configuration)
+        public static IServiceCollection AddTranslatorClient(this IServiceCollection services, Action<TranslatorSettings>? configuration, bool useCache = true)
         {
-            var settings = new TranslatorSettings();
-            configuration?.Invoke(settings);
-
-            services.AddSingleton(settings);
+            services.Configure(configuration);
 
             /*
-             * Classic (explicit) objects registrations
+             * Classic (explicit) services registrations
              * If needed, we can change the lifetime of the services
              */
 
@@ -39,18 +37,30 @@ namespace TranslatorService.DependencyInjection
              * Remember that AddHttpClient registers the implementations as transient
              */
 
-            services.AddMemoryCache();
-
-            services.AddHttpClient<ITokenProvider, CacheableTokenProvider>((httpClient, provider) =>
+            if (useCache)
             {
-                //return ActivatorUtilities.GetServiceOrCreateInstance<CacheableTokenProvider>(provider);
-                var cache = provider.GetRequiredService<IMemoryCache>();
-                return new CacheableTokenProvider(httpClient, settings, cache);
-            });
+                services.AddMemoryCache();
+
+                services.AddHttpClient<ITokenProvider, CacheableTokenProvider>((httpClient, provider) =>
+                {
+                    var cache = provider.GetRequiredService<IMemoryCache>();
+                    var settings = provider.GetRequiredService<IOptions<TranslatorSettings>>().Value;
+                    return new CacheableTokenProvider(httpClient, settings, cache);
+                });
+            }
+            else
+            {
+                services.AddHttpClient<ITokenProvider, DefaultTokenProvider>((httpClient, provider) =>
+                {
+                    var settings = provider.GetRequiredService<IOptions<TranslatorSettings>>().Value;
+                    return new DefaultTokenProvider(httpClient, settings);
+                });
+            }
 
             services.AddHttpClient<ITranslatorClient, TranslatorClient>((httpClient, provider) =>
             {
                 var tokenProvider = provider.GetRequiredService<ITokenProvider>();
+                var settings = provider.GetRequiredService<IOptions<TranslatorSettings>>().Value;
                 return new TranslatorClient(httpClient, settings, tokenProvider);
             });
 

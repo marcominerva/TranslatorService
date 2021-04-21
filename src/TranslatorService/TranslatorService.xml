@@ -1054,6 +1054,26 @@
             </para>
             </remarks>
         </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class, using the global (non region-dependent) service and the current language.
+            </summary>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.Net.Http.HttpClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class, using an existing <see cref="T:System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
         <member name="M:TranslatorService.TranslatorClient.#ctor(System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class, using the global (non region-dependent) service and the current language.
