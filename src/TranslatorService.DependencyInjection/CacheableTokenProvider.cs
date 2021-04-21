@@ -20,11 +20,6 @@ namespace TranslatorService
         private const string GlobalAuthorizationUrl = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
         private const string RegionAuthorizationUrl = "https://{0}.api.cognitive.microsoft.com/sts/v1.0/issueToken";
 
-        /// Gets or sets the URL of the token service.
-        public Uri ServiceUrl { get; set; }
-
-        public string? Region { get; set; }
-
         /// <summary>
         /// After obtaining a valid token, this class will cache it for this duration.
         /// Use a duration of 8 minutes, which is less than the actual token lifetime of 10 minutes.
@@ -34,28 +29,23 @@ namespace TranslatorService
         private readonly IMemoryCache cache;
         private readonly HttpClient httpClient;
 
-        private string storedTokenValue = string.Empty;
-        private string? subscriptionKey;
+        private string? region;
+        private Uri serviceUrl;
+
+        public string? Region
+        {
+            get => region;
+            set
+            {
+                region = value;
+                serviceUrl = new Uri(!string.IsNullOrWhiteSpace(region) ? string.Format(RegionAuthorizationUrl, region) : GlobalAuthorizationUrl);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the Service Subscription Key.
         /// </summary>
-        public string? SubscriptionKey
-        {
-            get
-            {
-                return subscriptionKey;
-            }
-            set
-            {
-                if (subscriptionKey != value)
-                {
-                    // If the subscription key is changed, the token is no longer valid.
-                    subscriptionKey = value;
-                    storedTokenValue = string.Empty;
-                }
-            }
-        }
+        public string? SubscriptionKey { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenProvider"/> class, that is used to obtain access token
@@ -77,7 +67,6 @@ namespace TranslatorService
         {
             this.httpClient = httpClient;
             SubscriptionKey = subscriptionKey;
-            ServiceUrl = new Uri(!string.IsNullOrWhiteSpace(region) ? string.Format(RegionAuthorizationUrl, region) : GlobalAuthorizationUrl);
             Region = region;
             this.cache = cache;
         }
@@ -95,16 +84,16 @@ namespace TranslatorService
         /// </remarks>
         public async Task<string> GetAccessTokenAsync()
         {
-            if (string.IsNullOrWhiteSpace(subscriptionKey))
+            if (string.IsNullOrWhiteSpace(SubscriptionKey))
             {
                 throw new ArgumentNullException(nameof(SubscriptionKey), "A subscription key is required. Go to Azure Portal and sign up for Microsoft Translator: https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/TextTranslation");
             }
 
-            storedTokenValue = await cache.GetOrCreateAsync(subscriptionKey, async (entry) =>
+            var tokenValue = await cache.GetOrCreateAsync(SubscriptionKey, async (entry) =>
             {
                 try
                 {
-                    using var request = new HttpRequestMessage(HttpMethod.Post, ServiceUrl);
+                    using var request = new HttpRequestMessage(HttpMethod.Post, serviceUrl);
                     request.Headers.Add(OcpApimSubscriptionKeyHeader, SubscriptionKey);
                     request.Headers.Add(OcpApimSubscriptionRegionHeader, Region);
 
@@ -113,10 +102,10 @@ namespace TranslatorService
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
-                        storedTokenValue = $"Bearer {content}";
+                        var tokenValue = $"Bearer {content}";
 
                         entry.AbsoluteExpirationRelativeToNow = TokenCacheDuration;
-                        return storedTokenValue;
+                        return tokenValue;
                     }
 
                     throw await TranslatorServiceException.ReadFromResponseAsync(response).ConfigureAwait(false);
@@ -127,7 +116,7 @@ namespace TranslatorService
                 }
             });
 
-            return storedTokenValue;
+            return tokenValue;
         }
     }
 }

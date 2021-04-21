@@ -129,24 +129,10 @@ namespace TranslatorService
         }
 
         /// <inheritdoc/>
-        public string AuthenticationUri
-        {
-            get => tokenProvider.ServiceUrl.ToString();
-            set => tokenProvider.ServiceUrl = new Uri(value);
-        }
-
-        /// <inheritdoc/>
         public string? Region
         {
             get => tokenProvider.Region;
-            set
-            {
-                if (tokenProvider.Region != value)
-                {
-                    tokenProvider.Region = value;
-                    AuthenticationUri = !string.IsNullOrWhiteSpace(value) ? string.Format(Constants.RegionAuthorizationUrl, value) : Constants.GlobalAuthorizationUrl;
-                }
-            }
+            set => tokenProvider.Region = value;
         }
 
         /// <inheritdoc/>

@@ -76,13 +76,6 @@ namespace TranslatorService
         }
 
         /// <inheritdoc/>
-        public string AuthenticationUri
-        {
-            get => authToken.ServiceUrl.ToString();
-            set => authToken.ServiceUrl = new Uri(value);
-        }
-
-        /// <inheritdoc/>
         public string? TextToSpeechRequestUri { get; set; }
 
         /// <inheritdoc/>
@@ -91,11 +84,6 @@ namespace TranslatorService
         /// <inheritdoc/>
         public async Task<Stream> SpeakAsync(TextToSpeechParameters input)
         {
-            if (string.IsNullOrWhiteSpace(AuthenticationUri))
-            {
-                throw new ArgumentNullException(nameof(AuthenticationUri));
-            }
-
             if (string.IsNullOrWhiteSpace(TextToSpeechRequestUri))
             {
                 throw new ArgumentNullException(nameof(TextToSpeechRequestUri));
@@ -151,11 +139,6 @@ namespace TranslatorService
         /// <inheritdoc/>
         public async Task<SpeechRecognitionResponse> RecognizeAsync(Stream audioStream, string language, RecognitionResultFormat recognitionFormat = RecognitionResultFormat.Simple, SpeechProfanityMode profanity = SpeechProfanityMode.Masked)
         {
-            if (string.IsNullOrWhiteSpace(AuthenticationUri))
-            {
-                throw new ArgumentNullException(nameof(AuthenticationUri));
-            }
-
             if (string.IsNullOrWhiteSpace(TextToSpeechRequestUri))
             {
                 throw new ArgumentNullException(nameof(TextToSpeechRequestUri));

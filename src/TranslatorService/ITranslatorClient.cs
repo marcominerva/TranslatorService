@@ -12,11 +12,6 @@ namespace TranslatorService
     public interface ITranslatorClient : IDisposable
     {
         /// <summary>
-        /// Gets or sets the Authentication URI for the Translator service.
-        /// </summary>
-        string AuthenticationUri { get; set; }
-
-        /// <summary>
         /// Gets or sets the Subscription key that is necessary to use <strong>Microsoft Translator Service</strong>.
         /// </summary>
         /// <value>The Subscription Key.</value>

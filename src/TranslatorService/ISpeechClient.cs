@@ -12,11 +12,6 @@ namespace TranslatorService
     public interface ISpeechClient : IDisposable
     {
         /// <summary>
-        /// Gets or sets the Authentication URI for the Speech service.
-        /// </summary>
-        string AuthenticationUri { get; set; }
-
-        /// <summary>
         /// Gets or sets the request URI for the Text-to-speech service.
         /// </summary>
         string? TextToSpeechRequestUri { get; set; }

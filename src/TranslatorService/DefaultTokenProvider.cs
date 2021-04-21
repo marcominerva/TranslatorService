@@ -16,10 +16,8 @@ namespace TranslatorService
         private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
         private const string OcpApimSubscriptionRegionHeader = "Ocp-Apim-Subscription-Region";
 
-        /// Gets or sets the URL of the token service.
-        public Uri ServiceUrl { get; set; }
-
-        public string? Region { get; set; }
+        private const string GlobalAuthorizationUrl = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
+        private const string RegionAuthorizationUrl = "https://{0}.api.cognitive.microsoft.com/sts/v1.0/issueToken";
 
         /// <summary>
         /// After obtaining a valid token, this class will cache it for this duration.
@@ -31,17 +29,27 @@ namespace TranslatorService
 
         private string storedTokenValue = string.Empty;
         private DateTime storedTokenTime = DateTime.MinValue;
+
+        private string? region;
         private string? subscriptionKey;
+        private Uri serviceUrl;
+
+        public string? Region
+        {
+            get => region;
+            set
+            {
+                region = value;
+                serviceUrl = new Uri(!string.IsNullOrWhiteSpace(region) ? string.Format(RegionAuthorizationUrl, region) : GlobalAuthorizationUrl);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the Service Subscription Key.
         /// </summary>
         public string? SubscriptionKey
         {
-            get
-            {
-                return subscriptionKey;
-            }
+            get => subscriptionKey;
             set
             {
                 if (subscriptionKey != value)
@@ -73,7 +81,6 @@ namespace TranslatorService
         {
             this.httpClient = httpClient;
             SubscriptionKey = subscriptionKey;
-            ServiceUrl = new Uri(!string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl);
             Region = region;
         }
 
@@ -103,7 +110,7 @@ namespace TranslatorService
 
             try
             {
-                using var request = new HttpRequestMessage(HttpMethod.Post, ServiceUrl);
+                using var request = new HttpRequestMessage(HttpMethod.Post, serviceUrl);
                 request.Headers.Add(OcpApimSubscriptionKeyHeader, SubscriptionKey);
                 request.Headers.Add(OcpApimSubscriptionRegionHeader, Region);
 
