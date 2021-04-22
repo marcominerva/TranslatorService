@@ -215,7 +215,7 @@ namespace TranslatorService
                 useInnerHttpClient = false;
             }
 
-            authToken = null; // new DefaultTokenProvider(this.httpClient, subscriptionKey, region);
+            authToken = new DefaultTokenProvider(this.httpClient, subscriptionKey, region);
             TextToSpeechRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseTextToSpeechRequestUri, region) : null;
             SpeechToTextRequestUri = !string.IsNullOrWhiteSpace(region) ? string.Format(BaseSpeechToTextRequestUri, region) : null;
         }

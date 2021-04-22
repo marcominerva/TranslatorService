@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using TranslatorService.Settings;
 
 namespace TranslatorService
@@ -52,7 +52,7 @@ namespace TranslatorService
         /// </summary>
         /// <param name="httpClient">The instance of <see cref="HttpClient"/> used by the service.</param>
         public CacheableTokenProvider(HttpClient httpClient, TranslatorSettings settings, IMemoryCache cache)
-            : this(httpClient, settings.SubscriptionKey, settings.Region, cache)
+            : this(httpClient, cache, settings.SubscriptionKey, settings.Region)
         {
         }
 
@@ -63,7 +63,7 @@ namespace TranslatorService
         /// <param name="subscriptionKey">Subscription key to use to get an authentication token.</param>
         /// <param name="region">The Azure region of the the Translator service, if any.</param>
         /// <exception cref="ArgumentNullException">The <em>serviceUrl</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</exception>
-        public CacheableTokenProvider(HttpClient httpClient, string? subscriptionKey, string? region = null, IMemoryCache cache = null)
+        public CacheableTokenProvider(HttpClient httpClient, IMemoryCache cache, string? subscriptionKey, string? region = null)
         {
             this.httpClient = httpClient;
             SubscriptionKey = subscriptionKey;
