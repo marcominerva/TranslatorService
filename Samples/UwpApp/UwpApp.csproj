@@ -133,7 +133,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\TranslatorService.csproj">
+    <ProjectReference Include="..\..\src\TranslatorService\TranslatorService.csproj">
       <Project>{ec436ec0-db8f-4353-b22b-8f81c35655f5}</Project>
       <Name>TranslatorService</Name>
     </ProjectReference>

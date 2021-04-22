@@ -1,0 +1,1260 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TranslatorService</name>
+    </assembly>
+    <members>
+        <member name="T:TranslatorService.DefaultTokenProvider">
+            <summary>
+            Client to call Cognitive Services Azure Auth Token service in order to get an access token.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.DefaultTokenProvider.OcpApimSubscriptionKeyHeader">
+            <summary>
+            Name of header used to pass the subscription key to the token service
+            </summary>
+        </member>
+        <member name="F:TranslatorService.DefaultTokenProvider.TokenCacheDuration">
+            <summary>
+            After obtaining a valid token, this class will cache it for this duration.
+            Use a duration of 8 minutes, which is less than the actual token lifetime of 10 minutes.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.DefaultTokenProvider.SubscriptionKey">
+            <summary>
+            Gets or sets the Service Subscription Key.
+            </summary>
+        </member>
+        <member name="M:TranslatorService.DefaultTokenProvider.#ctor(System.Net.Http.HttpClient,TranslatorService.Settings.TranslatorSettings)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.DefaultTokenProvider"/> class, that is used to obtain access token
+            </summary>
+            <param name="httpClient">The instance of <see cref="T:System.Net.Http.HttpClient"/> used by the service.</param>
+        </member>
+        <member name="M:TranslatorService.DefaultTokenProvider.#ctor(System.Net.Http.HttpClient,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.DefaultTokenProvider"/> class, that is used to obtain access token
+            </summary>
+            <param name="httpClient">The instance of <see cref="T:System.Net.Http.HttpClient"/> used by the service.</param>
+            <param name="subscriptionKey">Subscription key to use to get an authentication token.</param>
+            <param name="region">The Azure region of the the Translator service, if any.</param>
+            <exception cref="T:System.ArgumentNullException">The <em>serviceUrl</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</exception>
+        </member>
+        <member name="M:TranslatorService.DefaultTokenProvider.GetAccessTokenAsync">
+            <summary>
+            Gets a token for the specified subscription.
+            </summary>
+            <returns>The encoded JWT token prefixed with the string "Bearer ".</returns>
+            <remarks>
+            This method uses a cache to limit the number of request to the token service.
+            A fresh token can be re-used during its lifetime of 10 minutes. After a successful
+            request to the token service, this method caches the access token. Subsequent
+            invocations of the method return the cached token for the next 8 minutes. After
+            8 minutes, a new token is fetched from the token service and the cache is updated.
+            </remarks>
+        </member>
+        <member name="T:TranslatorService.TranslatorServiceException">
+            <summary>
+            The <strong>TranslatorServiceException</strong> class holds information about Exception related to <see cref="T:TranslatorService.TranslatorClient"/> or <see cref="T:TranslatorService.SpeechClient"/>.
+            </summary>
+            <seealso cref="T:TranslatorService.TranslatorClient"/>
+            <seealso cref="T:TranslatorService.SpeechClient"/>
+        </member>
+        <member name="P:TranslatorService.TranslatorServiceException.Code">
+            <summary>
+            Gets or sets the error status code.
+            </summary>
+        </member>
+        <member name="M:TranslatorService.TranslatorServiceException.#ctor(System.Int32,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorServiceException"/> class using the specified error message.
+            </summary>
+            <param name="code">The status code of the error.</param>
+            <param name="message">Message that describes the error.</param>
+        </member>
+        <member name="T:TranslatorService.ISpeechClient">
+            <summary>
+            The <strong>ISpeechClient</strong> interface specifies properties and methods for text-to-speech and speech-to-text
+            </summary>
+        </member>
+        <member name="P:TranslatorService.ISpeechClient.TextToSpeechRequestUri">
+            <summary>
+            Gets or sets the request URI for the Text-to-speech service.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.ISpeechClient.SpeechToTextRequestUri">
+            <summary>
+            Gets or sets the request URI for the Speech-to-text service.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.ISpeechClient.SubscriptionKey">
+            <summary>
+            Gets or sets the Subscription key that is necessary to use <strong>Microsoft Translator Service</strong>.
+            </summary>
+            <value>The Subscription Key.</value>
+            <remarks>
+            <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
+            </remarks>
+        </member>
+        <member name="M:TranslatorService.ISpeechClient.InitializeAsync">
+            <summary>
+            Initializes the <see cref="T:TranslatorService.SpeechClient"/> class by getting an access token for the service.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> that represents the initialize operation.</returns>
+            <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> property hasn't been set.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> isn't valid or has expired.</exception>
+            <remarks>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</remarks>
+        </member>
+        <member name="M:TranslatorService.ISpeechClient.InitializeAsync(System.String,System.String)">
+            <summary>
+            Initializes the <see cref="T:TranslatorService.SpeechClient"/> class by getting an access token for the service.
+            </summary>
+            <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="!:AuthenticationUri"/>, <see cref="P:TranslatorService.ISpeechClient.TextToSpeechRequestUri"/> and <see cref="P:TranslatorService.ISpeechClient.SpeechToTextRequestUri"/> properties.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> that represents the initialize operation.</returns>
+            <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> property hasn't been set.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> isn't valid or has expired.</exception>
+            <remarks>
+            <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
+            <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
+            </remarks>
+        </member>
+        <member name="M:TranslatorService.ISpeechClient.InitializeAsync(System.Net.Http.HttpClient,System.String,System.String)">
+            <summary>
+            Initializes the <see cref="T:TranslatorService.SpeechClient"/> class by getting an access token for the service using an existing <see cref="T:System.Net.Http.HttpClient"/>.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="!:AuthenticationUri"/>, <see cref="P:TranslatorService.ISpeechClient.TextToSpeechRequestUri"/> and <see cref="P:TranslatorService.ISpeechClient.SpeechToTextRequestUri"/> properties.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> that represents the initialize operation.</returns>
+            <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> property hasn't been set.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> isn't valid or has expired.</exception>
+            <remarks>
+            <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
+            <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="M:TranslatorService.ISpeechClient.SpeakAsync(TranslatorService.Models.Speech.TextToSpeechParameters)">
+            <summary>
+            Sends the specified text to be spoken to the TTS service and saves the response audio to a file.
+            </summary>
+            <param name="input">A class holding information to generate the audio file.</param>
+            <returns>The stream containing the audio of the input text</returns>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <see cref="!:AuthenticationUri"/> property hasn't been set.</term>
+            <term>The <see cref="P:TranslatorService.ISpeechClient.TextToSpeechRequestUri"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
+            </list>
+            </exception>
+            <exception cref="T:System.ArgumentException">The text is longer than 800 characters.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks><para>This method performs a non-blocking request for language detection.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/speech-service/rest-apis#text-to-speech.
+            </para></remarks>
+            <seealso cref="T:TranslatorService.Models.Speech.TextToSpeechParameters"/>
+        </member>
+        <member name="M:TranslatorService.ISpeechClient.RecognizeAsync(System.IO.Stream,System.String,TranslatorService.Models.Speech.RecognitionResultFormat,TranslatorService.Models.Speech.SpeechProfanityMode)">
+            <summary>
+            Recognize text in a speech audio file.
+            </summary>
+            <param name="audioStream">The stream containing the audio to be recognized.</param>
+            <param name="language">The language of the audio.</param>
+            <param name="recognitionFormat">The result format.</param>
+            <param name="profanity">The profanity in recognition results.</param>
+            <returns>A <see cref="T:TranslatorService.Models.Speech.SpeechRecognitionResponse"/> object containing information about the recognized text.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <see cref="!:AuthenticationUri"/> property hasn't been set.</term>
+            <term>The <see cref="P:TranslatorService.ISpeechClient.TextToSpeechRequestUri"/> property hasn't been set.</term>
+            <term>The <paramref name="audioStream"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
+            <term>The <paramref name="language"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            </list>
+            </exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ISpeechClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks>
+            <para>The currently supported format for recognition is single-channel (mono) WAV / PCM with a sampling rate of 16 kHz.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/speech-service/rest-apis#speech-to-text
+            </para>
+            </remarks>
+            <seealso cref="T:TranslatorService.Models.Speech.SpeechRecognitionResponse"/>
+            <seealso cref="T:TranslatorService.Models.Speech.RecognitionResultFormat"/>
+            <seealso cref="T:TranslatorService.Models.Speech.SpeechProfanityMode"/>
+        </member>
+        <member name="T:TranslatorService.ITranslatorClient">
+            <summary>
+            The <strong>ITranslatorClient</strong> interface specifies properties and methods to translate text in various supported languages.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.ITranslatorClient.SubscriptionKey">
+            <summary>
+            Gets or sets the Subscription key that is necessary to use <strong>Microsoft Translator Service</strong>.
+            </summary>
+            <value>The Subscription Key.</value>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+        </member>
+        <member name="P:TranslatorService.ITranslatorClient.Region">
+            <summary>
+            Gets or sets the the Azure region of the the Translator service.
+            </summary>
+            <remarks>This value is used to automatically set the <see cref="!:AuthenticationUri"/> property. If the paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.
+            </remarks>
+        </member>
+        <member name="P:TranslatorService.ITranslatorClient.Language">
+            <summary>
+            Gets or sets the string representing the supported language code to translate the text in.
+            </summary>
+            <value>The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>.</value>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.InitializeAsync">
+            <summary>
+            Initializes the <see cref="T:TranslatorService.TranslatorClient"/> class by getting an access token for the global (non region-dependent) service, using the current language.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> that represents the initialize operation.</returns>
+            <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</exception>
+            <remarks>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</remarks>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.InitializeAsync(System.String,System.String,System.String)">
+            <summary>
+            Initializes the <see cref="T:TranslatorService.TranslatorClient"/> class by getting an access token for a specified region service, using the given language.
+            </summary>
+            <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="!:AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
+            <param name="language">A string representing the supported language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> that represents the initialize operation.</returns>
+            <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</exception>
+            <remarks>
+            <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.InitializeAsync(System.Net.Http.HttpClient,System.String,System.String,System.String)">
+            <summary>
+            Initializes the <see cref="T:TranslatorService.TranslatorClient"/> class by getting an access token for a specified region service, using an existing <see cref="T:System.Net.Http.HttpClient"/>, using the given language.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="!:AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
+            <param name="subscriptionKey">The subscription key for the Microsoft Translator Service on Azure.</param>
+            <param name="language">A string representing the supported language code to speak the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> that represents the initialize operation.</returns>
+            <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</exception>
+            <remarks>
+            <para>Calling this method isn't mandatory, because the token is get/refreshed everytime is needed. However, it is called at startup, it can speed-up subsequest requests.</para>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)">
+            <summary>
+            Detects the language of a text.
+            </summary>
+            <param name="input">A string representing the text whose language must be detected.</param>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.DetectedLanguageResponse"/> object containing information about the detected language.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            </list>
+            </exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</exception>
+            <remarks><para>This method performs a non-blocking request for language detection.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-detect.
+            </para></remarks>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+            <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Detects the language of a text.
+            </summary>
+            <param name="input">A string array containing the sentences whose language must be detected.</param>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.DetectedLanguageResponse"/> array with one result for each string in the input array. Each object contains information about the detected language.</returns>
+            <exception cref="T:System.ArgumentException">
+            <list type="bullet">
+            <term>The <paramref name="input"/> parameter doesn't contain any element.</term>
+            <term>The <paramref name="input"/> array contains more than 100 elements.</term>
+            </list>
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> array is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
+            </list>
+            </exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>        /// <remarks><para>This method performs a non-blocking request for language detection.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-detect.
+            </para></remarks>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+            <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)">
+            <summary>
+            Retrieves friendly names for the languages available for text translation.
+            </summary>
+            <param name="language">The language used to localize the language names. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <returns>An array of <see cref="T:TranslatorService.Models.Translation.ServiceLanguage"/> containing the language codes and names supported for translation by <strong>Microsoft Translator Service</strong>.</returns>
+            <exception cref="T:System.ArgumentNullException">The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks><para>This method performs a non-blocking request for language names.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-languages.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String)">
+            <summary>
+            Translates a text string into the specified language.
+            </summary>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> object containing translated text and information.</returns>
+            <param name="input">A string representing the text to translate.</param>
+            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            </list>
+            </exception>
+            <exception cref="T:System.ArgumentException">The <paramref name="input"/> parameter is longer than 1000 characters.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks><para>This method perform a non-blocking request for text translation.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
+            </para>
+            </remarks>
+            <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.String)">
+            <summary>
+            Translates a text string into the specified languages.
+            </summary>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> object containing translated text and information.</returns>
+            <param name="input">A string representing the text to translate.</param>
+            <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            </list>
+            </exception>
+            <exception cref="T:System.ArgumentException">The <paramref name="input"/> parameter is longer than 1000 characters.</exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks><para>This method perform a non-blocking request for text translation.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
+            </para>
+            </remarks>
+            <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
+            <summary>
+            Translates a list of sentences into the specified language.
+            </summary>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> array with one result for each language code in the <paramref name="to"/> array. Each object contains translated text and information.</returns>
+            <param name="input">A string array containing the sentences to translate.</param>
+            <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <param name="to">A string representing the language code to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
+            </list>
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            <list type="bullet">
+            <term>The <paramref name="input"/> parameter is longer than 1000 characters.</term>
+            <term>The <paramref name="input"/> array contains more than 25 elements.</term>
+            </list>
+            </exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks><para>This method perform a non-blocking request for text translation.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
+            </para>
+            </remarks>
+            <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Translates a text into the specified languages.
+            </summary>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> object containing translated text and information.</returns>
+            <param name="input">A string representing the text to translate.</param>
+            <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <param name="to">A string array representing the language codes to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            </list>
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            <list type="bullet">
+            <term>The <paramref name="input"/> parameter is longer than 1000 characters.</term>
+            <term>The <paramref name="to"/> array contains more than 25 elements.</term>
+            </list>
+            </exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks><para>This method perform a non-blocking request for text translation.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
+            </para>
+            </remarks>
+            <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Translates a text string into the specified languages.
+            </summary>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> object containing translated text and information.</returns>
+            <param name="input">A string representing the text to translate.</param>
+            <param name="to">A string array representing the language codes to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</term>
+            </list>
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            <list type="bullet">
+            <term>The <paramref name="input"/> parameter is longer than 1000 characters.</term>
+            <term>The <paramref name="to"/> array contains more than 25 elements.</term>
+            </list>
+            </exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks><para>This method perform a non-blocking request for text translation.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
+            </para>
+            </remarks>
+            <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Translates a list of sentences into the specified languages.
+            </summary>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> array with one result for each language code in the <paramref name="to"/> array. Each object contains translated text and information.</returns>
+            <param name="input">A string array containing the sentences to translate.</param>
+            <param name="to">A string array representing the language codes to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
+            </list>
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            <list type="bullet">
+            <term>The <paramref name="input"/> parameter is longer than 1000 characters.</term>
+            <term>The <paramref name="input"/> array contains more than 25 elements.</term>
+            </list>
+            </exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks><para>This method perform a non-blocking request for text translation.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
+            </para>
+            </remarks>
+            <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+        </member>
+        <member name="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Translates a list of sentences into the specified languages.
+            </summary>
+            <returns>A <see cref="T:TranslatorService.Models.Translation.TranslationResponse"/> array with one result for each language code in the <paramref name="to"/> array. Each object contains translated text and information.</returns>
+            <param name="input">A string array containing the sentences to translate.</param>
+            <param name="from">A string representing the language code of the original text. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <param name="to">A string array representing the language codes to translate the text into. The code must be present in the list of codes returned from the <see cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/> method. If the parameter is set to <strong>null</strong>, the language specified in the <seealso cref="P:TranslatorService.ITranslatorClient.Language"/> property will be used.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <list type="bullet">
+            <term>The <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> property hasn't been set.</term>
+            <term>The <paramref name="input"/> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic).</term>
+            </list>
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            <list type="bullet">
+            <term>The <paramref name="input"/> parameter is longer than 1000 characters.</term>
+            <term>The <paramref name="input"/> array contains more than 25 elements.</term>
+            </list>
+            </exception>
+            <exception cref="T:TranslatorService.TranslatorServiceException">
+            <list type="bullet">
+            <term>The provided <see cref="P:TranslatorService.ITranslatorClient.SubscriptionKey"/> isn't valid or has expired.</term>
+            <term>The call to the method has encountered an unexpected error.</term>
+            </list>
+            </exception>
+            <remarks><para>This method perform a non-blocking request for text translation.</para>
+            <para>For more information, go to https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate.
+            </para>
+            </remarks>
+            <seealso cref="P:TranslatorService.ITranslatorClient.Language"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.AudioOutputFormat">
+            <summary>
+            Voice output formats.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw8Khz8BitMonoMULaw">
+            <summary>
+            raw-8khz-8bit-mono-mulaw request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw16Khz16BitMonoPcm">
+            <summary>
+            raw-16khz-16bit-mono-pcm request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Riff8Khz8BitMonoMULaw">
+            <summary>
+            riff-8khz-8bit-mono-mulaw request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Riff16Khz16BitMonoPcm">
+            <summary>
+            riff-16khz-16bit-mono-pcm request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Ssml16Khz16BitMonoSilk">
+            <summary>
+            ssml-16khz-16bit-mono-silk request output audio format type.
+            It is a SSML with audio segment, with audio compressed by SILK codec
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw16Khz16BitMonoTrueSilk">
+            <summary>
+            raw-16khz-16bit-mono-truesilk request output audio format type.
+            Audio compressed by SILK codec
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Ssml16Khz16BitMonoTts">
+            <summary>
+            ssml-16khz-16bit-mono-tts request output audio format type.
+            It is a SSML with audio segment, and it needs tts engine to play out
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio16Khz128KBitRateMonoMp3">
+            <summary>
+            audio-16khz-128kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio16Khz64KBitRateMonoMp3">
+            <summary>
+            audio-16khz-64kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio16Khz32KBitRateMonoMp3">
+            <summary>
+            audio-16khz-32kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio16Khz16KbpsMonoSiren">
+            <summary>
+            audio-16khz-16kbps-mono-siren request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Riff16Khz16KbpsMonoSiren">
+            <summary>
+            riff-16khz-16kbps-mono-siren request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw24Khz16BitMonoTrueSilk">
+            <summary>
+            raw-24khz-16bit-mono-truesilk request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Raw24Khz16BitMonoPcm">
+            <summary>
+            raw-24khz-16bit-mono-pcm request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Riff24Khz16BitMonoPcm">
+            <summary>
+            riff-24khz-16bit-mono-pcm request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio24Khz48KBitRateMonoMp3">
+            <summary>
+            audio-24khz-48kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio24Khz96KBitRateMonoMp3">
+            <summary>
+            audio-24khz-96kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.AudioOutputFormat.Audio24Khz160KBitRateMonoMp3">
+            <summary>
+            audio-24khz-160kbitrate-mono-mp3 request output audio format type.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.Gender">
+            <summary>
+            Gender of the voice.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.Gender.Female">
+            <summary>
+            Female voice
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.Gender.Male">
+            <summary>
+            Male voice
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.RecognitionAlternative">
+            <summary>
+            The <see cref="T:TranslatorService.Models.Speech.RecognitionAlternative"/> class contains information about a recognition result.
+            </summary>
+            <seealso cref="M:TranslatorService.ISpeechClient.RecognizeAsync(System.IO.Stream,System.String,TranslatorService.Models.Speech.RecognitionResultFormat,TranslatorService.Models.Speech.SpeechProfanityMode)"/>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.Confidence">
+            <summary>
+            The confidence score of the entry from 0.0 (no confidence) to 1.0 (full confidence)
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.LexicalForm">
+            <summary>
+            The lexical form of the recognized text: the actual words recognized.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.CanonicalForm">
+            <summary>
+            The inverse-text-normalized ("canonical") form of the recognized text, with phone numbers, numbers, abbreviations ("doctor smith" to "dr smith"), and other transformations applied.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.MaskedCanonicalForm">
+            <summary>
+            The ITN form with profanity masking applied, if requested.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.RecognitionAlternative.Display">
+            <summary>
+            The display form of the recognized text, with punctuation and capitalization added. This parameter is the same as <seealso cref="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.DisplayText"/> provided when <seealso cref="T:TranslatorService.Models.Speech.RecognitionResultFormat"/> is set to <seealso cref="F:TranslatorService.Models.Speech.RecognitionResultFormat.Simple"/>.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.RecognitionResultFormat">
+            <summary>
+            The <strong>RecognitionResultFormat</strong> enum specifies the result format.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionResultFormat.Simple">
+            <summary>
+            The service returns only the top level information of the recognized text. This is the default.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionResultFormat.Detailed">
+            <summary>
+            The service returns detailed recognition result.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.RecognitionStatus">
+            <summary>
+            Recognition status.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.Success">
+            <summary>
+            The recognition was successful and the DisplayText field will be present
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.NoMatch">
+            <summary>
+            Speech was detected in the audio stream, but no words from the target language were matched
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.InitialSilenceTimeout">
+            <summary>
+            The start of the audio stream contained only silence, and the service timed out waiting for speech
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.BabbleTimeout">
+            <summary>
+            The start of the audio stream contained only noise, and the service timed out waiting for speech
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.RecognitionStatus.Error">
+            <summary>
+            The recognition service encountered an internal error and could not continue
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.SpeechProfanityMode">
+            <summary>
+            The <strong>SpeechProfanityMode</strong> enum defines the possible modes in which the service can handle profanity.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.SpeechProfanityMode.Masked">
+            <summary>
+            The service masks profanity with an asterisk. This is the default.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.SpeechProfanityMode.Removed">
+            <summary>
+            The service removes profanity.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Speech.SpeechProfanityMode.Raw">
+            <summary>
+            The service does not remove or mask profanity.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.SpeechRecognitionResponse">
+            <summary>
+            The <strong>SpeechRecognitionResponse</strong> class contains information about a successful recognition operation.
+            </summary>
+            <seealso cref="T:TranslatorService.SpeechClient"/>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.RecognitionStatus">
+            <summary>
+            A string indicating the result status. Successful requests will return "Success"
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.Offset">
+            <summary>
+            Gets or sets the offset.
+            The Offset element specifies the offset (in 100-nanosecond units) at which the phrase was recognized, relative to the start of the audio stream.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.Duration">
+            <summary>
+            The duration of speech.
+            The Duration element specifies the duration (in 100-nanosecond units) of this speech phrase.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.DisplayText">
+            <summary>
+            Gets or sets the top result (by confidence), returned in Display Form.
+            </summary>
+            <remarks>The display form adds punctuation and capitalization to recognition results, making it the most appropriate form for applications that display the spoken text.</remarks>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.SpeechRecognitionResponse.Alternatives">
+            <summary>
+            A list of alternative interpretations of the same speech recognition result. These results are ranked from most likely to least likely The first entry is the same as the main recognition result.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Speech.TextToSpeechParameters">
+            <summary>
+            Inputs Options for the TTS Service.
+            </summary>
+        </member>
+        <member name="M:TranslatorService.Models.Speech.TextToSpeechParameters.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.Models.Speech.TextToSpeechParameters"/> class.
+            </summary>
+            <seealso cref="T:TranslatorService.SpeechClient"/>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.OutputFormat">
+            <summary>
+            Gets or sets the audio output format.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.Language">
+            <summary>
+            Gets or sets the language of the text.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.VoiceType">
+            <summary>
+            Gets or sets the type of the voice: male/female.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.VoiceName">
+            <summary>
+            Gets or sets the name of the voice.
+            </summary>
+            <remarks>Voices list is available at https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/supported-languages#text-to-speech.
+            </remarks>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.Text">
+            <summary>
+            Gets or sets the text to speech.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Speech.TextToSpeechParameters.Headers">
+            <summary>
+            Gets or sets the headers.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.DetectedLanguage">
+            <summary>
+            Strong type for Detected Language
+            </summary>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})"/>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguage.IsTranslationSupported">
+            <summary>
+            Gets or sets a value indicating whether the detected language is one of the languages supported for text translation.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguage.IsTransliterationSupported">
+            <summary>
+            Gets or sets a value indicating whether the detected language is one of the languages supported for transliteration.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.DetectedLanguageBase">
+            <summary>
+            Strong type for Base Detected Language
+            </summary>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.String)"/>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguageBase.Language">
+            <summary>
+            Gets or sets the code of the detected language.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguageBase.Score">
+            <summary>
+            Gets or sets a float value indicating the confidence in the result. The score is between zero and one and a low score indicates a low confidence.
+            </summary>
+        </member>
+        <member name="M:TranslatorService.Models.Translation.DetectedLanguageBase.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.DetectedLanguageResponse">
+            <summary>
+            Strong type for Detect Language Response
+            </summary>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguageAsync(System.String)"/>
+            <seealso cref="M:TranslatorService.ITranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})"/>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.DetectedLanguageResponse.Alternatives">
+            <summary>
+            Gets or sets an array of other possible languages.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.LanguageDirectionality">
+            <summary>
+            Language directionality, which is rtl for right-to-left languages or ltr for left-to-right languages.
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Translation.LanguageDirectionality.LeftToRight">
+            <summary>
+            Left to right language
+            </summary>
+        </member>
+        <member name="F:TranslatorService.Models.Translation.LanguageDirectionality.RightToLeft">
+            <summary>
+            Right to left language
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.ServiceLanguage">
+            <summary>
+            Holds information about langagues supported for text translation and speech synthesis.
+            </summary>
+            <seealso cref="M:TranslatorService.ITranslatorClient.GetLanguagesAsync(System.String)"/>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.ServiceLanguage.Code">
+            <summary>
+            Gets or sets the language code.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.ServiceLanguage.Name">
+            <summary>
+            Gets or sets the language friendly name.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.ServiceLanguage.NativeName">
+            <summary>
+            Gets or sets the display name of the language in the locale native for this language.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.ServiceLanguage.Directionality">
+            <summary>
+            Gets or sets the directionality, which is rtl for right-to-left languages or ltr for left-to-right languages.
+            </summary>
+        </member>
+        <member name="M:TranslatorService.Models.Translation.ServiceLanguage.ToString">
+            <summary>
+            Returns the language friendly name.
+            </summary>
+            <returns>The language friendly name.</returns>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.Translation">
+            <summary>
+            Strong type for Translation
+            </summary>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.String)"/>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.Translation.Text">
+            <summary>
+            Gets or sets a string giving the translated text.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.Translation.To">
+            <summary>
+            Gets or sets a string representing the language code of the target language.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.Models.Translation.TranslationResponse">
+            <summary>
+            Strong type for Translate Response
+            </summary>
+            <seealso cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String,System.String)"/>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.TranslationResponse.DetectedLanguage">
+            <summary>
+            Gets or sets a <see cref="T:TranslatorService.Models.Translation.DetectedLanguageBase"/> object describing the detected language.
+            </summary>
+            <remarks>This property has a value only when the <see cref="M:TranslatorService.ITranslatorClient.TranslateAsync(System.String,System.String)"/> method is invoked without the <strong>from</strong> parameter, so that automatic language detection is applied to determine the source language.
+            </remarks>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.TranslationResponse.Translations">
+            <summary>
+            Gets or sets an array of <see cref="P:TranslatorService.Models.Translation.TranslationResponse.Translation"/> results.
+            </summary>
+        </member>
+        <member name="P:TranslatorService.Models.Translation.TranslationResponse.Translation">
+            <summary>
+            Gets the first translation result.
+            </summary>
+        </member>
+        <member name="T:TranslatorService.SpeechClient">
+            <summary>
+            The <strong>SpeechClient</strong> class provides methods for text-to-speech and speech-to-text
+            </summary>
+            <remarks>
+            <para>To use this class, you must register Speech Sercvice on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Subscription key.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:TranslatorService.SpeechClient.#ctor(System.Net.Http.HttpClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.SpeechClient"/> class using an existing <see cref="T:System.Net.Http.HttpClient"/>.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>        
+            <remarks>
+            <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ISpeechClient"/>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="M:TranslatorService.SpeechClient.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.SpeechClient"/> class.
+            </summary>
+            <param name="subscriptionKey">The Subscription Key to use the service (it must be created in the specified <paramref name="region"/>).</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="!:AuthenticationUri"/>, <see cref="P:TranslatorService.SpeechClient.TextToSpeechRequestUri"/> and <see cref="P:TranslatorService.SpeechClient.SpeechToTextRequestUri"/> properties.</param>
+            <remarks>
+            <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
+            </remarks>
+        </member>
+        <member name="M:TranslatorService.SpeechClient.#ctor(System.Net.Http.HttpClient,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.SpeechClient"/> class using an existing <see cref="T:System.Net.Http.HttpClient"/>.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <param name="subscriptionKey">The Subscription Key to use the service (it must be created in the specified <paramref name="region"/>).</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="!:AuthenticationUri"/>, <see cref="P:TranslatorService.SpeechClient.TextToSpeechRequestUri"/> and <see cref="P:TranslatorService.SpeechClient.SpeechToTextRequestUri"/> properties.</param>
+            <remarks>
+            <para>You must register Speech Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices to obtain the Speech Uri, Authentication Uri and Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ISpeechClient"/>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="P:TranslatorService.SpeechClient.SubscriptionKey">
+            <inheritdoc/>
+        </member>
+        <member name="P:TranslatorService.SpeechClient.TextToSpeechRequestUri">
+            <inheritdoc/>
+        </member>
+        <member name="P:TranslatorService.SpeechClient.SpeechToTextRequestUri">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.SpeechClient.SpeakAsync(TranslatorService.Models.Speech.TextToSpeechParameters)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.SpeechClient.RecognizeAsync(System.IO.Stream,System.String,TranslatorService.Models.Speech.RecognitionResultFormat,TranslatorService.Models.Speech.SpeechProfanityMode)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.SpeechClient.InitializeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.SpeechClient.InitializeAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.SpeechClient.InitializeAsync(System.Net.Http.HttpClient,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.SpeechClient.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranslatorService.TranslatorClient">
+            <summary>
+            The <strong>TranslatorClient</strong> class provides methods to translate text in various supported languages.
+            </summary>
+            <remarks>
+            <para>To use this class, you must register Translator Service on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class, using the global (non region-dependent) service and the current language.
+            </summary>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.Net.Http.HttpClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class, using an existing <see cref="T:System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class, using the global (non region-dependent) service and the current language.
+            </summary>
+            <param name="subscriptionKey">The Subscription Key to use the service.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.Net.Http.HttpClient,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class, using an existing <see cref="T:System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <param name="subscriptionKey">The Subscription Key to use the service.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class for a specified region service, using the given language.
+            </summary>
+            <param name="subscriptionKey">The Subscription Key to use the service.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="!:AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
+            <param name="language">The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorClient.GetLanguagesAsync(System.String)"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.Net.Http.HttpClient,TranslatorService.Settings.TranslatorSettings,TranslatorService.ITokenProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class for a specified region service, using an existing <see cref="T:System.Net.Http.HttpClient"/> and the given language.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.#ctor(System.Net.Http.HttpClient,System.String,System.String,System.String,TranslatorService.ITokenProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TranslatorService.TranslatorClient"/> class for a specified region service, using an existing <see cref="T:System.Net.Http.HttpClient"/> and the given language.
+            </summary>
+            <param name="httpClient">An instance of the <see cref="T:System.Net.Http.HttpClient"/> object to use to network communication.</param>
+            <param name="subscriptionKey">The Subscription Key to use the service.</param>
+            <param name="region">The Azure region of the the Speech service. This value is used to automatically set the <see cref="!:AuthenticationUri"/> property. If the <em>region</em> paramter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the global service is used.</param>
+            <param name="language">The string representing the supported language code to translate the text in. The code must be present in the list of codes returned from the method <see cref="M:TranslatorService.TranslatorClient.GetLanguagesAsync(System.String)"/>. If the <em>language</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic), the current language is used.</param>
+            <remarks>
+            <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+            </remarks>
+            <seealso cref="T:TranslatorService.ITranslatorClient"/>
+            <seealso cref="T:System.Net.Http.HttpClient"/>
+        </member>
+        <member name="P:TranslatorService.TranslatorClient.SubscriptionKey">
+            <inheritdoc/>
+        </member>
+        <member name="P:TranslatorService.TranslatorClient.Region">
+            <inheritdoc/>
+        </member>
+        <member name="P:TranslatorService.TranslatorClient.Language">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.DetectLanguageAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.DetectLanguagesAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.GetLanguagesAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.TranslateAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.TranslateAsync(System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.TranslateAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.TranslateAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.InitializeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.InitializeAsync(System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.InitializeAsync(System.Net.Http.HttpClient,System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranslatorService.TranslatorClient.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:System.Net.Http.PushStreamContent">
+            <summary>
+            Provides an <see cref="T:System.Net.Http.HttpContent"/> implementation that exposes an output <see cref="T:System.IO.Stream"/>
+            which can be written to directly. The ability to push data to the output stream differs from the
+            <see cref="T:System.Net.Http.StreamContent"/> where data is pulled and not pushed.
+            </summary>
+        </member>
+        <member name="M:System.Net.Http.PushStreamContent.#ctor(System.Action{System.IO.Stream,System.Net.Http.HttpContent,System.Net.TransportContext})">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Net.Http.PushStreamContent"/> class. The
+            <paramref name="onStreamAvailable"/> action is called when an output stream
+            has become available allowing the action to write to it directly. When the
+            stream is closed, it will signal to the content that is has completed and the
+            HTTP request or response will be completed.
+            </summary>
+            <param name="onStreamAvailable">The action to call when an output stream is available.</param>
+        </member>
+        <member name="M:System.Net.Http.PushStreamContent.#ctor(System.Func{System.IO.Stream,System.Net.Http.HttpContent,System.Net.TransportContext,System.Threading.Tasks.Task})">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Net.Http.PushStreamContent"/> class.
+            </summary>
+            <param name="onStreamAvailable">The action to call when an output stream is available. The stream is automatically
+            closed when the return task is completed.</param>
+        </member>
+        <member name="M:System.Net.Http.PushStreamContent.#ctor(System.Action{System.IO.Stream,System.Net.Http.HttpContent,System.Net.TransportContext},System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Net.Http.PushStreamContent"/> class with the given media type.
+            </summary>
+        </member>
+        <member name="M:System.Net.Http.PushStreamContent.#ctor(System.Func{System.IO.Stream,System.Net.Http.HttpContent,System.Net.TransportContext,System.Threading.Tasks.Task},System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Net.Http.PushStreamContent"/> class with the given media type.
+            </summary>
+        </member>
+        <member name="M:System.Net.Http.PushStreamContent.#ctor(System.Action{System.IO.Stream,System.Net.Http.HttpContent,System.Net.TransportContext},System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Net.Http.PushStreamContent"/> class with the given <see cref="T:System.Net.Http.Headers.MediaTypeHeaderValue"/>.
+            </summary>
+        </member>
+        <member name="M:System.Net.Http.PushStreamContent.#ctor(System.Func{System.IO.Stream,System.Net.Http.HttpContent,System.Net.TransportContext,System.Threading.Tasks.Task},System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Net.Http.PushStreamContent"/> class with the given <see cref="T:System.Net.Http.Headers.MediaTypeHeaderValue"/>.
+            </summary>
+        </member>
+        <member name="T:System.Net.Http.PushStreamContent.AsyncVoid">
+            <summary>
+            Used as the T in a "conversion" of a Task into a Task{T}
+            </summary>
+        </member>
+        <member name="M:System.Net.Http.PushStreamContent.SerializeToStreamAsync(System.IO.Stream,System.Net.TransportContext)">
+            <summary>
+            When this method is called, it calls the action provided in the constructor with the output
+            stream to write to. Once the action has completed its work it closes the stream which will
+            close this content instance and complete the HTTP request or response.
+            </summary>
+            <param name="stream">The <see cref="T:System.IO.Stream"/> to which to write.</param>
+            <param name="context">The associated <see cref="T:System.Net.TransportContext"/>.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> instance that is asynchronously serializing the object's content.</returns>
+        </member>
+        <member name="M:System.Net.Http.PushStreamContent.TryComputeLength(System.Int64@)">
+            <summary>
+            Computes the length of the stream if possible.
+            </summary>
+            <param name="length">The computed length of the stream.</param>
+            <returns><c>true</c> if the length has been computed; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="T:System.Net.Http.DelegatingStream">
+            <summary>
+            Stream that delegates to inner stream.
+            This is taken from System.Net.Http
+            </summary>
+        </member>
+    </members>
+</doc>

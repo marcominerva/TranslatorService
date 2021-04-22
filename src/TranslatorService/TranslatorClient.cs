@@ -8,6 +8,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using TranslatorService.Models.Translation;
+using TranslatorService.Settings;
 
 namespace TranslatorService
 {
@@ -31,7 +32,7 @@ namespace TranslatorService
         private HttpClient httpClient = null!;
         private bool useInnerHttpClient = false;
 
-        private AzureAuthToken authToken = null!;
+        private ITokenProvider tokenProvider = null!;
         private string authorizationHeaderValue = null!;
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
         public TranslatorClient()
-            => Initialize(null, null, null, null);
+            => Initialize(null, null, null, null, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using an existing <see cref="System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
@@ -54,7 +55,7 @@ namespace TranslatorService
         /// <seealso cref="ITranslatorClient"/>
         /// <seealso cref="HttpClient"/>
         public TranslatorClient(HttpClient httpClient)
-            => Initialize(httpClient, null, null, null);
+            => Initialize(httpClient, null, null, null, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using the global (non region-dependent) service and the current language.
@@ -65,7 +66,7 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
         public TranslatorClient(string subscriptionKey)
-            => Initialize(null, subscriptionKey, null, null);
+            => Initialize(null, subscriptionKey, null, null, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class, using an existing <see cref="System.Net.Http.HttpClient"/>, the global (non region-dependent) service and the current language.
@@ -78,7 +79,7 @@ namespace TranslatorService
         /// <seealso cref="ITranslatorClient"/>
         /// <seealso cref="HttpClient"/>
         public TranslatorClient(HttpClient httpClient, string subscriptionKey)
-            => Initialize(httpClient, subscriptionKey, null, null);
+            => Initialize(httpClient, subscriptionKey, null, null, null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class for a specified region service, using the given language.
@@ -91,7 +92,19 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
         public TranslatorClient(string subscriptionKey, string? region, string? language = null)
-            => Initialize(null, subscriptionKey, region, language);
+            => Initialize(null, subscriptionKey, region, language, null);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TranslatorClient"/> class for a specified region service, using an existing <see cref="HttpClient"/> and the given language.
+        /// </summary>
+        /// <param name="httpClient">An instance of the <see cref="HttpClient"/> object to use to network communication.</param>
+        /// <remarks>
+        /// <para>You must register Microsoft Translator on https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation to obtain the Subscription key needed to use the service.</para>
+        /// </remarks>
+        /// <seealso cref="ITranslatorClient"/>
+        /// <seealso cref="HttpClient"/>
+        public TranslatorClient(HttpClient httpClient, TranslatorSettings settings, ITokenProvider tokenProvider)
+            => Initialize(httpClient, settings.SubscriptionKey, settings.Region, settings.Language, tokenProvider);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslatorClient"/> class for a specified region service, using an existing <see cref="HttpClient"/> and the given language.
@@ -105,35 +118,21 @@ namespace TranslatorService
         /// </remarks>
         /// <seealso cref="ITranslatorClient"/>
         /// <seealso cref="HttpClient"/>
-        public TranslatorClient(HttpClient httpClient, string subscriptionKey, string? region, string? language = null)
-            => Initialize(httpClient, subscriptionKey, region, language);
+        public TranslatorClient(HttpClient httpClient, string subscriptionKey, string? region, string? language = null, ITokenProvider? tokenProvider = null)
+            => Initialize(httpClient, subscriptionKey, region, language, tokenProvider);
 
         /// <inheritdoc/>
         public string? SubscriptionKey
         {
-            get => authToken.SubscriptionKey;
-            set => authToken.SubscriptionKey = value;
-        }
-
-        /// <inheritdoc/>
-        public string AuthenticationUri
-        {
-            get => authToken.ServiceUrl.ToString();
-            set => authToken.ServiceUrl = new Uri(value);
+            get => tokenProvider.SubscriptionKey;
+            set => tokenProvider.SubscriptionKey = value;
         }
 
         /// <inheritdoc/>
         public string? Region
         {
-            get => authToken.Region;
-            set
-            {
-                if (authToken.Region != value)
-                {
-                    authToken.Region = value;
-                    AuthenticationUri = !string.IsNullOrWhiteSpace(value) ? string.Format(Constants.RegionAuthorizationUrl, value) : Constants.GlobalAuthorizationUrl;
-                }
-            }
+            get => tokenProvider.Region;
+            set => tokenProvider.Region = value;
         }
 
         /// <inheritdoc/>
@@ -300,7 +299,7 @@ namespace TranslatorService
         /// <inheritdoc/>
         public Task InitializeAsync(HttpClient? httpClient, string? region, string? subscriptionKey, string? language = null)
         {
-            Initialize(httpClient, subscriptionKey, region, language);
+            Initialize(httpClient, subscriptionKey, region, language, null);
             return InitializeAsync();
         }
 
@@ -313,7 +312,7 @@ namespace TranslatorService
             }
         }
 
-        private void Initialize(HttpClient? httpClient, string? subscriptionKey, string? region, string? language)
+        private void Initialize(HttpClient? httpClient, string? subscriptionKey, string? region, string? language, ITokenProvider? tokenProvider)
         {
             if (httpClient == null)
             {
@@ -326,14 +325,14 @@ namespace TranslatorService
                 useInnerHttpClient = false;
             }
 
-            authToken = new AzureAuthToken(this.httpClient, subscriptionKey, !string.IsNullOrWhiteSpace(region) ? string.Format(Constants.RegionAuthorizationUrl, region) : Constants.GlobalAuthorizationUrl, region);
+            this.tokenProvider = tokenProvider ?? new DefaultTokenProvider(this.httpClient, subscriptionKey, region);
             Language = language ?? CultureInfo.CurrentCulture.Name.ToLower();
         }
 
         private async Task CheckUpdateTokenAsync()
         {
             // If necessary, updates the access token.
-            authorizationHeaderValue = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
+            authorizationHeaderValue = await tokenProvider.GetAccessTokenAsync().ConfigureAwait(false);
         }
 
         private HttpRequestMessage CreateHttpRequest(string uriString)

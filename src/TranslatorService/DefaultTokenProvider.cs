@@ -1,13 +1,14 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using TranslatorService.Settings;
 
 namespace TranslatorService
 {
     /// <summary>
     /// Client to call Cognitive Services Azure Auth Token service in order to get an access token.
     /// </summary>
-    internal class AzureAuthToken
+    public class DefaultTokenProvider : ITokenProvider
     {
         /// <summary>
         /// Name of header used to pass the subscription key to the token service
@@ -15,10 +16,8 @@ namespace TranslatorService
         private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
         private const string OcpApimSubscriptionRegionHeader = "Ocp-Apim-Subscription-Region";
 
-        /// Gets or sets the URL of the token service.
-        public Uri ServiceUrl { get; set; }
-
-        public string? Region { get; set; }
+        private const string GlobalAuthorizationUrl = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
+        private const string RegionAuthorizationUrl = "https://{0}.api.cognitive.microsoft.com/sts/v1.0/issueToken";
 
         /// <summary>
         /// After obtaining a valid token, this class will cache it for this duration.
@@ -30,17 +29,27 @@ namespace TranslatorService
 
         private string storedTokenValue = string.Empty;
         private DateTime storedTokenTime = DateTime.MinValue;
+
+        private string? region;
         private string? subscriptionKey;
+        private Uri serviceUrl;
+
+        public string? Region
+        {
+            get => region;
+            set
+            {
+                region = value;
+                serviceUrl = new Uri(!string.IsNullOrWhiteSpace(region) ? string.Format(RegionAuthorizationUrl, region) : GlobalAuthorizationUrl);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the Service Subscription Key.
         /// </summary>
         public string? SubscriptionKey
         {
-            get
-            {
-                return subscriptionKey;
-            }
+            get => subscriptionKey;
             set
             {
                 if (subscriptionKey != value)
@@ -53,18 +62,25 @@ namespace TranslatorService
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureAuthToken"/> class, that is used to obtain access token
+        /// Initializes a new instance of the <see cref="DefaultTokenProvider"/> class, that is used to obtain access token
         /// </summary>
-        /// <param name="client">The instance of <see cref="HttpClient"/> used by the service.</param>
-        /// <param name="key">Subscription key to use to get an authentication token.</param>
-        /// <param name="serviceUrl">The URL of the authentication service.</param>
+        /// <param name="httpClient">The instance of <see cref="HttpClient"/> used by the service.</param>
+        public DefaultTokenProvider(HttpClient httpClient, TranslatorSettings settings)
+            : this(httpClient, settings.SubscriptionKey, settings.Region)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultTokenProvider"/> class, that is used to obtain access token
+        /// </summary>
+        /// <param name="httpClient">The instance of <see cref="HttpClient"/> used by the service.</param>
+        /// <param name="subscriptionKey">Subscription key to use to get an authentication token.</param>
         /// <param name="region">The Azure region of the the Translator service, if any.</param>
         /// <exception cref="ArgumentNullException">The <em>serviceUrl</em> parameter is <strong>null</strong> (<strong>Nothing</strong> in Visual Basic) or empty.</exception>
-        public AzureAuthToken(HttpClient client, string? key, string? serviceUrl, string? region = null)
+        public DefaultTokenProvider(HttpClient httpClient, string? subscriptionKey, string? region = null)
         {
-            httpClient = client;
-            SubscriptionKey = key;
-            ServiceUrl = !string.IsNullOrWhiteSpace(serviceUrl) ? new Uri(serviceUrl) : throw new ArgumentNullException(nameof(serviceUrl));
+            this.httpClient = httpClient;
+            SubscriptionKey = subscriptionKey;
             Region = region;
         }
 
@@ -94,7 +110,7 @@ namespace TranslatorService
 
             try
             {
-                using var request = new HttpRequestMessage(HttpMethod.Post, ServiceUrl);
+                using var request = new HttpRequestMessage(HttpMethod.Post, serviceUrl);
                 request.Headers.Add(OcpApimSubscriptionKeyHeader, SubscriptionKey);
                 request.Headers.Add(OcpApimSubscriptionRegionHeader, Region);
 

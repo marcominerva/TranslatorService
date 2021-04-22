@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\TranslatorService.csproj" />
+    <ProjectReference Include="..\..\src\TranslatorService\TranslatorService.csproj" />
   </ItemGroup>
 
 </Project>

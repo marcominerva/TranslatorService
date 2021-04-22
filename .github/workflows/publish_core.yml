@@ -3,12 +3,12 @@ name: Publish TranslatorService on NuGet
 on:
   push:
     branches: [ master ]
-    paths: [ 'src/**' ]
+    paths: [ 'src/TranslatorService/**' ]
   workflow_dispatch:
 
 env:
   NETCORE_VERSION: '5.0.202'
-  PROJECT_NAME: src 
+  PROJECT_NAME: src/TranslatorService 
   PROJECT_FILE: TranslatorService.csproj
   NBGV_GitEngine: LibGit2
 
