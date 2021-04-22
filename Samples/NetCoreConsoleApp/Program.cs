@@ -1,33 +1,35 @@
-﻿using NetCoreConsoleApp;
-using System;
+﻿using System;
+using System.IO;
+using NetCoreConsoleApp;
 using TranslatorService;
+using TranslatorService.Models.Speech;
 
-//// Initializes the speech client.
-//using var speechClient = new SpeechClient(ServiceKeys.SpeechSubscriptionKey, ServiceKeys.SpeechRegion);
+// Initializes the speech client.
+using var speechClient = new SpeechClient(ServiceKeys.SpeechSubscriptionKey, ServiceKeys.SpeechRegion);
 
-//try
-//{
-//    Console.WriteLine("Calling Speech Service for speech-to-text (using a sample file \"What's the weather like?\")...\n");
+try
+{
+    Console.WriteLine("Calling Speech Service for speech-to-text (using a sample file \"What's the weather like?\")...\n");
 
-//    using var fileStream = File.OpenRead(@"SpeechSample.wav");
-//    var recognitionResponse = await speechClient.RecognizeAsync(fileStream, "en-US", RecognitionResultFormat.Detailed);
-//    Console.WriteLine($"Recognition Result: {recognitionResponse.RecognitionStatus}");
-//    Console.WriteLine(recognitionResponse.DisplayText);
+    using var fileStream = File.OpenRead(@"SpeechSample.wav");
+    var recognitionResponse = await speechClient.RecognizeAsync(fileStream, "en-US", RecognitionResultFormat.Detailed);
+    Console.WriteLine($"Recognition Result: {recognitionResponse.RecognitionStatus}");
+    Console.WriteLine(recognitionResponse.DisplayText);
 
-//    var speakResponse = await speechClient.SpeakAsync(new TextToSpeechParameters
-//    {
-//        Language = "en-US",
-//        VoiceType = Gender.Female,
-//        VoiceName = "en-US-AriaNeural",
-//        Text = "Hello everyone! Today is really a nice day."
-//    });
+    var speakResponse = await speechClient.SpeakAsync(new TextToSpeechParameters
+    {
+        Language = "en-US",
+        VoiceType = Gender.Female,
+        VoiceName = "en-US-AriaNeural",
+        Text = "Hello everyone! Today is really a nice day."
+    });
 
-//    // speakResponse contains the stream of the audio.
-//}
-//catch (TranslatorServiceException ex)
-//{
-//    Console.WriteLine($"Error: {ex.Message}");
-//}
+    // speakResponse contains the stream of the audio.
+}
+catch (TranslatorServiceException ex)
+{
+    Console.WriteLine($"Error: {ex.Message}");
+}
 
 // Initializes the translator client.
 using var translatorClient = new TranslatorClient(ServiceKeys.TranslatorSubscriptionKey, ServiceKeys.TranslatorRegion);

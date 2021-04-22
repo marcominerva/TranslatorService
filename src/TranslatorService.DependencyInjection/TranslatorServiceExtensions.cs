@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System;
 using TranslatorService.Settings;
 
 namespace TranslatorService.DependencyInjection
